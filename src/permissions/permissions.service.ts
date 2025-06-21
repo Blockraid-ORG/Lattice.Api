@@ -33,7 +33,7 @@ export class PermissionsService {
       data: {
         name: body.name,
         code: body.code,
-        path: body.code,
+        path: body.path,
       },
       select: {
         id: true,

@@ -1,6 +1,4 @@
-// import { NestFactory } from '@nestjs/core';
 import { PrismaClient } from '@prisma/client';
-// import { INestApplication } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { permissionData } from '../data/permissions';
 const prisma = new PrismaClient();
@@ -17,6 +15,8 @@ async function createUser() {
     data: {
       email: 'super@gmail.com',
       fullname: 'Super User',
+      category: 'UNSIGNED',
+      type: 'INTERNAL',
       password: await bcrypt.hash('super@123', 10),
     },
   });
@@ -122,6 +122,99 @@ async function createMenuMenuManagement(roleId: string, parentId: string) {
     },
   });
 }
+async function createCategoryProject() {
+  return prisma.category.createMany({
+    data: [
+      {
+        name: 'Private Credit',
+        icon: 'fluent-emoji-high-contrast:bank',
+        order: 1,
+        isParent: false,
+        targetYield: '8-14% IRR',
+        frequency: 'MONTHLY',
+        description: 'Factoring, SME loans, mezzanine debt, litigation finance',
+      },
+      {
+        name: 'Real Estate',
+        icon: 'fluent-emoji-high-contrast:houses',
+        order: 2,
+        targetYield: '6-10% IRR + appreciation',
+        frequency: 'MONTHLY',
+        isParent: false,
+        description:
+          'Stabilized commercial, rental- backed residential, fractional ownership',
+      },
+      {
+        name: 'Infrastructure & ESG',
+        icon: 'token:thundercore',
+        order: 3,
+        targetYield: '5-9% + impact',
+        frequency: 'QUARTERLY',
+        isParent: false,
+        description:
+          'Renewable energy projects, green bonds, carbon- linked yield',
+      },
+      {
+        name: 'Royalty Streams',
+        icon: 'material-symbols:music-cast',
+        order: 4,
+        targetYield: '10-18% variable',
+        frequency: 'MONTHLY',
+        isParent: false,
+        description:
+          'Music, film, sports, and intellectual property- backed contracts',
+      },
+    ],
+  });
+}
+async function createVerifications() {
+  return prisma.verification.createMany({
+    data: [
+      {
+        name: 'KYC',
+        type: 'PERSONAL',
+        IDCardRequired: true,
+        SelfieRequired: true,
+        BussinessLicenseRequired: false,
+        TaxIdRequired: false,
+      },
+      {
+        name: 'KYB',
+        type: 'CORPORATE',
+        IDCardRequired: true,
+        SelfieRequired: true,
+        BussinessLicenseRequired: true,
+        TaxIdRequired: true,
+      },
+    ],
+  });
+}
+async function createMasterSocials() {
+  return prisma.social.createMany({
+    data: [
+      {
+        name: 'X',
+        icon: 'ri:twitter-x-line',
+      },
+      {
+        name: 'Discord',
+        icon: 'ri:discord-fill',
+      },
+      {
+        name: 'Instagram',
+        icon: 'ri:instagram-fill',
+      },
+      {
+        name: 'Github',
+        icon: 'ri:github-fill',
+      },
+      {
+        name: 'Website',
+        icon: 'akar-icons:globe',
+      },
+    ],
+  });
+}
 async function main() {
   const role = await createRole();
   const user = await createUser();
@@ -150,6 +243,9 @@ async function main() {
   });
   const roleMenus = await createRoleMenu(roleMenuIds);
   await createMenuMenuManagement(role.id, headerMenu.id);
+  await createCategoryProject();
+  await createVerifications();
+  await createMasterSocials();
   console.log({
     role,
     user,

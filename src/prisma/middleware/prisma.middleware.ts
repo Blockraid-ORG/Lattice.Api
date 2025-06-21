@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
-import { softDeleteModels } from './soft-delete-model-list';
 import { asyncLocalStorage } from 'src/common/context/async-context';
+import { softDeleteModels } from './soft-delete-model-list';
 
 export function useMiddleware(): Prisma.Middleware {
   return async (params, next) => {
@@ -62,7 +62,6 @@ export function useMiddleware(): Prisma.Middleware {
         createdBy: userId,
       };
     }
-
     return next(params);
   };
 }

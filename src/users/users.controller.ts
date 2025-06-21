@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { PermissionGuard } from 'src/auth/auth.guard';
-import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
+import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
 import { CreateUserByAdminDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -27,7 +27,7 @@ export class UsersController {
   }
 
   @Get()
-  findMany(@Query() query: PaginationDto) {
+  findMany(@Query() query: QueryParamDto) {
     return this.usersService.findMany(query);
   }
 

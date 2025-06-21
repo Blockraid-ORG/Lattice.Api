@@ -78,12 +78,6 @@ export const permissionData = [
     method: 'POST',
   },
   {
-    name: 'GET_roles/all',
-    code: 'GET_roles/all',
-    path: 'roles/all',
-    method: 'GET',
-  },
-  {
     name: 'GET_roles',
     code: 'GET_roles',
     path: 'roles',
@@ -112,12 +106,6 @@ export const permissionData = [
     code: 'POST_permissions',
     path: 'permissions',
     method: 'POST',
-  },
-  {
-    name: 'GET_permissions/all',
-    code: 'GET_permissions/all',
-    path: 'permissions/all',
-    method: 'GET',
   },
   {
     name: 'GET_permissions',

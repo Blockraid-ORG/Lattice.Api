@@ -26,51 +26,13 @@ export class UsersService {
   }
 
   async findMany(query: QueryParamDto) {
-    const paginate = createPaginator({
-      page: query.page,
-      perPage: query.pageSize,
-    });
-    const orderField = query.sortBy || 'id';
-    const orderType = query.sortType || 'desc';
-    const orderBy = { [orderField]: orderType };
-    const result = await paginate<User, Prisma.UserFindManyArgs>(
-      this.prisma.user,
-      {
-        where: {
-          status: parseBoolean(query?.status),
-          OR: query?.search
-            ? [
-                { fullname: { contains: query.search, mode: 'insensitive' } },
-                { email: { contains: query.search, mode: 'insensitive' } },
-              ]
-            : undefined,
-        },
-        orderBy,
-        select: {
-          id: true,
-          fullname: true,
-          email: true,
-          status: true,
-          roles: {
-            select: {
-              id: true,
-              role: {
-                select: {
-                  id: true,
-                  name: true,
-                  code: true,
-                },
-              },
-            },
-          },
-        },
-      },
-    );
-
-    return result;
+    if (parseBoolean(query.noPaginate)) {
+      return this.noPagination(query);
+    }
+    return this.withPagination(query);
   }
 
-  findOne(id: string) {
+  async findOne(id: string) {
     return this.prisma.user.findUnique({
       where: { id },
       select: {
@@ -194,6 +156,85 @@ export class UsersService {
       });
 
       return created;
+    });
+  }
+
+  private async withPagination(query: QueryParamDto) {
+    const paginate = createPaginator({
+      page: query.page,
+      perPage: query.pageSize,
+    });
+    const orderField = query.sortBy || 'createdAt';
+    const orderType = query.sortType || 'desc';
+    const orderBy = { [orderField]: orderType };
+    const result = await paginate<User, Prisma.UserFindManyArgs>(
+      this.prisma.user,
+      {
+        where: {
+          status: parseBoolean(query?.status),
+          OR: query?.search
+            ? [
+                { fullname: { contains: query.search, mode: 'insensitive' } },
+                { email: { contains: query.search, mode: 'insensitive' } },
+              ]
+            : undefined,
+        },
+        orderBy,
+        select: {
+          id: true,
+          fullname: true,
+          email: true,
+          status: true,
+          roles: {
+            select: {
+              id: true,
+              role: {
+                select: {
+                  id: true,
+                  name: true,
+                  code: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    );
+    return result;
+  }
+  private async noPagination(query: QueryParamDto) {
+    const orderField = query.sortBy || 'createdAt';
+    const orderType = query.sortType || 'desc';
+    const orderBy = { [orderField]: orderType };
+    return this.prisma.user.findMany({
+      where: {
+        status: parseBoolean(query?.status),
+        OR: query?.search
+          ? [
+              { fullname: { contains: query.search, mode: 'insensitive' } },
+              { email: { contains: query.search, mode: 'insensitive' } },
+            ]
+          : undefined,
+      },
+      orderBy,
+      select: {
+        id: true,
+        fullname: true,
+        email: true,
+        status: true,
+        roles: {
+          select: {
+            id: true,
+            role: {
+              select: {
+                id: true,
+                name: true,
+                code: true,
+              },
+            },
+          },
+        },
+      },
     });
   }
 }

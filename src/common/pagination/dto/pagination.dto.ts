@@ -15,6 +15,9 @@ export class PaginationDto {
 
   @IsOptional()
   search?: string;
+
+  @IsOptional()
+  noPaginate?: string;
 }
 
 export class QueryParamDto extends IntersectionType(

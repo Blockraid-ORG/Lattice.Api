@@ -27,43 +27,6 @@ export class RolePermissionsService {
       },
     });
   }
-  // async signRolePermission(dto: CreateRolePermissionDto) {
-  //   const role = await this.prisma.role.findUnique({
-  //     where: { id: dto.roleId },
-  //   });
-  //   const permissions = await this.prisma.permission.findMany({
-  //     where: {
-  //       id: {
-  //         in: dto.permissionIds,
-  //       },
-  //     },
-  //   });
-  //   if (!role) {
-  //     throw new BadRequestException('role is undefined');
-  //   }
-
-  //   if (permissions.length !== dto.permissionIds.length) {
-  //     throw new BadRequestException('any permission is undefined');
-  //   }
-  //   return this.prisma.$transaction(async (tx) => {
-  //     await tx.rolePermission.deleteMany({
-  //       where: {
-  //         roleId: role.id,
-  //       },
-  //     });
-  //     const data = dto.permissionIds.map((item) => {
-  //       return {
-  //         roleId: role.id,
-  //         permissionId: item,
-  //       };
-  //     });
-  //     const created = await this.prisma.rolePermission.createMany({
-  //       data: data,
-  //       skipDuplicates: true,
-  //     });
-  //     return created;
-  //   });
-  // }
   async signRolePermission(dto: CreateRolePermissionDto) {
     const role = await this.prisma.role.findUnique({
       where: { id: dto.roleId },
@@ -73,7 +36,6 @@ export class RolePermissionsService {
       throw new BadRequestException('role is undefined');
     }
 
-    // Validasi di luar transaksi
     const validPermissions = await this.prisma.permission.findMany({
       where: { id: { in: dto.permissionIds } },
       select: { id: true },
@@ -88,13 +50,11 @@ export class RolePermissionsService {
       );
     }
 
-    // Persiapkan data insert di luar transaksi
     const data = dto.permissionIds.map((id) => ({
       roleId: role.id,
       permissionId: id,
     }));
 
-    // Jalankan transaksi ringan
     return await this.prisma.$transaction(
       async (tx) => {
         await tx.rolePermission.deleteMany({

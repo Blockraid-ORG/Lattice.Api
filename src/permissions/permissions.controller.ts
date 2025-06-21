@@ -1,23 +1,23 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
   Query,
   UseGuards,
-  HttpStatus,
-  HttpCode,
 } from '@nestjs/common';
-import { PermissionsService } from './permissions.service';
+import { HttpAdapterHost } from '@nestjs/core';
+import { AuthGuard } from '@nestjs/passport';
+import { PermissionGuard } from 'src/auth/auth.guard';
+import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
-import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { HttpAdapterHost } from '@nestjs/core';
-import { PermissionGuard } from 'src/auth/auth.guard';
+import { PermissionsService } from './permissions.service';
 @UseGuards(AuthGuard('jwt'), PermissionGuard)
 @Controller('permissions')
 export class PermissionsController {
@@ -31,10 +31,6 @@ export class PermissionsController {
     return this.permissionsService.create(createPermissionDto);
   }
 
-  @Get('all')
-  findAll() {
-    return this.permissionsService.findAll();
-  }
   @Get()
   findMany(@Query() query: QueryParamDto) {
     return this.permissionsService.findMany(query);

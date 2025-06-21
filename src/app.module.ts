@@ -8,6 +8,11 @@ import { RolePermissionsModule } from './role_permissions/role_permissions.modul
 import { RolesModule } from './roles/roles.module';
 import { SidemenuModule } from './sidemenu/sidemenu.module';
 import { UsersModule } from './users/users.module';
+import { FilesModule } from './files/files.module';
+import { ChainsModule } from './modules/chains/chains.module';
+import { SocialsModule } from './modules/socials/socials.module';
+import { CategoriesModule } from './modules/categories/categories.module';
+import { VerificationsModule } from './modules/verifications/verifications.module';
 
 @Module({
   imports: [
@@ -22,6 +27,11 @@ import { UsersModule } from './users/users.module';
     RolePermissionsModule,
     MenusModule,
     SidemenuModule,
+    FilesModule,
+    ChainsModule,
+    SocialsModule,
+    CategoriesModule,
+    VerificationsModule,
   ],
   controllers: [],
   providers: [],

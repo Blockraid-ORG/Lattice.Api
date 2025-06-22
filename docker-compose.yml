@@ -4,7 +4,7 @@ services:
   nest-app:
     build: .
     environment:
-      - DATABASE_URL=postgresql://postgres:uutb@lattice-dev.cfe0ysqi6mn5.ap-southeast-1.rds.amazonaws.com:5432/lattice_db?schema=lattice
+      - DATABASE_URL=postgresql://latticeapiuser:6ggQ1APm8rc7Ltp0@lattice-dev.cfe0ysqi6mn5.ap-southeast-1.rds.amazonaws.com:5432/lattice_db?schema=lattice
       - PORT=8000
       - JWT_REFRESH_SECRET=1234
       - JWT_SECRET=123

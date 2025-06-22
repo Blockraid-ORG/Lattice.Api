@@ -1,0 +1,28 @@
+# Base image
+FROM node:24-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Copy .env
+
+# Install dependencies
+RUN npm install --legacy-peer-deps
+
+# Copy the rest of the app
+COPY . .
+
+# Prisma: generate client
+RUN npx prisma generate
+
+# Build the app
+RUN npm run build
+
+# Expose the app port
+EXPOSE 8000
+
+# Run the app
+CMD ["node", "dist/main"]

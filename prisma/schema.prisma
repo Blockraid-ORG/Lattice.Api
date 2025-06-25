@@ -14,6 +14,12 @@ enum FileStorage {
   DOSpaces
 }
 
+enum EnumVerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 enum EnumUserCategory {
   UNSIGNED
   PERSONAL
@@ -77,8 +83,10 @@ model User {
   updatedBy String?
   deletedBy String?
 
-  roles    UserRole[]
-  projects Project[]
+  roles               UserRole[]
+  projects            Project[]
+  transactionPresales TransactionPresales[]
+  verifications       ProjectOwnerVerification[]
 
   @@index([email, walletAddress])
   @@map("users")
@@ -253,10 +261,11 @@ model Social {
   name String
   icon String?
 
+  projects ProjectSocial[]
+
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
-
   createdBy String?
   updatedBy String?
   deletedBy String?
@@ -277,9 +286,10 @@ model Verification {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  createdBy String?
-  updatedBy String?
-  deletedBy String?
+  createdBy     String?
+  updatedBy     String?
+  deletedBy     String?
+  projectOwners ProjectOwnerVerification[]
 
   @@map("verifications")
 }
@@ -314,7 +324,7 @@ model Project {
   decimals    Int               @default(18)
   totalSupply Decimal           @db.Decimal(65, 18)
   detail      String            @db.Text()
-  status      EnumProjectStatus
+  status      EnumProjectStatus @default(PENDING)
   userId      String
   user        User              @relation(fields: [userId], references: [id])
   categoryId  String
@@ -324,12 +334,15 @@ model Project {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  createdBy   String?
-  updatedBy   String?
-  deletedBy   String?
-  chains      ProjectChain[]
-  allocations ProjectAllocation[]
-  reviewLogs  ProjectReviewLog[]
+  createdBy           String?
+  updatedBy           String?
+  deletedBy           String?
+  chains              ProjectChain[]
+  allocations         ProjectAllocation[]
+  reviewLogs          ProjectReviewLog[]
+  socials             ProjectSocial[]
+  Presales            Presales[]
+  transactionPresales TransactionPresales[]
 
   @@map("projects")
 }
@@ -377,10 +390,11 @@ model ProjectAllocation {
 
 // ReviewProjectLog
 model ProjectReviewLog {
-  id        String        @id @default(uuid())
+  id        String            @id @default(uuid())
   projectId String
-  project   Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  status    ProjectStatus
+  project   Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  status    EnumProjectStatus @default(PENDING)
+  note      String?
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -393,10 +407,120 @@ model ProjectReviewLog {
   @@map("project_review_logs")
 }
 
+model ProjectSocial {
+  projectId String
+  socialId  String
+  url       String @db.VarChar(255)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  social  Social  @relation(fields: [socialId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  createdBy String?
+  updatedBy String?
+  deletedBy String?
+
+  @@id([projectId, socialId])
+  @@map("project_socials")
+}
+
 // Presales
+model Presales {
+  id              String   @id @default(uuid())
+  projectId       String   @unique
+  chainId         String
+  hardcap         Decimal  @db.Decimal(65, 18)
+  price           Decimal  @db.Decimal(65, 18)
+  maxContribution Decimal  @db.Decimal(65, 18)
+  duration        DateTime
+  unit            String   @db.VarChar(64)
+
+  project Project @relation(fields: [projectId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  createdBy   String?
+  updatedBy   String?
+  deletedBy   String?
+  trasactions TransactionPresales[]
+
+  @@map("project_presales")
+}
+
 // TransactionPresales
+model TransactionPresales {
+  id              String  @id @default(uuid())
+  projectId       String
+  presaleId       String
+  userId          String
+  price           Decimal @db.Decimal(65, 18)
+  count           Int
+  transactionHash String
+
+  project Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  presale Presales @relation(fields: [presaleId], references: [id], onDelete: Cascade)
+  users   User[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  createdBy String?
+  updatedBy String?
+  deletedBy String?
+
+  @@map("transaction_presales")
+}
 
 // ProjectOwnerVerification
+model ProjectOwnerVerification {
+  userId         String
+  verificationId String
+
+  idCard          String? @db.VarChar(255)
+  selfie          String? @db.VarChar(255)
+  bisnisLicense   String? @db.VarChar(255)
+  taxId           String? @db.VarChar(255)
+  submittedAt     DateTime
+  approvedAt      DateTime
+  rejectedAt      DateTime
+  status          EnumVerificationStatus @default(PENDING)
+  rejectionReason String?
+
+  verification Verification @relation(fields: [verificationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  createdBy String?
+  updatedBy String?
+  deletedBy String?
+
+  @@id([userId, verificationId]) // composite key
+  @@map("project_owner_verifications")
+}
+
 // ReviewVerificationLog
+model ReviewVerificationLog {
+  id        String                 @id @default(uuid())
+  status    EnumVerificationStatus
+  note      String?
+  createdAt DateTime               @default(now())
+  updatedAt DateTime               @updatedAt
+  deletedAt DateTime?
+
+  createdBy String?
+  updatedBy String?
+  deletedBy String?
+
+  @@map("review_verification_log")
+}
 
 // Project Here...

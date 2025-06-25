@@ -13,6 +13,7 @@ import { ChainsModule } from './modules/chains/chains.module';
 import { SocialsModule } from './modules/socials/socials.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { VerificationsModule } from './modules/verifications/verifications.module';
+import { ProjectsModule } from './modules/projects/projects.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { VerificationsModule } from './modules/verifications/verifications.modul
     SocialsModule,
     CategoriesModule,
     VerificationsModule,
+    ProjectsModule,
   ],
   controllers: [],
   providers: [],

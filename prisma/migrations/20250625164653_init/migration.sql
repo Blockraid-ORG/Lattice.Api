@@ -2,6 +2,9 @@
 CREATE TYPE "FileStorage" AS ENUM ('LOCAL', 'AWS', 'GCS', 'DOSpaces');
 
 -- CreateEnum
+CREATE TYPE "EnumVerificationStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
+
+-- CreateEnum
 CREATE TYPE "EnumUserCategory" AS ENUM ('UNSIGNED', 'PERSONAL', 'CORPORATE');
 
 -- CreateEnum
@@ -241,7 +244,7 @@ CREATE TABLE "projects" (
     "decimals" INTEGER NOT NULL DEFAULT 18,
     "totalSupply" DECIMAL(65,18) NOT NULL,
     "detail" TEXT NOT NULL,
-    "status" "EnumProjectStatus" NOT NULL,
+    "status" "EnumProjectStatus" NOT NULL DEFAULT 'PENDING',
     "userId" TEXT NOT NULL,
     "categoryId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -291,7 +294,8 @@ CREATE TABLE "project_allocations" (
 CREATE TABLE "project_review_logs" (
     "id" TEXT NOT NULL,
     "projectId" TEXT NOT NULL,
-    "status" "ProjectStatus" NOT NULL,
+    "status" "EnumProjectStatus" NOT NULL DEFAULT 'PENDING',
+    "note" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
@@ -302,6 +306,106 @@ CREATE TABLE "project_review_logs" (
     CONSTRAINT "project_review_logs_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "project_socials" (
+    "projectId" TEXT NOT NULL,
+    "socialId" TEXT NOT NULL,
+    "url" VARCHAR(255) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "deletedBy" TEXT,
+
+    CONSTRAINT "project_socials_pkey" PRIMARY KEY ("projectId","socialId")
+);
+
+-- CreateTable
+CREATE TABLE "project_presales" (
+    "id" TEXT NOT NULL,
+    "projectId" TEXT NOT NULL,
+    "chainId" TEXT NOT NULL,
+    "hardcap" DECIMAL(65,18) NOT NULL,
+    "price" DECIMAL(65,18) NOT NULL,
+    "maxContribution" DECIMAL(65,18) NOT NULL,
+    "duration" TIMESTAMP(3) NOT NULL,
+    "unit" VARCHAR(64) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "deletedBy" TEXT,
+
+    CONSTRAINT "project_presales_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "transaction_presales" (
+    "id" TEXT NOT NULL,
+    "projectId" TEXT NOT NULL,
+    "presaleId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "price" DECIMAL(65,18) NOT NULL,
+    "count" INTEGER NOT NULL,
+    "transactionHash" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "deletedBy" TEXT,
+
+    CONSTRAINT "transaction_presales_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "project_owner_verifications" (
+    "userId" TEXT NOT NULL,
+    "verificationId" TEXT NOT NULL,
+    "idCard" VARCHAR(255),
+    "selfie" VARCHAR(255),
+    "bisnisLicense" VARCHAR(255),
+    "taxId" VARCHAR(255),
+    "submittedAt" TIMESTAMP(3) NOT NULL,
+    "approvedAt" TIMESTAMP(3) NOT NULL,
+    "rejectedAt" TIMESTAMP(3) NOT NULL,
+    "status" "EnumVerificationStatus" NOT NULL DEFAULT 'PENDING',
+    "rejectionReason" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "deletedBy" TEXT,
+
+    CONSTRAINT "project_owner_verifications_pkey" PRIMARY KEY ("userId","verificationId")
+);
+
+-- CreateTable
+CREATE TABLE "review_verification_log" (
+    "id" TEXT NOT NULL,
+    "status" "EnumVerificationStatus" NOT NULL,
+    "note" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "deletedBy" TEXT,
+
+    CONSTRAINT "review_verification_log_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "_TransactionPresalesToUser" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL,
+
+    CONSTRAINT "_TransactionPresalesToUser_AB_pkey" PRIMARY KEY ("A","B")
+);
+
 -- CreateIndex
 CREATE INDEX "users_email_walletAddress_idx" ON "users"("email", "walletAddress");
 
@@ -310,6 +414,12 @@ CREATE UNIQUE INDEX "permissions_code_key" ON "permissions"("code");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "project_allocations_projectId_key" ON "project_allocations"("projectId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "project_presales_projectId_key" ON "project_presales"("projectId");
+
+-- CreateIndex
+CREATE INDEX "_TransactionPresalesToUser_B_index" ON "_TransactionPresalesToUser"("B");
 
 -- AddForeignKey
 ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -352,3 +462,30 @@ ALTER TABLE "project_allocations" ADD CONSTRAINT "project_allocations_projectId_
 
 -- AddForeignKey
 ALTER TABLE "project_review_logs" ADD CONSTRAINT "project_review_logs_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "project_socials" ADD CONSTRAINT "project_socials_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "project_socials" ADD CONSTRAINT "project_socials_socialId_fkey" FOREIGN KEY ("socialId") REFERENCES "socials"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "project_presales" ADD CONSTRAINT "project_presales_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "projects"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "transaction_presales" ADD CONSTRAINT "transaction_presales_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "transaction_presales" ADD CONSTRAINT "transaction_presales_presaleId_fkey" FOREIGN KEY ("presaleId") REFERENCES "project_presales"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "project_owner_verifications" ADD CONSTRAINT "project_owner_verifications_verificationId_fkey" FOREIGN KEY ("verificationId") REFERENCES "verifications"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "project_owner_verifications" ADD CONSTRAINT "project_owner_verifications_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_TransactionPresalesToUser" ADD CONSTRAINT "_TransactionPresalesToUser_A_fkey" FOREIGN KEY ("A") REFERENCES "transaction_presales"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_TransactionPresalesToUser" ADD CONSTRAINT "_TransactionPresalesToUser_B_fkey" FOREIGN KEY ("B") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

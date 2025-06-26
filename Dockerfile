@@ -28,4 +28,5 @@ RUN npm run build
 EXPOSE 8000
 
 # Run the app
-CMD ["node", "dist/main"]
+# CMD ["node", "dist/main"]
+CMD npx prisma migrate deploy && node dist/main

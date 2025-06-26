@@ -29,4 +29,5 @@ EXPOSE 8000
 
 # Run the app
 # CMD ["node", "dist/main"]
-CMD npx prisma migrate deploy && node dist/main
+# CMD npx prisma migrate deploy && node dist/main
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]

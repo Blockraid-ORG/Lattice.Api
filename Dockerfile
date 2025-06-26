@@ -29,4 +29,4 @@ EXPOSE 8000
 
 # Run the app
 # CMD ["node", "dist/main"]
-CMD ["sh", "-c", "sleep 10 && npx prisma migrate deploy && node dist/main"]
+CMD ["sh", "./wait-for-it.sh"]

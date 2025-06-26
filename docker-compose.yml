@@ -8,6 +8,6 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-    command: sh -c "npx prisma migrate dev && npm run start:dev"
+    command: sh -c "npx prisma migrate deploy && npm run start:dev"
     env_file:
       - .env

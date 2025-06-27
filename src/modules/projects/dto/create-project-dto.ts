@@ -1,3 +1,4 @@
+import { PartialType } from '@nestjs/mapped-types';
 import { EnumProjectStatus } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
@@ -129,3 +130,4 @@ export class CreateProjectDto {
   @Type(() => CreatePresalesDto)
   presales?: CreatePresalesDto;
 }
+export class UpdateProjectDto extends PartialType(CreateProjectDto) {}

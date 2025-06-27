@@ -368,7 +368,7 @@ model ProjectChain {
 
 model ProjectAllocation {
   id        String   @id @default(uuid())
-  projectId String   @unique
+  projectId String
   name      String   @db.VarChar(128)
   supply    Int
   vesting   Int

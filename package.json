@@ -24,9 +24,6 @@
     "db:init": "npx prisma migrate dev --name init",
     "db:rebuild": "npm run migration:delete && npm run db:reset && npm run db:init && npm run seed"
   },
-  "prisma": {
-    "seed": "ts-node --require tsconfig-paths/register prisma/seed.ts"
-  },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^4.0.2",

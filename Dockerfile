@@ -1,32 +1,26 @@
-
 # Base image
 FROM node:24-alpine
 
-# Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+RUN apk add --no-cache netcat-openbsd
+
 COPY package*.json ./
 
-# Copy .env
-
-# Install dependencies
 RUN npm install --legacy-peer-deps
 
-# Copy the rest of the app
 COPY . .
 
-# Prisma: generate client
 RUN npx prisma generate
 
-# Prisma: migrate
-RUN npx prisma migrate dev
-
-# Build the app
-RUN npm run build
-
-# Expose the app port
 EXPOSE 8000
 
-# Run the app
-CMD ["node", "dist/main"]
+ENV NODE_ENV=development
+
+CMD ["sh", "-c", "\
+  echo '⏳ Waiting for DB...' && \
+  until nc -z \"$DB_HOST\" \"$DB_PORT\"; do echo '🔁 Waiting...'; sleep 1; done && \
+  echo '✅ DB is ready!' && \
+  npx prisma migrate dev && \
+  npm run start:dev \
+"]

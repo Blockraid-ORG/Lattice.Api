@@ -1,38 +1,32 @@
+
 # Base image
 FROM node:24-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Install netcat for DB check
-RUN apk add --no-cache netcat-openbsd
-
-# Copy package files
+# Copy package.json and package-lock.json
 COPY package*.json ./
+
+# Copy .env
 
 # Install dependencies
 RUN npm install --legacy-peer-deps
 
-# Copy app source code
+# Copy the rest of the app
 COPY . .
 
-# Generate Prisma client
+# Prisma: generate client
 RUN npx prisma generate
 
-# Build NestJS project
+# Prisma: migrate
+RUN npx prisma migrate dev
+
+# Build the app
 RUN npm run build
 
-# Expose port
+# Expose the app port
 EXPOSE 8000
 
-# Set env to production
-ENV NODE_ENV=production
-
-CMD ["sh", "-c", "\
-  echo '⏳ Waiting for DB...' && \
-  until nc -z \"$DB_HOST\" \"$DB_PORT\"; do echo '🔁 Waiting...'; sleep 1; done && \
-  echo '✅ DB is ready!' && \
-  npx prisma generate && \
-  npx prisma migrate dev && \
-  npm run start:dev \
-"]
+# Run the app
+CMD ["node", "dist/main"]

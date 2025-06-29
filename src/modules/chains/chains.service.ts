@@ -49,8 +49,8 @@ export class ChainsService {
       page: query.page,
       perPage: query.pageSize,
     });
-    const orderField = query.sortBy || 'createdAt';
-    const orderType = query.sortType || 'desc';
+    const orderField = query.sortBy || 'type';
+    const orderType = query.sortType || 'asc';
     const orderBy = { [orderField]: orderType };
     const result = await paginate<Chain, Prisma.ChainFindManyArgs>(
       this.prisma.chain,

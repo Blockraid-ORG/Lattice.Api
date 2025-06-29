@@ -17,7 +17,7 @@ import { PermissionGuard } from 'src/auth/auth.guard';
 import { AuthGuard } from '@nestjs/passport';
 
 @UseGuards(AuthGuard('jwt'), PermissionGuard)
-@Controller('master/verifications')
+@Controller('master-verifications')
 export class VerificationsController {
   constructor(
     private readonly masterVerificationsService: VerificationsService,

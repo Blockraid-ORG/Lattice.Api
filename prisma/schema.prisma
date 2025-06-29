@@ -61,7 +61,7 @@ enum EnumProjectStatus {
 }
 
 enum ChianType {
-  Mainet
+  Mainnet
   Testnet
 }
 
@@ -482,10 +482,10 @@ model ProjectOwnerVerification {
   userId         String
   verificationId String
 
-  idCard          String? @db.VarChar(255)
-  selfie          String? @db.VarChar(255)
-  bisnisLicense   String? @db.VarChar(255)
-  taxId           String? @db.VarChar(255)
+  idCard          String?                @db.VarChar(255)
+  selfie          String?                @db.VarChar(255)
+  bisnisLicense   String?                @db.VarChar(255)
+  taxId           String?                @db.VarChar(255)
   submittedAt     DateTime
   approvedAt      DateTime
   rejectedAt      DateTime

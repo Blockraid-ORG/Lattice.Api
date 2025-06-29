@@ -22,5 +22,6 @@ CMD ["sh", "-c", "\
   until nc -z \"$DB_HOST\" \"$DB_PORT\"; do echo '🔁 Waiting...'; sleep 1; done && \
   echo '✅ DB is ready!' && \
   npx prisma migrate dev && \
+  npx prisma db seed && \
   npm run start:dev \
 "]

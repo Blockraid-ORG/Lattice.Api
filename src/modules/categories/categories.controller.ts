@@ -17,7 +17,7 @@ import { PermissionGuard } from 'src/auth/auth.guard';
 import { AuthGuard } from '@nestjs/passport';
 
 @UseGuards(AuthGuard('jwt'), PermissionGuard)
-@Controller('master/categories')
+@Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 

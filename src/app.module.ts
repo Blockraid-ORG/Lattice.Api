@@ -14,6 +14,7 @@ import { SocialsModule } from './modules/socials/socials.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { VerificationsModule } from './modules/verifications/verifications.module';
 import { ProjectsModule } from './modules/projects/projects.module';
+import { ProjectVerificationsModule } from './modules/project-verifications/project-verifications.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { ProjectsModule } from './modules/projects/projects.module';
     CategoriesModule,
     VerificationsModule,
     ProjectsModule,
+    ProjectVerificationsModule,
   ],
   controllers: [],
   providers: [],

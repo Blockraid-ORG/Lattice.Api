@@ -62,16 +62,6 @@ export class PermissionsService {
     }
     return r;
   }
-  async syncPermissions(routes: CreatePermissionDto[]) {
-    for (const route of routes) {
-      await this.prisma.permission.upsert({
-        where: { code: route.code },
-        update: {},
-        create: route,
-      });
-    }
-    return { message: 'success', count: routes.length };
-  }
   private async withPagination(query: QueryParamDto) {
     const paginate = createPaginator({
       page: query.page,

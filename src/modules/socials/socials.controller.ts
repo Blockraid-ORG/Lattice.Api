@@ -17,7 +17,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { PermissionGuard } from 'src/auth/auth.guard';
 
 @UseGuards(AuthGuard('jwt'), PermissionGuard)
-@Controller('master/socials')
+@Controller('socials')
 export class SocialsController {
   constructor(private readonly socialsService: SocialsService) {}
   @Post()

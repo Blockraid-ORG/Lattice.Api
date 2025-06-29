@@ -1,29 +1,5 @@
 export const permissionData = [
   {
-    name: 'POST_auth/login',
-    code: 'POST_auth/login',
-    path: 'auth/login',
-    method: 'POST',
-  },
-  {
-    name: 'POST_auth/register',
-    code: 'POST_auth/register',
-    path: 'auth/register',
-    method: 'POST',
-  },
-  {
-    name: 'POST_auth/refresh-token',
-    code: 'POST_auth/refresh-token',
-    path: 'auth/refresh-token',
-    method: 'POST',
-  },
-  {
-    name: 'GET_auth/logout',
-    code: 'GET_auth/logout',
-    path: 'auth/logout',
-    method: 'GET',
-  },
-  {
     name: 'POST_users',
     code: 'POST_users',
     path: 'users',
@@ -132,12 +108,6 @@ export const permissionData = [
     method: 'DELETE',
   },
   {
-    name: 'POST_permissions/sync',
-    code: 'POST_permissions/sync',
-    path: 'permissions/sync',
-    method: 'POST',
-  },
-  {
     name: 'POST_role-permissions/sign',
     code: 'POST_role-permissions/sign',
     path: 'role-permissions/sign',
@@ -208,5 +178,129 @@ export const permissionData = [
     code: 'GET_sidemenu',
     path: 'sidemenu',
     method: 'GET',
+  },
+  // ===
+  {
+    name: 'POST_chains',
+    code: 'POST_chains',
+    path: 'chains',
+    method: 'POST',
+  },
+  {
+    name: 'GET_chains',
+    code: 'GET_chains',
+    path: 'chains',
+    method: 'GET',
+  },
+  {
+    name: 'GET_chains/:id',
+    code: 'GET_chains/:id',
+    path: 'chains/:id',
+    method: 'GET',
+  },
+  {
+    name: 'PATCH_chains/:id',
+    code: 'PATCH_chains/:id',
+    path: 'chains/:id',
+    method: 'PATCH',
+  },
+  {
+    name: 'DELETE_chains/:id',
+    code: 'DELETE_chains/:id',
+    path: 'chains/:id',
+    method: 'DELETE',
+  },
+  // ===
+  {
+    name: 'POST_socials',
+    code: 'POST_socials',
+    path: 'socials',
+    method: 'POST',
+  },
+  {
+    name: 'GET_socials',
+    code: 'GET_socials',
+    path: 'socials',
+    method: 'GET',
+  },
+  {
+    name: 'GET_socials/:id',
+    code: 'GET_socials/:id',
+    path: 'socials/:id',
+    method: 'GET',
+  },
+  {
+    name: 'PATCH_socials/:id',
+    code: 'PATCH_socials/:id',
+    path: 'socials/:id',
+    method: 'PATCH',
+  },
+  {
+    name: 'DELETE_socials/:id',
+    code: 'DELETE_socials/:id',
+    path: 'socials/:id',
+    method: 'DELETE',
+  },
+  // ===
+  {
+    name: 'POST_categories',
+    code: 'POST_categories',
+    path: 'categories',
+    method: 'POST',
+  },
+  {
+    name: 'GET_categories',
+    code: 'GET_categories',
+    path: 'categories',
+    method: 'GET',
+  },
+  {
+    name: 'GET_categories/:id',
+    code: 'GET_categories/:id',
+    path: 'categories/:id',
+    method: 'GET',
+  },
+  {
+    name: 'PATCH_categories/:id',
+    code: 'PATCH_categories/:id',
+    path: 'categories/:id',
+    method: 'PATCH',
+  },
+  {
+    name: 'DELETE_categories/:id',
+    code: 'DELETE_categories/:id',
+    path: 'categories/:id',
+    method: 'DELETE',
+  },
+  // ===
+  {
+    name: 'POST_master-verifications',
+    code: 'POST_master-verifications',
+    path: 'master-verifications',
+    method: 'POST',
+  },
+  {
+    name: 'GET_master-verifications',
+    code: 'GET_master-verifications',
+    path: 'master-verifications',
+    method: 'GET',
+  },
+  {
+    name: 'GET_master-verifications/:id',
+    code: 'GET_master-verifications/:id',
+    path: 'master-verifications/:id',
+    method: 'GET',
+  },
+  {
+    name: 'PATCH_master-verifications/:id',
+    code: 'PATCH_master-verifications/:id',
+    path: 'master-verifications/:id',
+    method: 'PATCH',
+  },
+  {
+    name: 'DELETE_master-verifications/:id',
+    code: 'DELETE_master-verifications/:id',
+    path: 'master-verifications/:id',
+    method: 'DELETE',
   },
 ];

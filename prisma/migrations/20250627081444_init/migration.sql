@@ -23,7 +23,7 @@ CREATE TYPE "FrequencyCategory" AS ENUM ('DAILY', 'WEEKLY', 'MONTHLY', 'QUARTERL
 CREATE TYPE "EnumProjectStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED', 'DEPLOYED');
 
 -- CreateEnum
-CREATE TYPE "ChianType" AS ENUM ('Mainet', 'Testnet');
+CREATE TYPE "ChianType" AS ENUM ('Mainnet', 'Testnet');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -411,9 +411,6 @@ CREATE INDEX "users_email_walletAddress_idx" ON "users"("email", "walletAddress"
 
 -- CreateIndex
 CREATE UNIQUE INDEX "permissions_code_key" ON "permissions"("code");
-
--- CreateIndex
-CREATE UNIQUE INDEX "project_allocations_projectId_key" ON "project_allocations"("projectId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "project_presales_projectId_key" ON "project_presales"("projectId");

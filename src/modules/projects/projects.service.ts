@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma, Project } from '@prisma/client';
+import { createPaginator } from 'prisma-pagination';
+import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
+import { parseBoolean } from 'src/common/utils/parse-data-type';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProjectDto, UpdateProjectDto } from './dto/create-project-dto';
-import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
-import { createPaginator } from 'prisma-pagination';
-import { Prisma, Project } from '@prisma/client';
-import { parseBoolean } from 'src/common/utils/parse-data-type';
 @Injectable()
 export class ProjectsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -75,6 +75,8 @@ export class ProjectsService {
             id: true,
             status: true,
             note: true,
+            createdAt: true,
+            createdBy: true,
           },
         },
         socials: {
@@ -156,6 +158,7 @@ export class ProjectsService {
       this.prisma.project,
       {
         where: {
+          ...(query.categoryId && { categoryId: query.categoryId }),
           OR: query?.search
             ? [{ name: { contains: query.search, mode: 'insensitive' } }]
             : undefined,
@@ -199,6 +202,7 @@ export class ProjectsService {
                   id: true,
                   name: true,
                   logo: true,
+                  type: true,
                 },
               },
             },
@@ -257,6 +261,7 @@ export class ProjectsService {
                 id: true,
                 name: true,
                 logo: true,
+                type: true,
               },
             },
           },

@@ -33,6 +33,6 @@ async function bootstrap() {
     new TransformResponseInterceptor(reflector),
     new ContextInterceptor(),
   );
-  await app.listen(PORT,'0.0.0.0');
+  await app.listen(PORT);
 }
 bootstrap();

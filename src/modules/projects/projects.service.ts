@@ -4,7 +4,10 @@ import { createPaginator } from 'prisma-pagination';
 import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
 import { parseBoolean } from 'src/common/utils/parse-data-type';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateProjectDto, UpdateProjectDto } from './dto/create-project-dto';
+import {
+  CreateProjectDto,
+  CreateReviewProjectDto,
+} from './dto/create-project-dto';
 @Injectable()
 export class ProjectsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -34,7 +37,7 @@ export class ProjectsService {
           })),
         },
 
-        Presales: presales
+        presales: presales
           ? {
               create: {
                 ...presales,
@@ -46,7 +49,7 @@ export class ProjectsService {
         chains: { include: { chain: true } },
         allocations: true,
         socials: { include: { social: true } },
-        Presales: true,
+        presales: true,
       },
     });
   }
@@ -119,6 +122,16 @@ export class ProjectsService {
             isPresale: true,
           },
         },
+        presales: {
+          select: {
+            id: true,
+            hardcap: true,
+            price: true,
+            maxContribution: true,
+            duration: true,
+            unit: true,
+          },
+        },
         transactionPresales: {
           select: {
             id: true,
@@ -131,6 +144,16 @@ export class ProjectsService {
             },
           },
         },
+        user: {
+          select: {
+            id: true,
+            fullname: true,
+            walletAddress: true,
+            type: true,
+            status: true,
+            verifications: true,
+          },
+        },
       },
     });
     if (!result) {
@@ -138,11 +161,39 @@ export class ProjectsService {
     }
     return result;
   }
-  // TODO: update
 
   // Action Extra
-  async updateReviewProject(dto: UpdateProjectDto) {
-    return dto;
+  async reject(dto: CreateReviewProjectDto) {
+    const result = await this.prisma.$transaction(async (tx) => {
+      await tx.project.update({
+        where: {
+          id: dto.projectId,
+        },
+        data: {
+          status: dto.status,
+        },
+      });
+      await tx.projectReviewLog.create({
+        data: dto,
+      });
+    });
+    return result;
+  }
+  async approve(dto: CreateReviewProjectDto) {
+    const result = await this.prisma.$transaction(async (tx) => {
+      await tx.project.update({
+        where: {
+          id: dto.projectId,
+        },
+        data: {
+          status: dto.status,
+        },
+      });
+      await tx.projectReviewLog.create({
+        data: dto,
+      });
+    });
+    return result;
   }
   // Action Extra
 

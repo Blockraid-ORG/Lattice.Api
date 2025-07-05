@@ -130,4 +130,16 @@ export class CreateProjectDto {
   @Type(() => CreatePresalesDto)
   presales?: CreatePresalesDto;
 }
+export class CreateReviewProjectDto {
+  @IsString()
+  @MaxLength(128)
+  projectId: string;
+
+  @IsEnum(EnumProjectStatus)
+  status: EnumProjectStatus;
+
+  @IsString()
+  @IsOptional()
+  note: string;
+}
 export class UpdateProjectDto extends PartialType(CreateProjectDto) {}

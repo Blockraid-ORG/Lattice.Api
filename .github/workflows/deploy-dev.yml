@@ -32,16 +32,8 @@ jobs:
             
             echo "📂 Navigating to project directory..."
             cd /home/wahyu/Lattice.Api
-
-            echo "🧹 Cleaning prisma/migrations if exists..."
-            if [ -d "prisma/migrations" ]; then
-              sudo rm -rf prisma/migrations
-              echo "✅ Old migrations deleted."
-            fi
             
             echo "🔄 Pulling latest changes..."
-            git reset --hard
-            git clean -fdx
             git pull origin dev
             
             echo "🛑 Stopping existing containers..."

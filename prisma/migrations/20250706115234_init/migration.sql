@@ -47,6 +47,17 @@ CREATE TABLE "users" (
 );
 
 -- CreateTable
+CREATE TABLE "user_nonce_login" (
+    "id" TEXT NOT NULL,
+    "walletAddress" VARCHAR(128) NOT NULL,
+    "nonce" TEXT NOT NULL,
+    "expiredAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "user_nonce_login_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "roles" (
     "id" TEXT NOT NULL,
     "name" VARCHAR(128) NOT NULL,
@@ -408,6 +419,12 @@ CREATE TABLE "_TransactionPresalesToUser" (
 
 -- CreateIndex
 CREATE INDEX "users_email_walletAddress_idx" ON "users"("email", "walletAddress");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "user_nonce_login_walletAddress_key" ON "user_nonce_login"("walletAddress");
+
+-- CreateIndex
+CREATE INDEX "user_nonce_login_walletAddress_idx" ON "user_nonce_login"("walletAddress");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "permissions_code_key" ON "permissions"("code");

@@ -26,11 +26,14 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.HOST }} << 'EOF'
           echo "Starting deployment process..."
           echo "Current directory: $(pwd)"
-            cd /var/www/Lattice.Api
+            cd /home/wahyu/Lattice.Api
+
             echo "Current user: $(whoami)"
             echo "Deployment timestamp: $(date)"
             echo "Git status before pull:"
+            
             git status --porcelain
+            
             echo "Docker containers status:"
             docker ps -a
             echo "Available disk space:"

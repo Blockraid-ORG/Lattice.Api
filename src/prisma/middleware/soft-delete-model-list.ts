@@ -5,4 +5,5 @@ export const softDeleteModels = [
   'Menu',
   'Chain',
   'Category',
+  'ProjectReviewLog',
 ];

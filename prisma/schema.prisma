@@ -341,8 +341,8 @@ model Project {
   allocations         ProjectAllocation[]
   reviewLogs          ProjectReviewLog[]
   socials             ProjectSocial[]
-  Presales            Presales[]
   transactionPresales TransactionPresales[]
+  presales            Presales?
 
   @@map("projects")
 }

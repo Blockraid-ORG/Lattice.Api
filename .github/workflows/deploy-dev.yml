@@ -23,7 +23,7 @@ jobs:
 
       - name: 🚀 Deploy via SSH
         run: |
-          ssh -o StrictHostKeyChecking=no wahyu@52.220.221.2 << 'EOF'
+          ssh -o StrictHostKeyChecking=no root@52.220.221.2 << 'EOF'
             cd /home/wahyu/Lattice.Api
             git pull origin dev
             echo "Docker containers status after pull:"

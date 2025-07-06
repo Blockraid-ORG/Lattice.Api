@@ -162,7 +162,6 @@ export class ProjectsService {
     return result;
   }
 
-  // Action Extra
   async reject(dto: CreateReviewProjectDto) {
     const result = await this.prisma.$transaction(async (tx) => {
       await tx.project.update({
@@ -195,7 +194,6 @@ export class ProjectsService {
     });
     return result;
   }
-  // Action Extra
 
   private async withPagination(query: QueryParamDto) {
     const paginate = createPaginator({

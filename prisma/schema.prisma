@@ -92,6 +92,17 @@ model User {
   @@map("users")
 }
 
+model NonceLogin {
+  id            String   @id @default(uuid())
+  walletAddress String   @unique @db.VarChar(128)
+  nonce         String
+  expiredAt     DateTime
+  createdAt     DateTime @default(now())
+
+  @@index([walletAddress])
+  @@map("user_nonce_login")
+}
+
 model Role {
   id   String @id @default(uuid())
   name String @db.VarChar(128)

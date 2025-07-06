@@ -49,10 +49,4 @@ export class AuthController {
   ) {
     return this.authService.verifySignature(walletAddress, signature);
   }
-
-  // HAPUS NANTI
-  @Post('create-signature')
-  createSignature(@Body('nonce') nonce: string) {
-    return this.authService.createSignature(nonce);
-  }
 }

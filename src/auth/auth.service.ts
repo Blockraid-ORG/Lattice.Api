@@ -4,7 +4,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ethers, Wallet } from 'ethers';
+import { ethers } from 'ethers';
 import { JwtPayload, SignInDto, SignUpDto } from './dto/auth.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { comparePassword, hashPassword } from 'src/common/password';
@@ -335,18 +335,6 @@ export class AuthService {
       refreshToken,
       roles: roles.map((i) => i.role.name),
       permissions: permissions,
-    };
-  }
-
-  // HAPUS NANTI
-  async createSignature(nonce: string) {
-    const PK =
-      '5c09c7065abad027e32ace7d346ebcc16c16b50e93d917f2ceda43556e608855';
-    const wallet = new Wallet(PK);
-    const signature = await wallet.signMessage(nonce);
-    return {
-      signature,
-      address: wallet.address,
     };
   }
 }

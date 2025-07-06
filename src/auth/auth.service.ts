@@ -4,11 +4,14 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ethers } from 'ethers';
 import { JwtPayload, SignInDto, SignUpDto } from './dto/auth.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { comparePassword, hashPassword } from 'src/common/password';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { randomBytes } from 'crypto';
+import { addMinutes } from 'date-fns';
 
 @Injectable()
 export class AuthService {
@@ -206,5 +209,132 @@ export class AuthService {
   }
   async decodeToken(token: string) {
     return this.jwt.decode(token);
+  }
+
+  // Login Nonce
+  async requestNonce(walletAddress: string) {
+    const nonce = `${randomBytes(16).toString('hex')}`;
+    const expiredAt = addMinutes(new Date(), 5);
+
+    await this.prisma.nonceLogin.upsert({
+      where: {
+        walletAddress: walletAddress,
+      },
+      update: { nonce, expiredAt },
+      create: { walletAddress, nonce, expiredAt },
+    });
+
+    return { nonce };
+  }
+  async verifySignature(walletAddress: string, signature: string) {
+    const record = await this.prisma.nonceLogin.findUnique({
+      where: { walletAddress },
+    });
+    if (!record || new Date(record.expiredAt) < new Date()) {
+      throw new ForbiddenException('Nonce expired or not found');
+    }
+
+    const signerAddr = ethers.verifyMessage(record.nonce, signature);
+    if (signerAddr.toLowerCase() !== walletAddress.toLowerCase()) {
+      throw new ForbiddenException('Invalid signature');
+    }
+    const user = await this.prisma.user.findFirst({
+      where: { walletAddress },
+      include: {
+        roles: {
+          select: { id: true },
+        },
+      },
+    });
+    if (!user) {
+      await this.prisma.user.create({
+        data: {
+          walletAddress,
+          fullname: walletAddress,
+        },
+      });
+    }
+    if (user.roles.length <= 0) {
+      const role = await this.prisma.role.findFirst({
+        where: { name: 'USER' },
+      });
+      await this.prisma.userRole.create({
+        data: {
+          roleId: role.id,
+          userId: user.id,
+        },
+      });
+    }
+
+    await this.prisma.nonceLogin.delete({
+      where: {
+        walletAddress: walletAddress,
+      },
+    });
+    const accessToken = await this.generateAccessToken(user.id);
+    const refreshToken = await this.generateRefreshToken(user.id);
+    await this.prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        refreshToken,
+      },
+    });
+    const roles = await this.prisma.userRole.findMany({
+      where: {
+        userId: user.id,
+      },
+      select: {
+        id: true,
+        role: {
+          select: {
+            id: true,
+            code: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    const rolePermissions = await this.prisma.rolePermission.findMany({
+      where: {
+        roleId: {
+          in: roles.map((i) => i.role.id),
+        },
+      },
+    });
+    // GET UNIQUE PERMISSIONS
+    const uniquePermissions = [
+      ...new Set(rolePermissions.map((i) => i.permissionId)),
+    ];
+
+    const permissionLists = await this.prisma.permission.findMany({
+      where: {
+        id: {
+          in: uniquePermissions,
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        code: true,
+        method: true,
+      },
+    });
+    const permissions = permissionLists.map((item) => {
+      return `${item.name}`;
+    });
+    return {
+      user: {
+        id: user.id,
+        fullname: user.fullname,
+        roles: roles.map((i) => i.role.name),
+      },
+      accessToken,
+      refreshToken,
+      roles: roles.map((i) => i.role.name),
+      permissions: permissions,
+    };
   }
 }

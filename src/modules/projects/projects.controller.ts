@@ -35,7 +35,7 @@ export class ProjectsController {
   findOne(@Param('id') id: string) {
     return this.projectsService.findOne(id);
   }
-  // Extra
+
   @Post('reject')
   @HttpCode(HttpStatus.OK)
   async reject(@Body() dto: CreateReviewProjectDto) {

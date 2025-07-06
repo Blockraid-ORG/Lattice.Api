@@ -17,7 +17,7 @@ export class ProjectsService {
       data: {
         ...projectData,
         userId,
-        // Relations
+
         chains: {
           create: chainIds.map((chainId) => ({
             chain: { connect: { id: chainId } },

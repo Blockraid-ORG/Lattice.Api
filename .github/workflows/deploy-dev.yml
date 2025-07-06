@@ -24,8 +24,19 @@ jobs:
       - name: 🚀 Deploy via SSH
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.HOST }} << 'EOF'
+          echo "Starting deployment process..."
+          echo "Current directory: $(pwd)"
             cd /var/www/Lattice.Api
+            echo "Current user: $(whoami)"
+            echo "Deployment timestamp: $(date)"
+            echo "Git status before pull:"
+            git status --porcelain
+            echo "Docker containers status:"
+            docker ps -a
+            echo "Available disk space:"
+            df -h
             git pull origin dev
+            echo "Docker containers status after pull:"
             docker compose down
             docker compose up -d --build
           EOF

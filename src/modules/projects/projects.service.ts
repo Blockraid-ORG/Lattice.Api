@@ -207,6 +207,8 @@ export class ProjectsService {
       this.prisma.project,
       {
         where: {
+          ...(query.status && { status: query.status }),
+          ...(query.userId && { userId: query.userId }),
           ...(query.categoryId && { categoryId: query.categoryId }),
           OR: query?.search
             ? [{ name: { contains: query.search, mode: 'insensitive' } }]

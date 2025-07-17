@@ -88,6 +88,9 @@ export class ChainsService {
         id: true,
         name: true,
         logo: true,
+        ticker: true,
+        type: true,
+        urlScanner: true,
       },
     });
   }

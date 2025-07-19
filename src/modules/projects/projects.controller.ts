@@ -23,6 +23,13 @@ import { PermissionGuard } from 'src/auth/auth.guard';
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
+  @Get('upcoming')
+  findUpcomingProject(@Query() query: QueryParamDto) {
+    return this.projectsService.findMany({
+      ...query,
+      status: 'PENDING',
+    });
+  }
   @UseGuards(AuthGuard('jwt'), PermissionGuard)
   @Post()
   async create(@Body() dto: CreateProjectDto, @CurrentUserId() userId: string) {

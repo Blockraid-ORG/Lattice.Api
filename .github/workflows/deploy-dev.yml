@@ -32,6 +32,9 @@ jobs:
             
             echo "📂 Navigating to project directory..."
             cd /home/wahyu/Lattice.Api
+
+            echo "🧹 Resetting local changes..."
+            git reset --hard HEAD
             
             echo "🔄 Pulling latest changes..."
             git pull origin dev

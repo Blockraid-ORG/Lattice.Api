@@ -15,6 +15,8 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { VerificationsModule } from './modules/verifications/verifications.module';
 import { ProjectsModule } from './modules/projects/projects.module';
 import { ProjectVerificationsModule } from './modules/project-verifications/project-verifications.module';
+import { MembersModule } from './modules/members/members.module';
+import { MemberVerificationsModule } from './modules/member-verifications/member-verifications.module';
 
 @Module({
   imports: [
@@ -36,6 +38,8 @@ import { ProjectVerificationsModule } from './modules/project-verifications/proj
     VerificationsModule,
     ProjectsModule,
     ProjectVerificationsModule,
+    MembersModule,
+    MemberVerificationsModule,
   ],
   controllers: [],
   providers: [],

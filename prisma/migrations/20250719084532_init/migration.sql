@@ -33,7 +33,7 @@ CREATE TABLE "users" (
     "password" TEXT,
     "refreshToken" TEXT,
     "status" BOOLEAN NOT NULL DEFAULT true,
-    "category" "EnumUserCategory" NOT NULL DEFAULT 'UNSIGNED',
+    "category" "EnumUserCategory" NOT NULL DEFAULT 'PERSONAL',
     "type" "EnumUserType" NOT NULL DEFAULT 'PUBLIC',
     "walletAddress" VARCHAR(128),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -380,8 +380,8 @@ CREATE TABLE "project_owner_verifications" (
     "bisnisLicense" VARCHAR(255),
     "taxId" VARCHAR(255),
     "submittedAt" TIMESTAMP(3) NOT NULL,
-    "approvedAt" TIMESTAMP(3) NOT NULL,
-    "rejectedAt" TIMESTAMP(3) NOT NULL,
+    "approvedAt" TIMESTAMP(3),
+    "rejectedAt" TIMESTAMP(3),
     "status" "EnumVerificationStatus" NOT NULL DEFAULT 'PENDING',
     "rejectionReason" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -405,6 +405,8 @@ CREATE TABLE "review_verification_log" (
     "createdBy" TEXT,
     "updatedBy" TEXT,
     "deletedBy" TEXT,
+    "projectOwnerVerificationUserId" TEXT NOT NULL,
+    "projectOwnerVerificationVerificationId" TEXT NOT NULL,
 
     CONSTRAINT "review_verification_log_pkey" PRIMARY KEY ("id")
 );
@@ -497,6 +499,9 @@ ALTER TABLE "project_owner_verifications" ADD CONSTRAINT "project_owner_verifica
 
 -- AddForeignKey
 ALTER TABLE "project_owner_verifications" ADD CONSTRAINT "project_owner_verifications_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "review_verification_log" ADD CONSTRAINT "review_verification_log_projectOwnerVerificationUserId_pro_fkey" FOREIGN KEY ("projectOwnerVerificationUserId", "projectOwnerVerificationVerificationId") REFERENCES "project_owner_verifications"("userId", "verificationId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_TransactionPresalesToUser" ADD CONSTRAINT "_TransactionPresalesToUser_A_fkey" FOREIGN KEY ("A") REFERENCES "transaction_presales"("id") ON DELETE CASCADE ON UPDATE CASCADE;

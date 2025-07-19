@@ -303,4 +303,91 @@ export const permissionData = [
     path: 'master-verifications/:id',
     method: 'DELETE',
   },
+  // ===
+  {
+    name: 'POST_members',
+    code: 'POST_members',
+    path: 'members',
+    method: 'POST',
+  },
+  {
+    name: 'GET_members',
+    code: 'GET_members',
+    path: 'members',
+    method: 'GET',
+  },
+  {
+    name: 'GET_members/:id',
+    code: 'GET_members/:id',
+    path: 'members/:id',
+    method: 'GET',
+  },
+  {
+    name: 'PATCH_members/:id',
+    code: 'PATCH_members/:id',
+    path: 'members/:id',
+    method: 'PATCH',
+  },
+  {
+    name: 'DELETE_members/:id',
+    code: 'DELETE_members/:id',
+    path: 'members/:id',
+    method: 'DELETE',
+  },
+  // ===
+  {
+    name: 'POST_projects',
+    code: 'POST_projects',
+    path: 'projects',
+    method: 'POST',
+  },
+  {
+    name: 'GET_projects',
+    code: 'GET_projects',
+    path: 'projects',
+    method: 'GET',
+  },
+  {
+    name: 'POST_projects/me',
+    code: 'POST_projects/me',
+    path: 'projects/me',
+    method: 'GET',
+  },
+  {
+    name: 'GET_projects/:id',
+    code: 'GET_projects/:id',
+    path: 'projects/:id',
+    method: 'GET',
+  },
+  {
+    name: 'PATCH_projects/:id',
+    code: 'PATCH_projects/:id',
+    path: 'projects/:id',
+    method: 'PATCH',
+  },
+  {
+    name: 'DELETE_projects/:id',
+    code: 'DELETE_projects/:id',
+    path: 'projects/:id',
+    method: 'DELETE',
+  },
+  // ===
+  {
+    name: 'POST_project-verifications',
+    code: 'POST_project-verifications',
+    path: 'project-verifications',
+    method: 'POST',
+  },
+  {
+    name: 'GET_project-verifications',
+    code: 'GET_project-verifications',
+    path: 'project-verifications',
+    method: 'GET',
+  },
+  {
+    name: 'GET_project-verifications/:id',
+    code: 'GET_project-verifications/:id',
+    path: 'project-verifications/:id',
+    method: 'GET',
+  },
 ];

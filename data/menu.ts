@@ -44,6 +44,25 @@ export const menus = [
     ],
   },
   {
+    title: 'Members',
+    order: 2,
+    isGroup: true,
+    children: [
+      {
+        title: 'Project Owner',
+        path: '/project-owner',
+        icon: 'stash:users-crown-light',
+        order: 0,
+      },
+      {
+        title: 'Public',
+        path: '/public-user',
+        icon: 'lsicon:user-crowd-outline',
+        order: 1,
+      },
+    ],
+  },
+  {
     title: 'Utilities',
     order: 99,
     isGroup: true,

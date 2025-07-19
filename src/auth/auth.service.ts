@@ -238,7 +238,8 @@ export class AuthService {
     if (signerAddr.toLowerCase() !== walletAddress.toLowerCase()) {
       throw new ForbiddenException('Invalid signature');
     }
-    const user = await this.prisma.user.findFirst({
+    let newUser;
+    newUser = await this.prisma.user.findFirst({
       where: { walletAddress },
       include: {
         roles: {
@@ -246,22 +247,28 @@ export class AuthService {
         },
       },
     });
-    if (!user) {
-      await this.prisma.user.create({
+    if (!newUser) {
+      newUser = await this.prisma.user.create({
         data: {
           walletAddress,
           fullname: walletAddress,
         },
+        include: {
+          roles: {
+            select: { id: true },
+          },
+        },
       });
     }
-    if (user.roles.length <= 0) {
+    console.log(newUser);
+    if (newUser?.roles && newUser.roles.length <= 0) {
       const role = await this.prisma.role.findFirst({
         where: { name: 'USER' },
       });
       await this.prisma.userRole.create({
         data: {
           roleId: role.id,
-          userId: user.id,
+          userId: newUser.id,
         },
       });
     }
@@ -271,11 +278,11 @@ export class AuthService {
         walletAddress: walletAddress,
       },
     });
-    const accessToken = await this.generateAccessToken(user.id);
-    const refreshToken = await this.generateRefreshToken(user.id);
+    const accessToken = await this.generateAccessToken(newUser.id);
+    const refreshToken = await this.generateRefreshToken(newUser.id);
     await this.prisma.user.update({
       where: {
-        id: user.id,
+        id: newUser.id,
       },
       data: {
         refreshToken,
@@ -283,7 +290,7 @@ export class AuthService {
     });
     const roles = await this.prisma.userRole.findMany({
       where: {
-        userId: user.id,
+        userId: newUser.id,
       },
       select: {
         id: true,
@@ -327,8 +334,8 @@ export class AuthService {
     });
     return {
       user: {
-        id: user.id,
-        fullname: user.fullname,
+        id: newUser.id,
+        fullname: newUser.fullname,
         roles: roles.map((i) => i.role.name),
       },
       accessToken,

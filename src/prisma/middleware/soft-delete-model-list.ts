@@ -6,4 +6,6 @@ export const softDeleteModels = [
   'Chain',
   'Category',
   'ProjectReviewLog',
+  'ReviewVerificationLog',
+  'ProjectOwnerVerification',
 ];

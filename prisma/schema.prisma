@@ -72,7 +72,7 @@ model User {
   password      String?
   refreshToken  String?
   status        Boolean          @default(true)
-  category      EnumUserCategory @default(UNSIGNED)
+  category      EnumUserCategory @default(PERSONAL)
   type          EnumUserType     @default(PUBLIC)
   walletAddress String?          @db.VarChar(128)
 
@@ -498,8 +498,8 @@ model ProjectOwnerVerification {
   bisnisLicense   String?                @db.VarChar(255)
   taxId           String?                @db.VarChar(255)
   submittedAt     DateTime
-  approvedAt      DateTime
-  rejectedAt      DateTime
+  approvedAt      DateTime?
+  rejectedAt      DateTime?
   status          EnumVerificationStatus @default(PENDING)
   rejectionReason String?
 
@@ -513,6 +513,7 @@ model ProjectOwnerVerification {
   createdBy String?
   updatedBy String?
   deletedBy String?
+  logs      ReviewVerificationLog[]
 
   @@id([userId, verificationId]) // composite key
   @@map("project_owner_verifications")
@@ -527,9 +528,12 @@ model ReviewVerificationLog {
   updatedAt DateTime               @updatedAt
   deletedAt DateTime?
 
-  createdBy String?
-  updatedBy String?
-  deletedBy String?
+  verification                           ProjectOwnerVerification @relation(fields: [projectOwnerVerificationUserId, projectOwnerVerificationVerificationId], references: [userId, verificationId])
+  createdBy                              String?
+  updatedBy                              String?
+  deletedBy                              String?
+  projectOwnerVerificationUserId         String
+  projectOwnerVerificationVerificationId String
 
   @@map("review_verification_log")
 }

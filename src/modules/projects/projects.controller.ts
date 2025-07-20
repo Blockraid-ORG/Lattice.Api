@@ -55,7 +55,7 @@ export class ProjectsController {
     });
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  // @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.projectsService.findOne(id);

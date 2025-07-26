@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -15,6 +16,7 @@ import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
 import {
   CreateProjectDto,
   CreateReviewProjectDto,
+  UpdateProjectDto,
 } from './dto/create-project-dto';
 import { ProjectsService } from './projects.service';
 import { PermissionGuard } from 'src/auth/auth.guard';
@@ -30,11 +32,22 @@ export class ProjectsController {
       status: 'PENDING',
     });
   }
+
   @UseGuards(AuthGuard('jwt'), PermissionGuard)
   @Post()
   async create(@Body() dto: CreateProjectDto, @CurrentUserId() userId: string) {
     return this.projectsService.create(dto, userId);
   }
+  @UseGuards(AuthGuard('jwt'), PermissionGuard)
+  @Patch(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() dto: UpdateProjectDto,
+    @CurrentUserId() userId: string,
+  ) {
+    return this.projectsService.update(id, dto, userId);
+  }
+
   @UseGuards(AuthGuard('jwt'), PermissionGuard)
   @Get()
   @UseGuards(AuthGuard('jwt'), PermissionGuard)

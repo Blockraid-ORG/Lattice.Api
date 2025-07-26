@@ -18,6 +18,7 @@ import { ProjectVerificationsModule } from './modules/project-verifications/proj
 import { MembersModule } from './modules/members/members.module';
 import { MemberVerificationsModule } from './modules/member-verifications/member-verifications.module';
 import { ProfileModule } from './modules/profile/profile.module';
+import { UsrClientModule } from './modules/client/usr-client/usr-client.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { ProfileModule } from './modules/profile/profile.module';
     MembersModule,
     MemberVerificationsModule,
     ProfileModule,
+    UsrClientModule,
   ],
   controllers: [],
   providers: [],

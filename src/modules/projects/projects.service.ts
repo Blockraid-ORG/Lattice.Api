@@ -7,6 +7,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import {
   CreateProjectDto,
   CreateReviewProjectDto,
+  UpdateProjectDto,
 } from './dto/create-project-dto';
 @Injectable()
 export class ProjectsService {
@@ -53,6 +54,61 @@ export class ProjectsService {
       },
     });
   }
+
+  async update(id: string, dto: UpdateProjectDto, userId: string) {
+    const { chainIds, allocations, socials, presales, ...projectData } = dto;
+    return this.prisma.project.update({
+      where: { id },
+      data: {
+        ...projectData,
+        userId,
+        status: 'PENDING',
+        chains: {
+          deleteMany: {},
+          create: chainIds.map((chainId) => ({
+            chain: { connect: { id: chainId } },
+          })),
+        },
+
+        allocations: {
+          deleteMany: {},
+          create: allocations.map((a) => ({
+            ...a,
+          })),
+        },
+
+        socials: {
+          deleteMany: {},
+          create: socials.map((s) => ({
+            url: s.url,
+            social: { connect: { id: s.socialId } },
+          })),
+        },
+
+        presales: presales
+          ? {
+              upsert: {
+                update: {
+                  ...presales,
+                },
+                create: {
+                  ...presales,
+                },
+              },
+            }
+          : {
+              delete: true,
+            },
+      },
+      include: {
+        chains: { include: { chain: true } },
+        allocations: true,
+        socials: { include: { social: true } },
+        presales: true,
+      },
+    });
+  }
+
   async findMany(query: QueryParamDto) {
     if (parseBoolean(query.noPaginate)) {
       return this.noPagination(query);

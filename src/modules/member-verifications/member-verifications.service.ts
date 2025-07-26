@@ -146,6 +146,17 @@ export class MemberVerificationsService {
             projectOwnerVerificationVerificationId: verification.id,
           },
         }),
+        this.prisma.projectOwnerVerification.update({
+          where: {
+            userId_verificationId: {
+              userId: user.id,
+              verificationId: verification.id,
+            },
+          },
+          data: {
+            status: 'PENDING',
+          },
+        }),
       ]);
     return {
       projectOwnerVerification,

@@ -11,6 +11,7 @@ import { createSocials } from './seeds/create-socials';
 import { createVerifications } from './seeds/create-verifications';
 import { createChains } from './seeds/create-chains';
 import { createProject } from './seeds/create-project';
+import { signRolePublicPermission } from './seeds/sign-role-public-permissions';
 const prisma = new PrismaClient();
 
 async function main() {
@@ -25,6 +26,7 @@ async function main() {
   const mapRoleUser = await signRoleUser();
   const mapRoleMenu = await signRoleMenu();
   const signRolePermissions = await signRolePermission();
+  const signRolePublicPermissions = await signRolePublicPermission();
   await createProject();
   console.log({
     chains,
@@ -38,6 +40,7 @@ async function main() {
     mapRoleUser,
     mapRoleMenu,
     signRolePermissions,
+    signRolePublicPermissions,
   });
 }
 

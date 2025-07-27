@@ -29,7 +29,9 @@ export class ProjectsController {
   findUpcomingProject(@Query() query: QueryParamDto) {
     return this.projectsService.findMany({
       ...query,
-      status: 'PENDING',
+      status: {
+        in: ['PENDING', 'APPROVED'],
+      },
     });
   }
 

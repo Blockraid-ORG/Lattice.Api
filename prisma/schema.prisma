@@ -311,6 +311,8 @@ model Chain {
   ticker     String    @db.VarChar(8)
   logo       String?
   urlScanner String?
+  urlRpc     String?
+  urlApi     String?
   type       ChianType
 
   createdAt DateTime  @default(now())
@@ -326,24 +328,24 @@ model Chain {
 }
 
 model Project {
-  id          String            @id @default(uuid())
-  name        String            @db.VarChar(128)
-  slug        String            @db.VarChar(128)
-  logo        String
-  banner      String?
-  ticker      String?
-  decimals    Int               @default(18)
-  totalSupply Decimal           @db.Decimal(65, 18)
-  detail      String            @db.Text()
-  status      EnumProjectStatus @default(PENDING)
-  userId      String
-  user        User              @relation(fields: [userId], references: [id])
-  categoryId  String
-  category    Category          @relation(fields: [categoryId], references: [id])
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  id              String            @id @default(uuid())
+  name            String            @db.VarChar(128)
+  slug            String            @db.VarChar(128)
+  logo            String
+  banner          String?
+  ticker          String?
+  decimals        Int               @default(18)
+  totalSupply     Decimal           @db.Decimal(65, 18)
+  detail          String            @db.Text()
+  status          EnumProjectStatus @default(PENDING)
+  userId          String
+  user            User              @relation(fields: [userId], references: [id])
+  categoryId      String
+  category        Category          @relation(fields: [categoryId], references: [id])
+  contractAddress String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  deletedAt       DateTime?
 
   createdBy           String?
   updatedBy           String?
@@ -388,13 +390,13 @@ model ProjectAllocation {
 
   project Project @relation(fields: [projectId], references: [id])
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  createdBy String?
-  updatedBy String?
-  deletedBy String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+  contractAddress String?
+  createdBy       String?
+  updatedBy       String?
+  deletedBy       String?
 
   @@map("project_allocations")
 }
@@ -449,11 +451,11 @@ model Presales {
   duration        DateTime
   unit            String   @db.VarChar(64)
 
-  project Project @relation(fields: [projectId], references: [id])
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  project         Project   @relation(fields: [projectId], references: [id])
+  contractAddress String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
 
   createdBy   String?
   updatedBy   String?

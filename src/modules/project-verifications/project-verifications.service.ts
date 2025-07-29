@@ -20,6 +20,7 @@ export class ProjectVerificationsService {
       select: {
         id: true,
         status: true,
+        contractAddress: true,
       },
     });
     if (projectItem.status === dto.status) {
@@ -27,7 +28,11 @@ export class ProjectVerificationsService {
     }
     return this.prisma.$transaction(async (tx) => {
       await tx.projectReviewLog.create({
-        data: dto,
+        data: {
+          status: dto.status,
+          note: dto.note,
+          projectId: dto.projectId,
+        },
       });
       const updatedProject = await tx.project.update({
         where: {

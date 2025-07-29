@@ -35,6 +35,7 @@ export class ProjectVerificationsService {
         },
         data: {
           status: dto.status,
+          contractAddress: dto.contractAddress,
         },
         select: {
           id: true,

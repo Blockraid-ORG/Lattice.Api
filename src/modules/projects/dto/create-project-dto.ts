@@ -142,4 +142,13 @@ export class CreateReviewProjectDto {
   @IsOptional()
   note: string;
 }
+
+export class UpdateAllocationDto {
+  @IsString()
+  @MaxLength(128)
+  id: string;
+
+  @IsString()
+  contractAddress: string;
+}
 export class UpdateProjectDto extends PartialType(CreateProjectDto) {}

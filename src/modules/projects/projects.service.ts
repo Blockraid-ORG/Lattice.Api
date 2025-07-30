@@ -7,6 +7,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import {
   CreateProjectDto,
   CreateReviewProjectDto,
+  UpdateAllocationDto,
   UpdateProjectDto,
 } from './dto/create-project-dto';
 @Injectable()
@@ -129,6 +130,7 @@ export class ProjectsService {
         totalSupply: true,
         detail: true,
         status: true,
+        contractAddress: true,
         reviewLogs: {
           select: {
             id: true,
@@ -176,6 +178,7 @@ export class ProjectsService {
             vesting: true,
             startDate: true,
             isPresale: true,
+            contractAddress: true,
           },
         },
         presales: {
@@ -283,6 +286,7 @@ export class ProjectsService {
           detail: true,
           status: true,
           userId: true,
+          contractAddress: true,
           socials: {
             select: {
               url: true,
@@ -342,6 +346,7 @@ export class ProjectsService {
         detail: true,
         status: true,
         userId: true,
+        contractAddress: true,
         socials: {
           select: {
             url: true,
@@ -375,5 +380,17 @@ export class ProjectsService {
         },
       },
     });
+  }
+
+  async updateAllocation(dto: UpdateAllocationDto) {
+    const result = await this.prisma.projectAllocation.update({
+      where: {
+        id: dto.id,
+      },
+      data: {
+        contractAddress: dto.contractAddress,
+      },
+    });
+    return result;
   }
 }

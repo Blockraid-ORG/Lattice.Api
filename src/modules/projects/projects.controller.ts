@@ -16,6 +16,7 @@ import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
 import {
   CreateProjectDto,
   CreateReviewProjectDto,
+  UpdateAllocationDto,
   UpdateProjectDto,
 } from './dto/create-project-dto';
 import { ProjectsService } from './projects.service';
@@ -87,5 +88,11 @@ export class ProjectsController {
   @HttpCode(HttpStatus.OK)
   async approve(@Body() dto: CreateReviewProjectDto) {
     return this.projectsService.approve(dto);
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @Post('update-allocation')
+  @HttpCode(HttpStatus.OK)
+  async updateAllocation(@Body() dto: UpdateAllocationDto) {
+    return this.projectsService.updateAllocation(dto);
   }
 }

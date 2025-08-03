@@ -66,7 +66,7 @@ export async function createProject() {
         hardcap: '10',
         price: '0.05',
         maxContribution: '10',
-        duration: '2025-07-31T00:00:00Z',
+        duration: 1,
         unit: 'USDT',
       },
     };

@@ -66,4 +66,12 @@ export const chains = [
     logo: 'https://red-careful-koala-550.mypinata.cloud/ipfs/bafybeicluvxrd3rb273v664rjcbhspkpyfbgdqwt6xrkfslyup2i4teife/sonic-mainet.png',
     urlScanner: 'https://sonicscan.org',
   },
+  {
+    name: 'Gnosis',
+    ticker: 'XDAI',
+    type: 'Mainnet',
+    logo: 'https://red-careful-koala-550.mypinata.cloud/ipfs/bafybeicluvxrd3rb273v664rjcbhspkpyfbgdqwt6xrkfslyup2i4teife/gnosis.png',
+    urlScanner: 'https://gnosisscan.io',
+    urlApi: 'https://api.gnosisscan.io/v2/api',
+  },
 ];

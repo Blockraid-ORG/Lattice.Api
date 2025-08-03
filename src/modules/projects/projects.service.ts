@@ -7,6 +7,9 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import {
   CreateProjectDto,
   CreateReviewProjectDto,
+  SetAllocationDeployingDto,
+  SetContractPresaleDto,
+  SetContractWhitelistDto,
   UpdateAllocationDto,
   UpdateProjectDto,
 } from './dto/create-project-dto';
@@ -15,6 +18,12 @@ export class ProjectsService {
   constructor(private readonly prisma: PrismaService) {}
   async create(dto: CreateProjectDto, userId: string) {
     const { chainIds, allocations, socials, presales, ...projectData } = dto;
+    const newAllocations = allocations.map((item, index) => {
+      return {
+        ...item,
+        sortNumber: index,
+      };
+    });
     return this.prisma.project.create({
       data: {
         ...projectData,
@@ -27,7 +36,7 @@ export class ProjectsService {
         },
 
         allocations: {
-          create: allocations.map((a) => ({
+          create: newAllocations.map((a) => ({
             ...a,
           })),
         },
@@ -166,11 +175,15 @@ export class ProjectsService {
                 id: true,
                 name: true,
                 logo: true,
+                ticker: true,
+                urlScanner: true,
+                urlRpc: true,
               },
             },
           },
         },
         allocations: {
+          orderBy: [{ createdAt: 'asc' }, { sortNumber: 'asc' }],
           select: {
             id: true,
             name: true,
@@ -179,6 +192,7 @@ export class ProjectsService {
             startDate: true,
             isPresale: true,
             contractAddress: true,
+            isDeploying: true,
           },
         },
         presales: {
@@ -189,6 +203,15 @@ export class ProjectsService {
             maxContribution: true,
             duration: true,
             unit: true,
+            claimTime: true,
+            contractAddress: true,
+            whitelistContract: true,
+            whitelists: {
+              select: {
+                id: true,
+                walletAddress: true,
+              },
+            },
           },
         },
         transactionPresales: {
@@ -388,6 +411,43 @@ export class ProjectsService {
         id: dto.id,
       },
       data: {
+        contractAddress: dto.contractAddress,
+        isDeploying: false,
+      },
+    });
+    return result;
+  }
+  async setAllocationDeploying(dto: SetAllocationDeployingDto[]) {
+    const result = await this.prisma.$transaction(
+      dto.map(({ id }) =>
+        this.prisma.projectAllocation.update({
+          where: { id },
+          data: {
+            isDeploying: true,
+          },
+        }),
+      ),
+    );
+    return result;
+  }
+  async setContractWhitelist(dto: SetContractWhitelistDto) {
+    const result = await this.prisma.presales.update({
+      where: {
+        id: dto.id,
+      },
+      data: {
+        whitelistContract: dto.whitelistContract,
+      },
+    });
+    return result;
+  }
+  async setContractPresale(dto: SetContractPresaleDto) {
+    const result = await this.prisma.presales.update({
+      where: {
+        id: dto.id,
+      },
+      data: {
+        whitelistContract: dto.whitelistContract,
         contractAddress: dto.contractAddress,
       },
     });

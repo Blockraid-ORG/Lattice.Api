@@ -16,6 +16,9 @@ import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
 import {
   CreateProjectDto,
   CreateReviewProjectDto,
+  SetAllocationDeployingDto,
+  SetContractPresaleDto,
+  SetContractWhitelistDto,
   UpdateAllocationDto,
   UpdateProjectDto,
 } from './dto/create-project-dto';
@@ -94,5 +97,23 @@ export class ProjectsController {
   @HttpCode(HttpStatus.OK)
   async updateAllocation(@Body() dto: UpdateAllocationDto) {
     return this.projectsService.updateAllocation(dto);
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @Post('set-allocation-deploy')
+  @HttpCode(HttpStatus.OK)
+  async setAllocationDeploying(@Body() dto: SetAllocationDeployingDto[]) {
+    return this.projectsService.setAllocationDeploying(dto);
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @Post('set-contract-whitelist')
+  @HttpCode(HttpStatus.OK)
+  async setContractWhitelist(@Body() dto: SetContractWhitelistDto) {
+    return this.projectsService.setContractWhitelist(dto);
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @Post('set-contract-presale')
+  @HttpCode(HttpStatus.OK)
+  async setContractPresale(@Body() dto: SetContractPresaleDto) {
+    return this.projectsService.setContractPresale(dto);
   }
 }

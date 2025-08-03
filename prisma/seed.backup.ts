@@ -102,7 +102,6 @@ async function createRolePermissions(
 }
 // CREATE RoleMenus
 async function createRoleMenu(data: { roleId: string; menuId: string }[]) {
-  // console.log(data);
   return prisma.roleMenu.createMany({
     data,
     skipDuplicates: true,

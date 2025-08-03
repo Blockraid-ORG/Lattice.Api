@@ -19,6 +19,7 @@ import { MembersModule } from './modules/members/members.module';
 import { MemberVerificationsModule } from './modules/member-verifications/member-verifications.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { UsrClientModule } from './modules/client/usr-client/usr-client.module';
+import { PresaleModule } from './modules/client/presale/presale.module';
 @Module({
   imports: [
     PrismaModule,
@@ -43,6 +44,7 @@ import { UsrClientModule } from './modules/client/usr-client/usr-client.module';
     MemberVerificationsModule,
     ProfileModule,
     UsrClientModule,
+    PresaleModule,
   ],
   controllers: [],
   providers: [],

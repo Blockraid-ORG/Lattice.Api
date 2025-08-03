@@ -56,8 +56,14 @@ export class CreatePresalesDto {
   @IsNumberString()
   maxContribution: string;
 
-  @IsDateString()
-  duration: string;
+  @IsNumber()
+  duration: number;
+
+  // @IsNumber()
+  // claimTime: number;
+
+  // @IsNumber()
+  // startDate: number;
 
   @IsString()
   @MaxLength(64)
@@ -150,5 +156,32 @@ export class UpdateAllocationDto {
 
   @IsString()
   contractAddress: string;
+}
+export class SetAllocationDeployingDto {
+  @IsString()
+  @MaxLength(128)
+  id: string;
+}
+export class SetContractWhitelistDto {
+  @IsString()
+  @MaxLength(128)
+  id: string;
+
+  @IsString()
+  @MaxLength(128)
+  whitelistContract: string;
+}
+export class SetContractPresaleDto {
+  @IsString()
+  @MaxLength(128)
+  id: string;
+
+  @IsString()
+  @MaxLength(128)
+  contractAddress: string;
+
+  @IsString()
+  @MaxLength(128)
+  whitelistContract: string;
 }
 export class UpdateProjectDto extends PartialType(CreateProjectDto) {}

@@ -185,6 +185,7 @@ export class UsersService {
           fullname: true,
           email: true,
           status: true,
+          walletAddress: true,
           roles: {
             select: {
               id: true,

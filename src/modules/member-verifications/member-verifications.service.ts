@@ -185,6 +185,23 @@ export class MemberVerificationsService {
     return { user, verification };
   }
 
+  private async findUserByWalletAddress(walletAddress: string) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        walletAddress: walletAddress.toString(),
+      },
+    });
+    return user;
+  }
+
+  private async findVerificationType() {
+    const verification = await this.prisma.verification.findFirst({
+      where: { name: 'KYC' },
+      orderBy: { createdAt: 'desc' },
+    });
+    return verification;
+  }
+
   async reject(dto: RejectMemberVerificationDto) {
     const { user, verification } = await this.findUserVerification(dto.userId);
     const [projectOwnerVerification, verificationLog] =
@@ -236,6 +253,35 @@ export class MemberVerificationsService {
           data: {
             status: 'APPROVED',
             note: 'OK',
+            projectOwnerVerificationUserId: user.id,
+            projectOwnerVerificationVerificationId: verification.id,
+          },
+        }),
+      ]);
+    return {
+      projectOwnerVerification,
+      verificationLog,
+    };
+  }
+  async approveByWalletAddress(data: { walletAddress: string }) {
+    const { walletAddress } = data;
+    const user = await this.findUserByWalletAddress(walletAddress);
+    const verification = await this.findVerificationType();
+    const [projectOwnerVerification, verificationLog] =
+      await this.prisma.$transaction([
+        this.prisma.projectOwnerVerification.create({
+          data: {
+            userId: user.id,
+            verificationId: verification.id,
+            submittedAt: new Date(),
+            status: 'APPROVED',
+            approvedAt: new Date(),
+          },
+        }),
+        this.prisma.reviewVerificationLog.create({
+          data: {
+            status: 'APPROVED',
+            note: 'Verified by ZKME',
             projectOwnerVerificationUserId: user.id,
             projectOwnerVerificationVerificationId: verification.id,
           },

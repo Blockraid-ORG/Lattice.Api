@@ -52,4 +52,8 @@ export class MemberVerificationsController {
   approve(@Body() dto: ApproveMemberVerificationDto) {
     return this.memberVerificationsService.approve(dto);
   }
+  @Post('approve-by-zkme')
+  approveByWalletAddress(@Body() data: { walletAddress: string }) {
+    return this.memberVerificationsService.approveByWalletAddress(data);
+  }
 }

@@ -260,7 +260,6 @@ export class AuthService {
         },
       });
     }
-    console.log(newUser);
     if (newUser?.roles && newUser.roles.length <= 0) {
       const role = await this.prisma.role.findFirst({
         where: { name: 'USER' },

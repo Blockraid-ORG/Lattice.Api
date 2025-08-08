@@ -13,6 +13,10 @@ export class CreateProjectVerificationDto {
   @IsString()
   contractAddress?: string;
 
+  @IsOptional()
+  @IsString()
+  factoryAddress?: string;
+
   @IsUUID()
   projectId: string;
 }

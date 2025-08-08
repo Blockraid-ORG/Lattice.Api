@@ -229,6 +229,7 @@ CREATE TABLE "verifications" (
 -- CreateTable
 CREATE TABLE "chains" (
     "id" TEXT NOT NULL,
+    "chainid" INTEGER NOT NULL DEFAULT 1,
     "name" VARCHAR(32) NOT NULL,
     "ticker" VARCHAR(8) NOT NULL,
     "logo" TEXT,
@@ -294,6 +295,8 @@ CREATE TABLE "project_allocations" (
     "vesting" INTEGER NOT NULL,
     "startDate" TIMESTAMP(3) NOT NULL,
     "isPresale" BOOLEAN NOT NULL DEFAULT false,
+    "isDeploying" BOOLEAN NOT NULL DEFAULT false,
+    "sortNumber" INTEGER NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
@@ -344,9 +347,12 @@ CREATE TABLE "project_presales" (
     "hardcap" DECIMAL(65,18) NOT NULL,
     "price" DECIMAL(65,18) NOT NULL,
     "maxContribution" DECIMAL(65,18) NOT NULL,
-    "duration" TIMESTAMP(3) NOT NULL,
+    "startDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "duration" INTEGER NOT NULL DEFAULT 1,
+    "claimTime" INTEGER NOT NULL DEFAULT 1,
     "unit" VARCHAR(64) NOT NULL,
     "contractAddress" TEXT,
+    "whitelistContract" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
@@ -355,6 +361,21 @@ CREATE TABLE "project_presales" (
     "deletedBy" TEXT,
 
     CONSTRAINT "project_presales_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "presale_address_whitelist" (
+    "id" TEXT NOT NULL,
+    "walletAddress" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "deletedBy" TEXT,
+    "presaleId" TEXT,
+
+    CONSTRAINT "presale_address_whitelist_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -492,6 +513,9 @@ ALTER TABLE "project_socials" ADD CONSTRAINT "project_socials_socialId_fkey" FOR
 
 -- AddForeignKey
 ALTER TABLE "project_presales" ADD CONSTRAINT "project_presales_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "projects"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "presale_address_whitelist" ADD CONSTRAINT "presale_address_whitelist_presaleId_fkey" FOREIGN KEY ("presaleId") REFERENCES "project_presales"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "transaction_presales" ADD CONSTRAINT "transaction_presales_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;

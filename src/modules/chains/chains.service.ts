@@ -68,6 +68,9 @@ export class ChainsService {
           ticker: true,
           type: true,
           urlScanner: true,
+          chainid: true,
+          urlApi: true,
+          urlRpc: true,
         },
       },
     );
@@ -91,6 +94,9 @@ export class ChainsService {
         ticker: true,
         type: true,
         urlScanner: true,
+        chainid: true,
+        urlApi: true,
+        urlRpc: true,
       },
     });
   }

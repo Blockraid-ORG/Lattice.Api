@@ -10,6 +10,7 @@ import {
   SetAllocationDeployingDto,
   SetContractPresaleDto,
   SetContractWhitelistDto,
+  SetDistributedLockerDto,
   UpdateAllocationDto,
   UpdateProjectDto,
 } from './dto/create-project-dto';
@@ -140,6 +141,9 @@ export class ProjectsService {
         detail: true,
         status: true,
         contractAddress: true,
+        factoryAddress: true,
+        lockerDistributed: true,
+        lockerDistributeHash: true,
         reviewLogs: {
           select: {
             id: true,
@@ -178,6 +182,8 @@ export class ProjectsService {
                 ticker: true,
                 urlScanner: true,
                 urlRpc: true,
+                chainid: true,
+                type: true,
               },
             },
           },
@@ -206,6 +212,9 @@ export class ProjectsService {
             claimTime: true,
             contractAddress: true,
             whitelistContract: true,
+            sweepDuration: true,
+            startDate: true,
+            whitelistDuration: true,
             whitelists: {
               select: {
                 id: true,
@@ -449,6 +458,19 @@ export class ProjectsService {
       data: {
         whitelistContract: dto.whitelistContract,
         contractAddress: dto.contractAddress,
+      },
+    });
+    return result;
+  }
+
+  async setDistributedLocker(dto: SetDistributedLockerDto) {
+    const result = await this.prisma.project.update({
+      where: {
+        id: dto.id,
+      },
+      data: {
+        lockerDistributed: true,
+        lockerDistributeHash: dto.lockerDistributeHash,
       },
     });
     return result;

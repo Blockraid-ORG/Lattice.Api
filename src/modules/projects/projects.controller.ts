@@ -19,6 +19,7 @@ import {
   SetAllocationDeployingDto,
   SetContractPresaleDto,
   SetContractWhitelistDto,
+  SetDistributedLockerDto,
   UpdateAllocationDto,
   UpdateProjectDto,
 } from './dto/create-project-dto';
@@ -115,5 +116,11 @@ export class ProjectsController {
   @HttpCode(HttpStatus.OK)
   async setContractPresale(@Body() dto: SetContractPresaleDto) {
     return this.projectsService.setContractPresale(dto);
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @Post('set-distributed-locker')
+  @HttpCode(HttpStatus.OK)
+  async setDistributedLocker(@Body() dto: SetDistributedLockerDto) {
+    return this.projectsService.setDistributedLocker(dto);
   }
 }

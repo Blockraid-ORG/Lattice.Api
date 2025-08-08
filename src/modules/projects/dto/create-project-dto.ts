@@ -171,6 +171,15 @@ export class SetContractWhitelistDto {
   @MaxLength(128)
   whitelistContract: string;
 }
+export class SetDistributedLockerDto {
+  @IsString()
+  @MaxLength(128)
+  id: string;
+
+  @IsString()
+  @MaxLength(128)
+  lockerDistributeHash: string;
+}
 export class SetContractPresaleDto {
   @IsString()
   @MaxLength(128)

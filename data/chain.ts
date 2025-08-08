@@ -7,6 +7,7 @@ export const chains = [
     urlScanner: 'https://etherscan.io',
     urlRpc: '',
     urlApi: 'https://api.etherscan.io/v2/api',
+    chainid: 1,
   },
   {
     name: 'Binance',
@@ -14,6 +15,7 @@ export const chains = [
     type: 'Mainnet',
     logo: 'https://red-careful-koala-550.mypinata.cloud/ipfs/bafybeicluvxrd3rb273v664rjcbhspkpyfbgdqwt6xrkfslyup2i4teife/binance.png',
     urlScanner: 'https://bscscan.com',
+    chainid: 56,
   },
   {
     name: 'Base',
@@ -21,13 +23,15 @@ export const chains = [
     type: 'Mainnet',
     logo: 'https://red-careful-koala-550.mypinata.cloud/ipfs/bafybeicluvxrd3rb273v664rjcbhspkpyfbgdqwt6xrkfslyup2i4teife/base.png',
     urlScanner: 'https://basescan.org',
+    chainid: 8453,
   },
   {
-    name: 'Arbitrum',
+    name: 'Arbitrum One',
     ticker: 'ETH',
     type: 'Mainnet',
     logo: 'https://red-careful-koala-550.mypinata.cloud/ipfs/bafybeicluvxrd3rb273v664rjcbhspkpyfbgdqwt6xrkfslyup2i4teife/arbitrum.png',
     urlScanner: 'https://arbiscan.io',
+    chainid: 42161,
   },
   {
     name: 'Polygon',
@@ -35,6 +39,7 @@ export const chains = [
     type: 'Mainnet',
     logo: 'https://red-careful-koala-550.mypinata.cloud/ipfs/bafybeicluvxrd3rb273v664rjcbhspkpyfbgdqwt6xrkfslyup2i4teife/polygon.png',
     urlScanner: 'https://polygonscan.com',
+    chainid: 137,
   },
   {
     name: 'Ethereum Sepolia',
@@ -44,6 +49,7 @@ export const chains = [
     urlScanner: 'https://sepolia.etherscan.io',
     urlRpc: '',
     urlApi: 'https://api.etherscan.io/v2/api',
+    chainid: 11155111,
   },
   {
     name: 'BSC Testnet',
@@ -51,6 +57,7 @@ export const chains = [
     type: 'Testnet',
     logo: 'https://red-careful-koala-550.mypinata.cloud/ipfs/bafybeicluvxrd3rb273v664rjcbhspkpyfbgdqwt6xrkfslyup2i4teife/binance-tesnet.png',
     urlScanner: 'https://testnet.bscscan.com',
+    chainid: 97,
   },
   {
     name: 'OP Mainnet',
@@ -65,6 +72,7 @@ export const chains = [
     type: 'Mainnet',
     logo: 'https://red-careful-koala-550.mypinata.cloud/ipfs/bafybeicluvxrd3rb273v664rjcbhspkpyfbgdqwt6xrkfslyup2i4teife/sonic-mainet.png',
     urlScanner: 'https://sonicscan.org',
+    chainid: 10,
   },
   {
     name: 'Gnosis',
@@ -73,5 +81,6 @@ export const chains = [
     logo: 'https://red-careful-koala-550.mypinata.cloud/ipfs/bafybeicluvxrd3rb273v664rjcbhspkpyfbgdqwt6xrkfslyup2i4teife/gnosis.png',
     urlScanner: 'https://gnosisscan.io',
     urlApi: 'https://api.gnosisscan.io/v2/api',
+    chainid: 100,
   },
 ];

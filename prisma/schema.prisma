@@ -307,6 +307,7 @@ model Verification {
 
 model Chain {
   id         String    @id @default(uuid())
+  chainid    Int       @default(1)
   name       String    @db.VarChar(32)
   ticker     String    @db.VarChar(8)
   logo       String?
@@ -328,24 +329,27 @@ model Chain {
 }
 
 model Project {
-  id              String            @id @default(uuid())
-  name            String            @db.VarChar(128)
-  slug            String            @db.VarChar(128)
-  logo            String
-  banner          String?
-  ticker          String?
-  decimals        Int               @default(18)
-  totalSupply     Decimal           @db.Decimal(65, 18)
-  detail          String            @db.Text()
-  status          EnumProjectStatus @default(PENDING)
-  userId          String
-  user            User              @relation(fields: [userId], references: [id])
-  categoryId      String
-  category        Category          @relation(fields: [categoryId], references: [id])
-  contractAddress String?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  deletedAt       DateTime?
+  id                   String            @id @default(uuid())
+  name                 String            @db.VarChar(128)
+  slug                 String            @db.VarChar(128)
+  logo                 String
+  banner               String?
+  ticker               String?
+  decimals             Int               @default(18)
+  totalSupply          Decimal           @db.Decimal(65, 18)
+  detail               String            @db.Text()
+  status               EnumProjectStatus @default(PENDING)
+  userId               String
+  user                 User              @relation(fields: [userId], references: [id])
+  categoryId           String
+  category             Category          @relation(fields: [categoryId], references: [id])
+  contractAddress      String?
+  factoryAddress       String?
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+  deletedAt            DateTime?
+  lockerDistributed    Boolean           @default(false)
+  lockerDistributeHash String?
 
   createdBy           String?
   updatedBy           String?
@@ -459,6 +463,8 @@ model Presales {
   contractAddress   String?
   whitelistContract String?
   whitelists        PresaleAddressWhitelist[]
+  whitelistDuration Int?
+  sweepDuration     Int?
   createdAt         DateTime                  @default(now())
   updatedAt         DateTime                  @updatedAt
   deletedAt         DateTime?

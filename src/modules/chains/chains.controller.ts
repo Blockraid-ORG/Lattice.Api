@@ -16,11 +16,11 @@ import { UpdateChainDto } from './dto/update-chain.dto';
 import { PermissionGuard } from 'src/auth/auth.guard';
 import { AuthGuard } from '@nestjs/passport';
 
-@UseGuards(AuthGuard('jwt'), PermissionGuard)
 @Controller('chains')
 export class ChainsController {
   constructor(private readonly chainsService: ChainsService) {}
 
+  @UseGuards(AuthGuard('jwt'), PermissionGuard)
   @Post()
   create(@Body() createChainDto: CreateChainDto) {
     return this.chainsService.create(createChainDto);
@@ -35,11 +35,13 @@ export class ChainsController {
     return this.chainsService.findOne(id);
   }
 
+  @UseGuards(AuthGuard('jwt'), PermissionGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateChainDto: UpdateChainDto) {
     return this.chainsService.update(id, updateChainDto);
   }
 
+  @UseGuards(AuthGuard('jwt'), PermissionGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.chainsService.remove(id);

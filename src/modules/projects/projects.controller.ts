@@ -57,8 +57,6 @@ export class ProjectsController {
 
   @UseGuards(AuthGuard('jwt'), PermissionGuard)
   @Get()
-  @UseGuards(AuthGuard('jwt'), PermissionGuard)
-  @Get()
   findMany(@Query() query: QueryParamDto) {
     return this.projectsService.findMany(query);
   }

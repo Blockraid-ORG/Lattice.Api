@@ -1,15 +1,7 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
-import { PresaleService } from './presale.service';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
 import { AddWhitelistDto, CreatePresaleDto } from './dto/create-presale.dto';
-import { UpdatePresaleDto } from './dto/update-presale.dto';
+import { PresaleService } from './presale.service';
 
 @Controller('presale')
 export class PresaleController {
@@ -21,25 +13,14 @@ export class PresaleController {
   }
 
   @Get()
-  findAll() {
-    return this.presaleService.findAll();
+  findMany(@Query() query: QueryParamDto) {
+    return this.presaleService.findMany(query);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.presaleService.findOne(+id);
+    return this.presaleService.findOne(id);
   }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePresaleDto: UpdatePresaleDto) {
-    return this.presaleService.update(+id, updatePresaleDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.presaleService.remove(+id);
-  }
-
   // Extra
   @Post('whitelist')
   addWhitelist(@Body() dto: AddWhitelistDto) {

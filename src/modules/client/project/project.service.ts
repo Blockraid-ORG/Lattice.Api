@@ -3,18 +3,14 @@ import { Prisma, Project } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AddWhitelistDto, CreatePresaleDto } from './dto/create-presale.dto';
 
 @Injectable()
-export class PresaleService {
+export class ProjectService {
   constructor(private readonly prisma: PrismaService) {}
-  create(dto: CreatePresaleDto) {
-    return dto;
-  }
-
-  async findMany(query: QueryParamDto) {
+  findMany(query: QueryParamDto) {
     return this.withPagination(query);
   }
+
   async findOne(id: string) {
     const result = await this.prisma.project.findUnique({
       where: { id },
@@ -138,7 +134,6 @@ export class PresaleService {
     }
     return result;
   }
-
   private async withPagination(query: QueryParamDto) {
     const paginate = createPaginator({
       page: query.page,
@@ -151,8 +146,9 @@ export class PresaleService {
       this.prisma.project,
       {
         where: {
-          ...(query.categoryId && { categoryId: query.categoryId }),
+          // ...(query.status && { status: query.status }),
           status: 'DEPLOYED',
+          ...(query.categoryId && { categoryId: query.categoryId }),
           OR: query?.search
             ? [{ name: { contains: query.search, mode: 'insensitive' } }]
             : undefined,
@@ -171,31 +167,6 @@ export class PresaleService {
           status: true,
           userId: true,
           contractAddress: true,
-          category: {
-            select: {
-              id: true,
-              name: true,
-              icon: true,
-            },
-          },
-          presales: {
-            select: {
-              id: true,
-              projectId: true,
-              chainId: true,
-              hardcap: true,
-              price: true,
-              maxContribution: true,
-              startDate: true,
-              duration: true,
-              claimTime: true,
-              unit: true,
-              contractAddress: true,
-              whitelistContract: true,
-              whitelistDuration: true,
-              sweepDuration: true,
-            },
-          },
           socials: {
             select: {
               url: true,
@@ -206,6 +177,13 @@ export class PresaleService {
                   icon: true,
                 },
               },
+            },
+          },
+          category: {
+            select: {
+              id: true,
+              name: true,
+              icon: true,
             },
           },
           chains: {
@@ -223,28 +201,6 @@ export class PresaleService {
         },
       },
     );
-    return result;
-  }
-
-  // Extra
-  async addWhitelist(dto: AddWhitelistDto) {
-    const data = dto.walletAddress.map((item) => {
-      return {
-        presaleId: dto.presaleId,
-        walletAddress: item,
-      };
-    });
-    const result = await this.prisma.$transaction(async (tx) => {
-      const deletedAddress = await tx.presaleAddressWhitelist.deleteMany({
-        where: {
-          presaleId: dto.presaleId,
-        },
-      });
-      const createdAddress = await tx.presaleAddressWhitelist.createMany({
-        data: data,
-      });
-      return { deletedAddress, createdAddress };
-    });
     return result;
   }
 }

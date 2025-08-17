@@ -21,6 +21,7 @@ import { ProfileModule } from './modules/profile/profile.module';
 import { UsrClientModule } from './modules/client/usr-client/usr-client.module';
 import { PresaleModule } from './modules/client/presale/presale.module';
 import { ProjectModule } from './modules/client/project/project.module';
+import { PresalesModule } from './modules/presales/presales.module';
 @Module({
   imports: [
     PrismaModule,
@@ -47,6 +48,7 @@ import { ProjectModule } from './modules/client/project/project.module';
     UsrClientModule,
     PresaleModule,
     ProjectModule,
+    PresalesModule,
   ],
   controllers: [],
   providers: [],

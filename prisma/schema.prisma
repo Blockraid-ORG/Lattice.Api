@@ -447,15 +447,16 @@ model ProjectSocial {
 
 // Presales
 model Presales {
-  id              String   @id @default(uuid())
-  projectId       String   @unique
+  id              String    @id @default(uuid())
+  projectId       String    @unique
   chainId         String
-  hardcap         Decimal  @db.Decimal(65, 18)
-  price           Decimal  @db.Decimal(65, 18)
-  maxContribution Decimal  @db.Decimal(65, 18)
-  startDate       DateTime @default(now())
-  duration        Int      @default(1)
-  claimTime       Int      @default(1)
+  hardcap         Decimal   @db.Decimal(65, 18)
+  price           Decimal   @db.Decimal(65, 18)
+  maxContribution Decimal   @db.Decimal(65, 18)
+  startDate       DateTime  @default(now())
+  endDate         DateTime?
+  duration        Int       @default(1)
+  claimTime       Int       @default(1)
 
   unit String @db.VarChar(64)
 
@@ -505,7 +506,7 @@ model TransactionPresales {
 
   project Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   presale Presales @relation(fields: [presaleId], references: [id], onDelete: Cascade)
-  users   User[]
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt

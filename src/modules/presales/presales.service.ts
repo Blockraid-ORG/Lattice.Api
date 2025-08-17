@@ -1,0 +1,329 @@
+import { Injectable } from '@nestjs/common';
+import { Presales, Prisma } from '@prisma/client';
+import { createPaginator } from 'prisma-pagination';
+import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { CreatePresaleDto } from './dto/create-presale.dto';
+
+@Injectable()
+export class PresalesService {
+  constructor(private readonly prisma: PrismaService) {}
+  create(dto: CreatePresaleDto, userId: string) {
+    return {
+      ...dto,
+      userId,
+    };
+  }
+  async findAll(query: QueryParamDto) {
+    const paginate = createPaginator({
+      page: query.page,
+      perPage: query.pageSize,
+    });
+    const orderField = query.sortBy || 'createdAt';
+    const orderType = query.sortType || 'desc';
+    const orderBy = { [orderField]: orderType };
+    const result = await paginate<Presales, Prisma.PresalesFindManyArgs>(
+      this.prisma.presales,
+      {
+        where: {
+          OR: query?.search
+            ? [
+                {
+                  project: {
+                    name: { contains: query.search, mode: 'insensitive' },
+                  },
+                },
+              ]
+            : undefined,
+        },
+        orderBy,
+        select: {
+          id: true,
+          project: {
+            select: {
+              id: true,
+              name: true,
+              logo: true,
+              banner: true,
+              ticker: true,
+              totalSupply: true,
+              decimals: true,
+              contractAddress: true,
+              chains: {
+                select: {
+                  chain: true,
+                },
+              },
+              socials: {
+                include: {
+                  social: true,
+                },
+              },
+              allocations: true,
+            },
+          },
+          projectId: true,
+          chainId: true,
+          hardcap: true,
+          price: true,
+          maxContribution: true,
+          startDate: true,
+          endDate: true,
+          duration: true,
+          claimTime: true,
+          unit: true,
+          contractAddress: true,
+          whitelistContract: true,
+          whitelistDuration: true,
+          sweepDuration: true,
+        },
+      },
+    );
+    return result;
+  }
+  async findAllMyPresale(query: QueryParamDto, userId: string) {
+    const paginate = createPaginator({
+      page: query.page,
+      perPage: query.pageSize,
+    });
+    const orderField = query.sortBy || 'createdAt';
+    const orderType = query.sortType || 'desc';
+    const orderBy = { [orderField]: orderType };
+    const result = await paginate<Presales, Prisma.PresalesFindManyArgs>(
+      this.prisma.presales,
+      {
+        where: {
+          project: {
+            userId,
+          },
+          OR: query?.search
+            ? [
+                {
+                  project: {
+                    name: { contains: query.search, mode: 'insensitive' },
+                  },
+                },
+              ]
+            : undefined,
+        },
+        orderBy,
+        select: {
+          id: true,
+          project: {
+            select: {
+              id: true,
+              name: true,
+              logo: true,
+              banner: true,
+              ticker: true,
+              totalSupply: true,
+              decimals: true,
+              contractAddress: true,
+              chains: {
+                select: {
+                  chain: true,
+                },
+              },
+              socials: {
+                include: {
+                  social: true,
+                },
+              },
+              allocations: true,
+            },
+          },
+          projectId: true,
+          chainId: true,
+          hardcap: true,
+          price: true,
+          maxContribution: true,
+          startDate: true,
+          endDate: true,
+          duration: true,
+          claimTime: true,
+          unit: true,
+          contractAddress: true,
+          whitelistContract: true,
+          whitelistDuration: true,
+          sweepDuration: true,
+        },
+      },
+    );
+    return result;
+  }
+
+  async findAllActivePresale(query: QueryParamDto) {
+    const now = new Date();
+    const paginate = createPaginator({
+      page: query.page,
+      perPage: query.pageSize,
+    });
+    const orderField = query.sortBy || 'createdAt';
+    const orderType = query.sortType || 'desc';
+    const orderBy = { [orderField]: orderType };
+    const result = await paginate<Presales, Prisma.PresalesFindManyArgs>(
+      this.prisma.presales,
+      {
+        where: {
+          startDate: { lte: now },
+          endDate: { gte: now },
+          project: {
+            status: 'DEPLOYED',
+          },
+        },
+        orderBy,
+        select: {
+          id: true,
+          project: {
+            select: {
+              id: true,
+              name: true,
+              logo: true,
+              banner: true,
+              ticker: true,
+              totalSupply: true,
+              decimals: true,
+              contractAddress: true,
+              chains: {
+                select: {
+                  chain: true,
+                },
+              },
+              socials: {
+                include: {
+                  social: true,
+                },
+              },
+              allocations: true,
+            },
+          },
+          projectId: true,
+          chainId: true,
+          hardcap: true,
+          price: true,
+          maxContribution: true,
+          startDate: true,
+          endDate: true,
+          duration: true,
+          claimTime: true,
+          unit: true,
+          contractAddress: true,
+          whitelistContract: true,
+          whitelistDuration: true,
+          sweepDuration: true,
+        },
+      },
+    );
+    return result;
+  }
+  async findAllUpcomingPresale(query: QueryParamDto) {
+    const now = new Date();
+    const paginate = createPaginator({
+      page: query.page,
+      perPage: query.pageSize,
+    });
+    const orderField = query.sortBy || 'createdAt';
+    const orderType = query.sortType || 'desc';
+    const orderBy = { [orderField]: orderType };
+    const result = await paginate<Presales, Prisma.PresalesFindManyArgs>(
+      this.prisma.presales,
+      {
+        where: {
+          startDate: { gte: now },
+          project: {
+            status: 'APPROVED',
+          },
+        },
+        orderBy,
+        select: {
+          id: true,
+          project: {
+            select: {
+              id: true,
+              name: true,
+              logo: true,
+              banner: true,
+              ticker: true,
+              totalSupply: true,
+              decimals: true,
+              contractAddress: true,
+              chains: {
+                select: {
+                  chain: true,
+                },
+              },
+              socials: {
+                include: {
+                  social: true,
+                },
+              },
+              allocations: true,
+            },
+          },
+          projectId: true,
+          chainId: true,
+          hardcap: true,
+          price: true,
+          maxContribution: true,
+          startDate: true,
+          endDate: true,
+          duration: true,
+          claimTime: true,
+          unit: true,
+          contractAddress: true,
+          whitelistContract: true,
+          whitelistDuration: true,
+          sweepDuration: true,
+        },
+      },
+    );
+    return result;
+  }
+  async findOne(id: string) {
+    return this.prisma.presales.findUnique({
+      where: {
+        id: id,
+      },
+      include: {
+        project: {
+          include: {
+            allocations: true,
+            category: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+              },
+            },
+            chains: {
+              select: {
+                chain: {
+                  select: {
+                    id: true,
+                    name: true,
+                    ticker: true,
+                    logo: true,
+                    urlScanner: true,
+                    type: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        trasactions: {
+          select: {
+            id: true,
+            user: {
+              select: {
+                id: true,
+                walletAddress: true,
+                fullname: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+}

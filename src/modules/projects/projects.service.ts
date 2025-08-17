@@ -226,7 +226,7 @@ export class ProjectsService {
         transactionPresales: {
           select: {
             id: true,
-            users: {
+            user: {
               select: {
                 id: true,
                 walletAddress: true,
@@ -242,7 +242,13 @@ export class ProjectsService {
             walletAddress: true,
             type: true,
             status: true,
-            verifications: true,
+            verifications: {
+              select: {
+                userId: true,
+                verificationId: true,
+                status: true,
+              },
+            },
           },
         },
       },

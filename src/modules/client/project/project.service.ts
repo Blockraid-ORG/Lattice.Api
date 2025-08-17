@@ -111,7 +111,7 @@ export class ProjectService {
         transactionPresales: {
           select: {
             id: true,
-            users: {
+            user: {
               select: {
                 id: true,
                 walletAddress: true,

@@ -390,4 +390,23 @@ export const permissionData = [
     path: 'project-verifications/:id',
     method: 'GET',
   },
+  // ===
+  {
+    name: 'POST_transaction-presale',
+    code: 'POST_transaction-presale',
+    path: 'transaction-presale',
+    method: 'POST',
+  },
+  {
+    name: 'GET_transaction-presale',
+    code: 'GET_transaction-presale',
+    path: 'transaction-presale',
+    method: 'GET',
+  },
+  {
+    name: 'GET_transaction-presale/:id',
+    code: 'GET_transaction-presale/:id',
+    path: 'transaction-presale/:id',
+    method: 'GET',
+  },
 ];

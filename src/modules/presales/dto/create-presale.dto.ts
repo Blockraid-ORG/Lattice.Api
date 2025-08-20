@@ -16,9 +16,17 @@ export class CreatePresaleDto {
 
   @IsNotEmpty()
   @IsNumber()
-  count: string;
+  count: number;
 
   @IsNotEmpty()
   @IsString()
   transactionHash: string;
+}
+
+export class FindMyContributeDto {
+  @IsUUID()
+  projectId: string;
+
+  @IsUUID()
+  presaleId: string;
 }

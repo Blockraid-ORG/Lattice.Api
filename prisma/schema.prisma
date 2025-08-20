@@ -501,7 +501,8 @@ model TransactionPresales {
   presaleId       String
   userId          String
   price           Decimal @db.Decimal(65, 18)
-  count           Int
+  // count           Int
+  count           Decimal @db.Decimal(65, 18)
   transactionHash String
 
   project Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)

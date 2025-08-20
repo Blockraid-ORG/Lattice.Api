@@ -8,7 +8,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
-import { CreatePresaleDto } from './dto/create-presale.dto';
+import {
+  CreatePresaleDto,
+  FindMyContributeDto,
+} from './dto/create-presale.dto';
 import { PresalesService } from './presales.service';
 import { CurrentUserId } from 'src/common/decorators/current-user.decorator';
 import { AuthGuard } from '@nestjs/passport';
@@ -46,6 +49,15 @@ export class PresalesController {
   @Get('upcoming')
   findAllUpcomingPresale(@Query() query: QueryParamDto) {
     return this.presalesService.findAllUpcomingPresale(query);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('my-contribution')
+  getMyContribution(
+    @Query() query: FindMyContributeDto,
+    @CurrentUserId() userId: string,
+  ) {
+    return this.presalesService.getMyContribution(query, userId);
   }
   @Get(':id')
   findOne(@Param('id') id: string) {

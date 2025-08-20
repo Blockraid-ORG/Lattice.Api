@@ -3,16 +3,25 @@ import { Presales, Prisma } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreatePresaleDto } from './dto/create-presale.dto';
+import {
+  CreatePresaleDto,
+  FindMyContributeDto,
+} from './dto/create-presale.dto';
 
 @Injectable()
 export class PresalesService {
   constructor(private readonly prisma: PrismaService) {}
   create(dto: CreatePresaleDto, userId: string) {
-    return {
-      ...dto,
-      userId,
-    };
+    return this.prisma.transactionPresales.create({
+      data: {
+        presaleId: dto.presaleId,
+        price: dto.price,
+        projectId: dto.projectId,
+        count: dto.count,
+        userId,
+        transactionHash: dto.transactionHash,
+      },
+    });
   }
   async findAll(query: QueryParamDto) {
     const paginate = createPaginator({
@@ -319,6 +328,27 @@ export class PresalesService {
                 id: true,
                 walletAddress: true,
                 fullname: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+  async getMyContribution(query: FindMyContributeDto, userId: string) {
+    return this.prisma.transactionPresales.findMany({
+      where: {
+        presaleId: query.presaleId,
+        projectId: query.projectId,
+        userId,
+      },
+      include: {
+        presale: true,
+        project: {
+          select: {
+            chains: {
+              select: {
+                chain: true,
               },
             },
           },

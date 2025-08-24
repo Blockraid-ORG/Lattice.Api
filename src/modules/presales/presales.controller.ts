@@ -15,6 +15,10 @@ import {
 import { PresalesService } from './presales.service';
 import { CurrentUserId } from 'src/common/decorators/current-user.decorator';
 import { AuthGuard } from '@nestjs/passport';
+import {
+  CreateClaimPresaleDto,
+  GetClaimPresaleDto,
+} from '../client/presale/dto/create-presale.dto';
 
 @Controller('presales')
 export class PresalesController {
@@ -62,5 +66,23 @@ export class PresalesController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.presalesService.findOne(id);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('claimPresale')
+  createClaimPresale(
+    @Body() dto: CreateClaimPresaleDto,
+    @CurrentUserId() userId: string,
+  ) {
+    return this.presalesService.createClaimPresale(dto, userId);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('claimPresale')
+  getMyClaimPresale(
+    @Query() dto: GetClaimPresaleDto,
+    @CurrentUserId() userId: string,
+  ) {
+    return this.presalesService.getMyClaimPresale(dto, userId);
   }
 }

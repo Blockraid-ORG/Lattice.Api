@@ -87,6 +87,7 @@ model User {
   projects            Project[]
   transactionPresales TransactionPresales[]
   verifications       ProjectOwnerVerification[]
+  PresaleClaimedToken PresaleClaimedToken[]
 
   @@index([email, walletAddress])
   @@map("users")
@@ -470,10 +471,11 @@ model Presales {
   updatedAt         DateTime                  @updatedAt
   deletedAt         DateTime?
 
-  createdBy   String?
-  updatedBy   String?
-  deletedBy   String?
-  trasactions TransactionPresales[]
+  createdBy           String?
+  updatedBy           String?
+  deletedBy           String?
+  trasactions         TransactionPresales[]
+  PresaleClaimedToken PresaleClaimedToken[]
 
   @@map("project_presales")
 }
@@ -568,6 +570,23 @@ model ReviewVerificationLog {
   projectOwnerVerificationVerificationId String
 
   @@map("review_verification_log")
+}
+
+model PresaleClaimedToken {
+  id              String    @id @default(uuid())
+  presaleId       String
+  userId          String
+  amount          Decimal   @db.Decimal(65, 18)
+  transactionHash String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  presale    Presales @relation(fields: [presaleId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+  createdBy  String?
+  updatedBy  String?
+  deletedBy  String?
 }
 
 // Project Here...

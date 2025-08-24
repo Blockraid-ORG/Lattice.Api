@@ -7,6 +7,10 @@ import {
   CreatePresaleDto,
   FindMyContributeDto,
 } from './dto/create-presale.dto';
+import {
+  CreateClaimPresaleDto,
+  GetClaimPresaleDto,
+} from '../client/presale/dto/create-presale.dto';
 
 @Injectable()
 export class PresalesService {
@@ -353,6 +357,26 @@ export class PresalesService {
             },
           },
         },
+      },
+    });
+  }
+
+  async createClaimPresale(dto: CreateClaimPresaleDto, userId: string) {
+    return this.prisma.presaleClaimedToken.create({
+      data: {
+        presaleId: dto.presaleId,
+        amount: dto.amount,
+        transactionHash: dto.transactionHash,
+        userId: userId,
+      },
+    });
+  }
+
+  async getMyClaimPresale(dto: GetClaimPresaleDto, userId: string) {
+    return this.prisma.presaleClaimedToken.findMany({
+      where: {
+        presaleId: dto.presaleId,
+        userId: userId,
       },
     });
   }

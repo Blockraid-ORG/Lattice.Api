@@ -1,10 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma, Project } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
 import { parseBoolean } from 'src/common/utils/parse-data-type';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
+  AddAirdropDto,
   CreateProjectDto,
   CreateReviewProjectDto,
   SetAllocationDeployingDto,
@@ -18,7 +23,14 @@ import {
 export class ProjectsService {
   constructor(private readonly prisma: PrismaService) {}
   async create(dto: CreateProjectDto, userId: string) {
-    const { chainIds, allocations, socials, presales, ...projectData } = dto;
+    const {
+      chainIds,
+      allocations,
+      socials,
+      presales,
+      additionalReward,
+      ...projectData
+    } = dto;
     const newAllocations = allocations.map((item, index) => {
       return {
         ...item,
@@ -56,6 +68,14 @@ export class ProjectsService {
               },
             }
           : undefined,
+        additionalReward:
+          additionalReward && additionalReward.length
+            ? {
+                create: additionalReward.map((ar) => ({
+                  ...ar,
+                })),
+              }
+            : undefined,
       },
       include: {
         chains: { include: { chain: true } },
@@ -67,7 +87,14 @@ export class ProjectsService {
   }
 
   async update(id: string, dto: UpdateProjectDto, userId: string) {
-    const { chainIds, allocations, socials, presales, ...projectData } = dto;
+    const {
+      chainIds,
+      allocations,
+      socials,
+      presales,
+      additionalReward,
+      ...projectData
+    } = dto;
     return this.prisma.project.update({
       where: { id },
       data: {
@@ -110,12 +137,38 @@ export class ProjectsService {
           : {
               delete: true,
             },
+        additionalReward: additionalReward
+          ? {
+              upsert: additionalReward.map((reward) => ({
+                where: { id: reward.userId ?? '' },
+                update: {
+                  address: reward.address,
+                  amount: reward.amount,
+                  typeId: reward.typeId,
+                  userId,
+                  startDateCliam: reward.startDateCliam,
+                  endDateCliam: reward.endDateCliam,
+                },
+                create: {
+                  address: reward.address,
+                  amount: reward.amount,
+                  typeId: reward.typeId,
+                  userId,
+                  startDateCliam: reward.startDateCliam,
+                  endDateCliam: reward.endDateCliam,
+                },
+              })),
+            }
+          : {
+              deleteMany: {},
+            },
       },
       include: {
         chains: { include: { chain: true } },
         allocations: true,
         socials: { include: { social: true } },
         presales: true,
+        additionalReward: true,
       },
     });
   }
@@ -251,12 +304,40 @@ export class ProjectsService {
             },
           },
         },
+        additionalReward: {
+          select: {
+            id: true,
+            address: true,
+            amount: true,
+            type: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+            user: {
+              select: {
+                id: true,
+                walletAddress: true,
+              },
+            },
+            startDateCliam: true,
+            endDateCliam: true,
+            isClaimed: true,
+          },
+        },
       },
     });
     if (!result) {
       throw new NotFoundException(`data with ${id} not found!`);
     }
-    return result;
+    const hasAirdrop = result.allocations.some(
+      (a) => a.name.toLowerCase() === 'airdrop',
+    );
+    return {
+      ...result,
+      isHashAirdrop: hasAirdrop,
+    };
   }
 
   async reject(dto: CreateReviewProjectDto) {
@@ -478,6 +559,39 @@ export class ProjectsService {
         lockerDistributed: true,
         lockerDistributeHash: dto.lockerDistributeHash,
       },
+    });
+    return result;
+  }
+  async addAirdrop(dto: AddAirdropDto) {
+    const { projectId, airdrops } = dto;
+    const rewardTypeAirdrop = await this.prisma.additionalRewardType.findFirst({
+      where: {
+        name: 'Airdrop',
+      },
+    });
+    if (!rewardTypeAirdrop) {
+      throw new BadRequestException('Airdrop Not Available');
+    }
+    const addresses = airdrops.map((a) => a.address);
+    const users = await this.prisma.user.findMany({
+      where: {
+        walletAddress: { in: addresses },
+      },
+      select: { id: true, walletAddress: true },
+    });
+    const walletAddressMapped = airdrops.map((i) => {
+      return {
+        ...i,
+        projectId,
+        typeId: rewardTypeAirdrop.id,
+        userId: users.find(
+          (u) => u.walletAddress.toLowerCase() === i.address.toLowerCase(),
+        ).id,
+      };
+    });
+    const result = await this.prisma.additionalReward.createMany({
+      data: walletAddressMapped,
+      skipDuplicates: true,
     });
     return result;
   }

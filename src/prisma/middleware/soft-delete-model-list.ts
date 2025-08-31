@@ -8,4 +8,10 @@ export const softDeleteModels = [
   'ProjectReviewLog',
   'ReviewVerificationLog',
   'ProjectOwnerVerification',
+  'FileLog',
+  'Social',
+  'Verification',
+  'Project',
+  'ProjectType',
+  'Presales',
 ];

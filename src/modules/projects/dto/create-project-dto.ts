@@ -70,6 +70,20 @@ export class CreatePresalesDto {
   unit: string;
 }
 
+export class CreateAdditionalRewardDto {
+  @IsString()
+  address: string;
+  @IsString()
+  amount: string;
+  @IsUUID()
+  typeId: string;
+  @IsUUID()
+  userId: string;
+  @IsString()
+  startDateCliam: string;
+  @IsString()
+  endDateCliam: string;
+}
 export class CreateProjectDto {
   @IsString()
   @MaxLength(128)
@@ -102,10 +116,6 @@ export class CreateProjectDto {
   @IsEnum(EnumProjectStatus)
   status: EnumProjectStatus;
 
-  // @IsOptional()
-  // @IsUUID()
-  // userId?: string;
-
   @IsUUID()
   categoryId: string;
 
@@ -130,11 +140,16 @@ export class CreateProjectDto {
   @Type(() => CreateProjectSocialDto)
   socials: CreateProjectSocialDto[];
 
-  // Presales (One-to-one)
   @IsOptional()
   @ValidateNested()
   @Type(() => CreatePresalesDto)
   presales?: CreatePresalesDto;
+
+  @IsArray()
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CreateAdditionalRewardDto)
+  additionalReward?: CreateAdditionalRewardDto[];
 }
 export class CreateReviewProjectDto {
   @IsString()
@@ -192,5 +207,25 @@ export class SetContractPresaleDto {
   @IsString()
   @MaxLength(128)
   whitelistContract: string;
+}
+export class AddAirdropItemDto {
+  @IsString()
+  address: string;
+  @IsString()
+  amount: string;
+  @IsString()
+  startDateCliam: string;
+  @IsString()
+  endDateCliam: string;
+}
+export class AddAirdropDto {
+  @IsUUID()
+  projectId: string;
+
+  @IsArray()
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => AddAirdropItemDto)
+  airdrops?: AddAirdropItemDto[];
 }
 export class UpdateProjectDto extends PartialType(CreateProjectDto) {}

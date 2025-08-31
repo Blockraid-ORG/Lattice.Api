@@ -22,6 +22,8 @@ import { UsrClientModule } from './modules/client/usr-client/usr-client.module';
 import { PresaleModule } from './modules/client/presale/presale.module';
 import { ProjectModule } from './modules/client/project/project.module';
 import { PresalesModule } from './modules/presales/presales.module';
+import { ProjectTypesModule } from './modules/project-types/project-types.module';
+import { AdditionalRewardTypesModule } from './modules/additional-reward-types/additional-reward-types.module';
 @Module({
   imports: [
     PrismaModule,
@@ -49,6 +51,8 @@ import { PresalesModule } from './modules/presales/presales.module';
     PresaleModule,
     ProjectModule,
     PresalesModule,
+    ProjectTypesModule,
+    AdditionalRewardTypesModule,
   ],
   controllers: [],
   providers: [],

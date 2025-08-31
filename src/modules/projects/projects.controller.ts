@@ -14,6 +14,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { CurrentUserId } from 'src/common/decorators/current-user.decorator';
 import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
 import {
+  AddAirdropDto,
   CreateProjectDto,
   CreateReviewProjectDto,
   SetAllocationDeployingDto,
@@ -120,5 +121,11 @@ export class ProjectsController {
   @HttpCode(HttpStatus.OK)
   async setDistributedLocker(@Body() dto: SetDistributedLockerDto) {
     return this.projectsService.setDistributedLocker(dto);
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @Post('add-airdrop')
+  @HttpCode(HttpStatus.OK)
+  async addAirdrop(@Body() dto: AddAirdropDto) {
+    return this.projectsService.addAirdrop(dto);
   }
 }

@@ -88,6 +88,7 @@ model User {
   transactionPresales TransactionPresales[]
   verifications       ProjectOwnerVerification[]
   PresaleClaimedToken PresaleClaimedToken[]
+  AdditionalReward    AdditionalReward[]
 
   @@index([email, walletAddress])
   @@map("users")
@@ -253,6 +254,7 @@ model Category {
   frequency      FrequencyCategory
   frequencyCount Int               @default(1)
   targetYield    String
+  status         Boolean           @default(true)
 
   parent    Category?  @relation("CategoryToSubcategory", fields: [parentId], references: [id])
   children  Category[] @relation("CategoryToSubcategory")
@@ -273,10 +275,10 @@ model Social {
   name String
   icon String?
 
-  projects ProjectSocial[]
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  projects  ProjectSocial[]
+  status    Boolean         @default(true)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
   deletedAt DateTime?
   createdBy String?
   updatedBy String?
@@ -316,6 +318,7 @@ model Chain {
   urlRpc     String?
   urlApi     String?
   type       ChianType
+  status     Boolean   @default(true)
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -344,6 +347,8 @@ model Project {
   user                 User              @relation(fields: [userId], references: [id])
   categoryId           String
   category             Category          @relation(fields: [categoryId], references: [id])
+  projectTypeId        String?
+  projectType          ProjectType?       @relation(fields: [projectTypeId], references: [id])
   contractAddress      String?
   factoryAddress       String?
   createdAt            DateTime          @default(now())
@@ -361,8 +366,27 @@ model Project {
   socials             ProjectSocial[]
   transactionPresales TransactionPresales[]
   presales            Presales?
+  additionalReward    AdditionalReward[]
 
   @@map("projects")
+}
+
+model ProjectType {
+  id          String    @id @default(uuid())
+  name        String    @db.VarChar(128)
+  description String
+  icon        String?
+  order       Int       @default(1)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  createdBy String?
+  updatedBy String?
+  deletedBy String?
+  project   Project[]
+
+  @@map("project_types")
 }
 
 model ProjectChain {
@@ -582,11 +606,54 @@ model PresaleClaimedToken {
   updatedAt       DateTime  @updatedAt
   deletedAt       DateTime?
 
-  presale    Presales @relation(fields: [presaleId], references: [id])
-  user       User     @relation(fields: [userId], references: [id])
-  createdBy  String?
-  updatedBy  String?
-  deletedBy  String?
+  presale   Presales @relation(fields: [presaleId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  createdBy String?
+  updatedBy String?
+  deletedBy String?
+}
+
+model AdditionalRewardType {
+  id     String  @id @default(uuid())
+  name   String
+  status Boolean @default(true)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  createdBy String?
+  updatedBy String?
+  deletedBy String?
+  rewards   AdditionalReward[]
+
+  @@map("additional_reward_types")
+}
+
+model AdditionalReward {
+  id             String               @id @default(uuid())
+  projectId      String
+  userId         String
+  address        String
+  amount         Decimal              @db.Decimal(65, 18)
+  typeId         String
+  type           AdditionalRewardType @relation(fields: [typeId], references: [id])
+  project        Project              @relation(fields: [projectId], references: [id])
+  user           User                 @relation(fields: [userId], references: [id])
+  startDateCliam DateTime?
+  endDateCliam   DateTime?
+  isClaimed      Boolean              @default(false)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy String?
+  updatedBy String?
+  deletedBy String?
+
+  @@index([address])
+  @@map("additional_rewards")
+  @@unique([projectId, userId])
 }
 
 // Project Here...

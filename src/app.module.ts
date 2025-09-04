@@ -24,6 +24,7 @@ import { ProjectModule } from './modules/client/project/project.module';
 import { PresalesModule } from './modules/presales/presales.module';
 import { ProjectTypesModule } from './modules/project-types/project-types.module';
 import { AdditionalRewardTypesModule } from './modules/additional-reward-types/additional-reward-types.module';
+import { AdditionalAssetRewardsModule } from './modules/additional-asset-rewards/additional-asset-rewards.module';
 @Module({
   imports: [
     PrismaModule,
@@ -53,6 +54,7 @@ import { AdditionalRewardTypesModule } from './modules/additional-reward-types/a
     PresalesModule,
     ProjectTypesModule,
     AdditionalRewardTypesModule,
+    AdditionalAssetRewardsModule,
   ],
   controllers: [],
   providers: [],

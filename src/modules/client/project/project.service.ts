@@ -127,6 +127,21 @@ export class ProjectService {
             walletAddress: true,
           },
         },
+        additionalReward: {
+          select: {
+            id: true,
+            amount: true,
+            type: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+            startDateClaim: true,
+            endDateClaim: true,
+            contactAddress: true,
+          },
+        },
       },
     });
     if (!result) {

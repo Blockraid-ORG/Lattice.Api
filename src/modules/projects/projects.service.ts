@@ -19,6 +19,7 @@ import {
   UpdateAllocationDto,
   UpdateProjectDto,
 } from './dto/create-project-dto';
+import { add } from 'date-fns';
 @Injectable()
 export class ProjectsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -31,6 +32,12 @@ export class ProjectsService {
       additionalReward,
       ...projectData
     } = dto;
+    const pType = await this.prisma.projectType.findUnique({
+      where: {
+        id: dto.projectTypeId,
+      },
+    });
+    const prefixTypeName = pType ? pType.name.charAt(0) : '';
     const newAllocations = allocations.map((item, index) => {
       return {
         ...item,
@@ -40,6 +47,7 @@ export class ProjectsService {
     return this.prisma.project.create({
       data: {
         ...projectData,
+        ticker: `${prefixTypeName}${dto.ticker}`,
         userId,
 
         chains: {
@@ -65,6 +73,9 @@ export class ProjectsService {
           ? {
               create: {
                 ...presales,
+                endDate: add(new Date(presales.startDate), {
+                  days: presales.duration,
+                }),
               },
             }
           : undefined,
@@ -197,6 +208,13 @@ export class ProjectsService {
         factoryAddress: true,
         lockerDistributed: true,
         lockerDistributeHash: true,
+        projectType: {
+          select: {
+            id: true,
+            name: true,
+            icon: true,
+          },
+        },
         reviewLogs: {
           select: {
             id: true,
@@ -307,23 +325,16 @@ export class ProjectsService {
         additionalReward: {
           select: {
             id: true,
-            address: true,
             amount: true,
+            contactAddress: true,
             type: {
               select: {
                 id: true,
                 name: true,
               },
             },
-            user: {
-              select: {
-                id: true,
-                walletAddress: true,
-              },
-            },
-            startDateCliam: true,
-            endDateCliam: true,
-            isClaimed: true,
+            startDateClaim: true,
+            endDateClaim: true,
           },
         },
       },
@@ -425,6 +436,13 @@ export class ProjectsService {
               icon: true,
             },
           },
+          projectType: {
+            select: {
+              id: true,
+              name: true,
+              icon: true,
+            },
+          },
           chains: {
             select: {
               chain: {
@@ -479,6 +497,13 @@ export class ProjectsService {
           },
         },
         category: {
+          select: {
+            id: true,
+            name: true,
+            icon: true,
+          },
+        },
+        projectType: {
           select: {
             id: true,
             name: true,

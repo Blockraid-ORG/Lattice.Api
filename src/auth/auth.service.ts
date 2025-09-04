@@ -226,7 +226,7 @@ export class AuthService {
 
     return { nonce };
   }
-    async verifySignature(walletAddress: string, signature: string) {
+  async verifySignature(walletAddress: string, signature: string) {
     const record = await this.prisma.nonceLogin.findUnique({
       where: { walletAddress },
     });

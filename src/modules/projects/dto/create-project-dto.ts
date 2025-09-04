@@ -59,11 +59,17 @@ export class CreatePresalesDto {
   @IsNumber()
   duration: number;
 
-  // @IsNumber()
-  // claimTime: number;
+  @IsOptional()
+  @IsNumber()
+  claimTime: number;
 
-  // @IsNumber()
-  // startDate: number;
+  @IsOptional()
+  @IsString()
+  startDate: string;
+
+  @IsOptional()
+  @IsString()
+  endDate: string;
 
   @IsString()
   @MaxLength(64)
@@ -118,6 +124,9 @@ export class CreateProjectDto {
 
   @IsUUID()
   categoryId: string;
+
+  @IsUUID()
+  projectTypeId: string;
 
   @IsOptional()
   @IsString()

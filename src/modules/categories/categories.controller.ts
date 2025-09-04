@@ -21,10 +21,12 @@ import { AuthGuard } from '@nestjs/passport';
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
+  @UseGuards(AuthGuard('jwt'), PermissionGuard)
   @Post()
   create(@Body() data: CreateCategoryDto) {
     return this.categoriesService.create(data);
   }
+
   @Get()
   findMany(@Query() query: QueryParamDto) {
     return this.categoriesService.findMany(query);
@@ -34,12 +36,12 @@ export class CategoriesController {
   findOne(@Param('id') id: string) {
     return this.categoriesService.findOne(id);
   }
-
+  @UseGuards(AuthGuard('jwt'), PermissionGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() data: UpdateCategoryDto) {
     return this.categoriesService.update(id, data);
   }
-
+  @UseGuards(AuthGuard('jwt'), PermissionGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.categoriesService.remove(id);

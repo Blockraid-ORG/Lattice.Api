@@ -83,12 +83,12 @@ model User {
   updatedBy String?
   deletedBy String?
 
-  roles               UserRole[]
-  projects            Project[]
-  transactionPresales TransactionPresales[]
-  verifications       ProjectOwnerVerification[]
-  PresaleClaimedToken PresaleClaimedToken[]
-  AdditionalReward    AdditionalReward[]
+  roles                UserRole[]
+  projects             Project[]
+  transactionPresales  TransactionPresales[]
+  verifications        ProjectOwnerVerification[]
+  PresaleClaimedToken  PresaleClaimedToken[]
+  UserAdditionalReward UserAdditionalReward[]
 
   @@index([email, walletAddress])
   @@map("users")
@@ -348,7 +348,7 @@ model Project {
   categoryId           String
   category             Category          @relation(fields: [categoryId], references: [id])
   projectTypeId        String?
-  projectType          ProjectType?       @relation(fields: [projectTypeId], references: [id])
+  projectType          ProjectType?      @relation(fields: [projectTypeId], references: [id])
   contractAddress      String?
   factoryAddress       String?
   createdAt            DateTime          @default(now())
@@ -631,29 +631,44 @@ model AdditionalRewardType {
 }
 
 model AdditionalReward {
-  id             String               @id @default(uuid())
-  projectId      String
-  userId         String
-  address        String
-  amount         Decimal              @db.Decimal(65, 18)
-  typeId         String
-  type           AdditionalRewardType @relation(fields: [typeId], references: [id])
-  project        Project              @relation(fields: [projectId], references: [id])
-  user           User                 @relation(fields: [userId], references: [id])
-  startDateCliam DateTime?
-  endDateCliam   DateTime?
-  isClaimed      Boolean              @default(false)
+  id                   String                 @id @default(uuid())
+  projectId            String
+  amount               Decimal                @db.Decimal(65, 18)
+  typeId               String
+  type                 AdditionalRewardType   @relation(fields: [typeId], references: [id])
+  project              Project                @relation(fields: [projectId], references: [id])
+  startDateClaim       DateTime?
+  endDateClaim         DateTime?
+  contactAddress       String?
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  deletedAt            DateTime?
+  createdBy            String?
+  updatedBy            String?
+  deletedBy            String?
+  userAdditionalReward UserAdditionalReward[]
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  createdBy String?
-  updatedBy String?
-  deletedBy String?
+  @@map("additional_asset_rewards")
+}
 
-  @@index([address])
-  @@map("additional_rewards")
-  @@unique([projectId, userId])
+model UserAdditionalReward {
+  id                 String           @id @default(uuid())
+  additionalRewardId String
+  userId             String
+  address            String
+  amount             Decimal          @db.Decimal(65, 18)
+  isClaimed          Boolean          @default(false)
+  user               User             @relation(fields: [userId], references: [id])
+  additionalReward   AdditionalReward @relation(fields: [additionalRewardId], references: [id])
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  deletedAt          DateTime?
+  createdBy          String?
+  updatedBy          String?
+  deletedBy          String?
+
+  @@unique([additionalRewardId, userId])
+  @@map("user_additional_rewars")
 }
 
 // Project Here...

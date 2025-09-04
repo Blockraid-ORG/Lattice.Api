@@ -181,6 +181,7 @@ export class PresalesService {
           startDate: { lte: now },
           endDate: { gte: now },
           project: {
+            ...(query.categoryId && { categoryId: query.categoryId }),
             status: 'DEPLOYED',
           },
         },
@@ -197,6 +198,18 @@ export class PresalesService {
               totalSupply: true,
               decimals: true,
               contractAddress: true,
+              projectType: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              category: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
               chains: {
                 select: {
                   chain: true,

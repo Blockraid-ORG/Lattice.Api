@@ -6,10 +6,6 @@ export class CreateAdditionalAssetRewardDto {
   projectId: string;
 
   @IsNotEmpty()
-  @IsUUID()
-  typeId: string;
-
-  @IsNotEmpty()
   @IsString()
   amount: string;
 

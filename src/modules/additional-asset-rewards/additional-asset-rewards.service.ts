@@ -49,12 +49,18 @@ export class AdditionalAssetRewardsService {
       },
     });
   }
-  create(dto: CreateAdditionalAssetRewardDto) {
+  async create(dto: CreateAdditionalAssetRewardDto) {
+    const projectType = await this.prisma.additionalRewardType.findFirst({
+      where: { name: 'Airdrop', status: true },
+    });
+    if (!projectType) {
+      throw new Error('Project type not found');
+    }
     return this.prisma.additionalReward.create({
       data: {
         amount: dto.amount,
         projectId: dto.projectId,
-        typeId: dto.typeId,
+        typeId: projectType.id,
         startDateClaim: new Date(dto.startDateClaim),
         endDateClaim: new Date(dto.endDateClaim),
       },

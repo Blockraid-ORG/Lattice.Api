@@ -234,8 +234,9 @@ export class AuthService {
       throw new ForbiddenException('Nonce expired or not found');
     }
     const message = `Welcome To Terravest\n\n
-Agree to Presale Terms\n\nTo participate in the BRIDGE presale, you must agree to the following terms:\n\n
-By signing, you acknowledge and agree to the BRIDGE presale terms and conditions.\nYou understand that participation is subject to all applicable laws and regulations, and you have read and accept the full terms at terravest.capital/terms.\n\nNonce: ${record.nonce}`;
+Agree to Presale Terms\n\nTo participate in the Terravest presale, you must agree to the following terms:\n\n
+By signing, you acknowledge and agree to the Terravest presale terms and conditions.
+You understand that participation is subject to all applicable laws and regulations, and you have read and accept the full terms at terravest.capital/terms.\n\nNonce: ${record.nonce}`;
     const signerAddr = ethers.verifyMessage(message, signature);
     if (signerAddr.toLowerCase() !== walletAddress.toLowerCase()) {
       throw new ForbiddenException('Invalid signature');

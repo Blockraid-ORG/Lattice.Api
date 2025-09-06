@@ -18,6 +18,7 @@ import {
 import { UpdateAdditionalAssetRewardDto } from './dto/update-additional-asset-reward.dto';
 import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { CurrentUserId } from 'src/common/decorators/current-user.decorator';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('additional-asset-rewards')
@@ -32,6 +33,14 @@ export class AdditionalAssetRewardsController {
   removeAllocations(@Body() dto: RemoveAllocationAirdropDto[]) {
     return this.service.removeAllocations(dto);
   }
+  @Get('get-eligible-airdrop')
+  findEligibleAirdrop(
+    @Query() query: QueryParamDto,
+    @CurrentUserId() userId: string,
+  ) {
+    return this.service.findEligibleAirdrop(query, userId);
+  }
+
   @Post()
   create(@Body() dto: CreateAdditionalAssetRewardDto) {
     return this.service.create(dto);

@@ -249,4 +249,169 @@ export class AdditionalAssetRewardsService {
       },
     });
   }
+
+  // async findEligibleAirdrop(query: QueryParamDto, userId: string) {
+  //   const now = new Date();
+  //   const rewards = await this.prisma.userAdditionalReward.findMany({
+  //     where: {
+  //       userId: userId,
+  //       isClaimed: false,
+  //       additionalReward: {
+  //         endDateClaim: {
+  //           gte: now,
+  //         },
+  //         startDateClaim: {
+  //           lte: now,
+  //         },
+  //       },
+  //     },
+  //     include: {
+  //       additionalReward: {
+  //         include: {
+  //           project: {
+  //             select: {
+  //               id: true,
+  //               name: true,
+  //               ticker: true,
+  //               contractAddress: true,
+  //               decimals: true,
+  //               chains: {
+  //                 select: {
+  //                   chain: {
+  //                     select: {
+  //                       id: true,
+  //                       urlScanner: true,
+  //                     },
+  //                   },
+  //                 },
+  //               },
+  //             },
+  //           },
+  //           type: {
+  //             select: {
+  //               name: true,
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   });
+  //   return rewards;
+  // }
+  async findEligibleAirdrop(query: QueryParamDto, userId: string) {
+    const now = new Date();
+    const userAdditionalRewards =
+      await this.prisma.userAdditionalReward.findMany({
+        where: {
+          userId: userId,
+          isClaimed: false,
+        },
+        select: {
+          additionalRewardId: true,
+        },
+      });
+    const projects = await this.prisma.project.findMany({
+      where: {
+        additionalReward: {
+          some: {
+            id: {
+              in: userAdditionalRewards.map(
+                (reward) => reward.additionalRewardId,
+              ),
+            },
+            startDateClaim: { lte: now },
+            endDateClaim: { gte: now },
+          },
+        },
+        OR: query?.search
+          ? [
+              {
+                name: { contains: query.search, mode: 'insensitive' },
+              },
+            ]
+          : undefined,
+      },
+      select: {
+        id: true,
+        name: true,
+        ticker: true,
+        contractAddress: true,
+        decimals: true,
+        banner: true,
+        logo: true,
+        chains: {
+          select: {
+            chain: {
+              select: {
+                id: true,
+                urlScanner: true,
+                chainid: true,
+                name: true,
+              },
+            },
+          },
+        },
+        additionalReward: {
+          where: {
+            id: {
+              in: userAdditionalRewards.map(
+                (reward) => reward.additionalRewardId,
+              ),
+            },
+            startDateClaim: { lte: now },
+            endDateClaim: { gte: now },
+          },
+          select: {
+            id: true,
+            amount: true,
+            startDateClaim: true,
+            endDateClaim: true,
+            contactAddress: true,
+            type: {
+              select: {
+                name: true,
+              },
+            },
+            userAdditionalReward: {
+              where: {
+                userId: userId,
+                isClaimed: false,
+              },
+              select: {
+                id: true,
+                address: true,
+                amount: true,
+                isClaimed: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const newProjects = projects.map((item) => {
+      return {
+        id: item.id,
+        name: item.name,
+        ticker: item.ticker,
+        contractAddress: item.contractAddress,
+        decimals: item.decimals,
+        banner: item.banner,
+        logo: item.logo,
+        chains: item.chains,
+        airdrop: item.additionalReward.map((item) => {
+          const itemAirdrop = item.userAdditionalReward[0];
+          return {
+            ...itemAirdrop,
+            amount: Number(itemAirdrop?.amount || 0),
+          };
+        }),
+        totalEligible: item.additionalReward.reduce((a, b) => {
+          return a + Number(b.userAdditionalReward[0]?.amount || 0);
+        }, 0),
+      };
+    });
+
+    return newProjects;
+  }
 }

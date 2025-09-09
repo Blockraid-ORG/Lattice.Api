@@ -16,6 +16,8 @@ import {
   SetContractPresaleDto,
   SetContractWhitelistDto,
   SetDistributedLockerDto,
+  SetRewardContractPresaleDto,
+  SetRewardContractPresaleScheduleIdDto,
   UpdateAllocationDto,
   UpdateProjectDto,
 } from './dto/create-project-dto';
@@ -208,6 +210,7 @@ export class ProjectsService {
         factoryAddress: true,
         lockerDistributed: true,
         lockerDistributeHash: true,
+        rewardContractAddress: true,
         projectType: {
           select: {
             id: true,
@@ -335,6 +338,12 @@ export class ProjectsService {
             },
             startDateClaim: true,
             endDateClaim: true,
+            scheduleId: true,
+            project: {
+              select: {
+                rewardContractAddress: true,
+              },
+            },
           },
         },
       },
@@ -417,6 +426,7 @@ export class ProjectsService {
           status: true,
           userId: true,
           contractAddress: true,
+          rewardContractAddress: true,
           socials: {
             select: {
               url: true,
@@ -484,6 +494,7 @@ export class ProjectsService {
         status: true,
         userId: true,
         contractAddress: true,
+        rewardContractAddress: true,
         socials: {
           select: {
             url: true,
@@ -617,6 +628,30 @@ export class ProjectsService {
     const result = await this.prisma.additionalReward.createMany({
       data: walletAddressMapped,
       skipDuplicates: true,
+    });
+    return result;
+  }
+  async setRewardContractAddress(dto: SetRewardContractPresaleDto) {
+    const result = await this.prisma.project.update({
+      where: {
+        id: dto.id,
+      },
+      data: {
+        rewardContractAddress: dto.rewardContractAddress,
+      },
+    });
+    return result;
+  }
+  async setRewardContractAddressScheduleId(
+    dto: SetRewardContractPresaleScheduleIdDto,
+  ) {
+    const result = await this.prisma.additionalReward.update({
+      where: {
+        id: dto.id,
+      },
+      data: {
+        scheduleId: dto.scheduleId,
+      },
     });
     return result;
   }

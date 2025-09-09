@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreateAdditionalAssetRewardDto {
   @IsNotEmpty()
@@ -16,6 +16,14 @@ export class CreateAdditionalAssetRewardDto {
   @IsNotEmpty()
   @IsString()
   endDateClaim: string;
+
+  @IsOptional()
+  @IsString()
+  scheduleId?: string;
+
+  @IsOptional()
+  @IsString()
+  contractAddress?: string;
 }
 export class SetAllocationAirdropDto {
   @IsNotEmpty()
@@ -35,4 +43,9 @@ export class RemoveAllocationAirdropDto {
 
   @IsNotEmpty()
   address: string;
+}
+export class SetUserRewardClaimedDto {
+  @IsNotEmpty()
+  @IsUUID()
+  id: string;
 }

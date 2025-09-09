@@ -1,15 +1,16 @@
 import { Injectable } from '@nestjs/common';
+import { AdditionalReward, Prisma } from '@prisma/client';
+import { createPaginator } from 'prisma-pagination';
+import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
+import { parseBoolean } from 'src/common/utils/parse-data-type';
+import { PrismaService } from 'src/prisma/prisma.service';
 import {
   CreateAdditionalAssetRewardDto,
   RemoveAllocationAirdropDto,
   SetAllocationAirdropDto,
+  SetUserRewardClaimedDto,
 } from './dto/create-additional-asset-reward.dto';
 import { UpdateAdditionalAssetRewardDto } from './dto/update-additional-asset-reward.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
-import { createPaginator } from 'prisma-pagination';
-import { AdditionalReward, Prisma } from '@prisma/client';
-import { parseBoolean } from 'src/common/utils/parse-data-type';
 
 @Injectable()
 export class AdditionalAssetRewardsService {
@@ -170,6 +171,7 @@ export class AdditionalAssetRewardsService {
         endDateClaim: true,
         startDateClaim: true,
         contactAddress: true,
+        scheduleId: true,
         project: {
           select: {
             id: true,
@@ -177,6 +179,7 @@ export class AdditionalAssetRewardsService {
             ticker: true,
             contractAddress: true,
             decimals: true,
+            rewardContractAddress: true,
             chains: {
               select: {
                 chain: {
@@ -222,6 +225,7 @@ export class AdditionalAssetRewardsService {
         endDateClaim: true,
         startDateClaim: true,
         contactAddress: true,
+        scheduleId: true,
         project: {
           select: {
             id: true,
@@ -229,6 +233,7 @@ export class AdditionalAssetRewardsService {
             ticker: true,
             contractAddress: true,
             decimals: true,
+            rewardContractAddress: true,
             chains: {
               select: {
                 chain: {
@@ -339,6 +344,7 @@ export class AdditionalAssetRewardsService {
         decimals: true,
         banner: true,
         logo: true,
+        rewardContractAddress: true,
         chains: {
           select: {
             chain: {
@@ -367,9 +373,15 @@ export class AdditionalAssetRewardsService {
             startDateClaim: true,
             endDateClaim: true,
             contactAddress: true,
+            scheduleId: true,
             type: {
               select: {
                 name: true,
+              },
+            },
+            project: {
+              select: {
+                rewardContractAddress: true,
               },
             },
             userAdditionalReward: {
@@ -389,6 +401,8 @@ export class AdditionalAssetRewardsService {
       },
     });
 
+    // return projects;
+
     const newProjects = projects.map((item) => {
       return {
         id: item.id,
@@ -399,10 +413,12 @@ export class AdditionalAssetRewardsService {
         banner: item.banner,
         logo: item.logo,
         chains: item.chains,
+        rewardContractAddress: item.rewardContractAddress,
         airdrop: item.additionalReward.map((item) => {
           const itemAirdrop = item.userAdditionalReward[0];
           return {
             ...itemAirdrop,
+            schedileId: item.scheduleId,
             amount: Number(itemAirdrop?.amount || 0),
           };
         }),
@@ -413,5 +429,11 @@ export class AdditionalAssetRewardsService {
     });
 
     return newProjects;
+  }
+  async setUserRewardClaimed(dto: SetUserRewardClaimedDto) {
+    return this.prisma.userAdditionalReward.update({
+      where: { id: dto.id },
+      data: { isClaimed: true },
+    });
   }
 }

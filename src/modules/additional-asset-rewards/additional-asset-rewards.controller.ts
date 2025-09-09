@@ -14,6 +14,7 @@ import {
   CreateAdditionalAssetRewardDto,
   RemoveAllocationAirdropDto,
   SetAllocationAirdropDto,
+  SetUserRewardClaimedDto,
 } from './dto/create-additional-asset-reward.dto';
 import { UpdateAdditionalAssetRewardDto } from './dto/update-additional-asset-reward.dto';
 import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
@@ -24,6 +25,11 @@ import { CurrentUserId } from 'src/common/decorators/current-user.decorator';
 @Controller('additional-asset-rewards')
 export class AdditionalAssetRewardsController {
   constructor(private readonly service: AdditionalAssetRewardsService) {}
+
+  @Post('set-user-allocation-claim')
+  setUserRewardClaimed(@Body() dto: SetUserRewardClaimedDto) {
+    return this.service.setUserRewardClaimed(dto);
+  }
 
   @Post('setAllocations')
   setAllocations(@Body() dto: SetAllocationAirdropDto[]) {

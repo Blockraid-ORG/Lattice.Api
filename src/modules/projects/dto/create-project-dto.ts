@@ -237,4 +237,23 @@ export class AddAirdropDto {
   @Type(() => AddAirdropItemDto)
   airdrops?: AddAirdropItemDto[];
 }
+
+export class SetRewardContractPresaleDto {
+  @IsString()
+  @MaxLength(128)
+  id: string;
+
+  @IsString()
+  @MaxLength(128)
+  rewardContractAddress: string;
+}
+export class SetRewardContractPresaleScheduleIdDto {
+  @IsString()
+  @MaxLength(128)
+  id: string;
+
+  @IsString()
+  @MaxLength(128)
+  scheduleId: string;
+}
 export class UpdateProjectDto extends PartialType(CreateProjectDto) {}

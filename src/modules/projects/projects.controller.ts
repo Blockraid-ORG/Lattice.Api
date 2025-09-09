@@ -21,6 +21,8 @@ import {
   SetContractPresaleDto,
   SetContractWhitelistDto,
   SetDistributedLockerDto,
+  SetRewardContractPresaleDto,
+  SetRewardContractPresaleScheduleIdDto,
   UpdateAllocationDto,
   UpdateProjectDto,
 } from './dto/create-project-dto';
@@ -127,5 +129,19 @@ export class ProjectsController {
   @HttpCode(HttpStatus.OK)
   async addAirdrop(@Body() dto: AddAirdropDto) {
     return this.projectsService.addAirdrop(dto);
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @Post('set-reward-contract-address')
+  @HttpCode(HttpStatus.OK)
+  async setRewardContractAddress(@Body() dto: SetRewardContractPresaleDto) {
+    return this.projectsService.setRewardContractAddress(dto);
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @Post('set-reward-schedule-id')
+  @HttpCode(HttpStatus.OK)
+  async setRewardContractAddressScheduleId(
+    @Body() dto: SetRewardContractPresaleScheduleIdDto,
+  ) {
+    return this.projectsService.setRewardContractAddressScheduleId(dto);
   }
 }

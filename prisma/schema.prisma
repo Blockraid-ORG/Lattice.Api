@@ -333,40 +333,40 @@ model Chain {
 }
 
 model Project {
-  id                   String            @id @default(uuid())
-  name                 String            @db.VarChar(128)
-  slug                 String            @db.VarChar(128)
-  logo                 String
-  banner               String?
-  ticker               String?
-  decimals             Int               @default(18)
-  totalSupply          Decimal           @db.Decimal(65, 18)
-  detail               String            @db.Text()
-  status               EnumProjectStatus @default(PENDING)
-  userId               String
-  user                 User              @relation(fields: [userId], references: [id])
-  categoryId           String
-  category             Category          @relation(fields: [categoryId], references: [id])
-  projectTypeId        String?
-  projectType          ProjectType?      @relation(fields: [projectTypeId], references: [id])
-  contractAddress      String?
-  factoryAddress       String?
-  createdAt            DateTime          @default(now())
-  updatedAt            DateTime          @updatedAt
-  deletedAt            DateTime?
-  lockerDistributed    Boolean           @default(false)
-  lockerDistributeHash String?
-
-  createdBy           String?
-  updatedBy           String?
-  deletedBy           String?
-  chains              ProjectChain[]
-  allocations         ProjectAllocation[]
-  reviewLogs          ProjectReviewLog[]
-  socials             ProjectSocial[]
-  transactionPresales TransactionPresales[]
-  presales            Presales?
-  additionalReward    AdditionalReward[]
+  id                    String                @id @default(uuid())
+  name                  String                @db.VarChar(128)
+  slug                  String                @db.VarChar(128)
+  logo                  String
+  banner                String?
+  ticker                String?
+  decimals              Int                   @default(18)
+  totalSupply           Decimal               @db.Decimal(65, 18)
+  detail                String                @db.Text()
+  status                EnumProjectStatus     @default(PENDING)
+  userId                String
+  user                  User                  @relation(fields: [userId], references: [id])
+  categoryId            String
+  category              Category              @relation(fields: [categoryId], references: [id])
+  projectTypeId         String?
+  projectType           ProjectType?          @relation(fields: [projectTypeId], references: [id])
+  contractAddress       String?
+  factoryAddress        String?
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+  deletedAt             DateTime?
+  lockerDistributed     Boolean               @default(false)
+  lockerDistributeHash  String?
+  rewardContractAddress String?
+  createdBy             String?
+  updatedBy             String?
+  deletedBy             String?
+  chains                ProjectChain[]
+  allocations           ProjectAllocation[]
+  reviewLogs            ProjectReviewLog[]
+  socials               ProjectSocial[]
+  transactionPresales   TransactionPresales[]
+  presales              Presales?
+  additionalReward      AdditionalReward[]
 
   @@map("projects")
 }
@@ -647,6 +647,7 @@ model AdditionalReward {
   updatedBy            String?
   deletedBy            String?
   userAdditionalReward UserAdditionalReward[]
+  scheduleId           String?
 
   @@map("additional_asset_rewards")
 }

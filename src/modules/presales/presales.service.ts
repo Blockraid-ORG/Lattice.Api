@@ -198,6 +198,7 @@ export class PresalesService {
               totalSupply: true,
               decimals: true,
               contractAddress: true,
+              detail: true,
               projectType: {
                 select: {
                   id: true,

@@ -288,6 +288,7 @@ export class ProjectsService {
             whitelistContract: true,
             sweepDuration: true,
             startDate: true,
+            endDate: true,
             whitelistDuration: true,
             whitelists: {
               select: {

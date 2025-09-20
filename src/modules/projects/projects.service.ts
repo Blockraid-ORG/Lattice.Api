@@ -10,16 +10,21 @@ import { parseBoolean } from 'src/common/utils/parse-data-type';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   AddAirdropDto,
+  CreateProjectAllocationAddressDto,
   CreateProjectDto,
   CreateReviewProjectDto,
+  DeleteProjectAllocationAddressDto,
+  DeleteProjectAllocationAddressIdsDto,
   SetAllocationDeployingDto,
   SetContractPresaleDto,
+  SetContractPresaleProjectDto,
   SetContractWhitelistDto,
   SetDistributedLockerDto,
+  SetPausedProjectDto,
   SetRewardContractPresaleDto,
   SetRewardContractPresaleScheduleIdDto,
   UpdateAllocationDto,
-  UpdateProjectDto,
+  // UpdateProjectDto,
 } from './dto/create-project-dto';
 import { add } from 'date-fns';
 @Injectable()
@@ -99,92 +104,92 @@ export class ProjectsService {
     });
   }
 
-  async update(id: string, dto: UpdateProjectDto, userId: string) {
-    const {
-      chainIds,
-      allocations,
-      socials,
-      presales,
-      additionalReward,
-      ...projectData
-    } = dto;
-    return this.prisma.project.update({
-      where: { id },
-      data: {
-        ...projectData,
-        userId,
-        status: 'PENDING',
-        chains: {
-          deleteMany: {},
-          create: chainIds.map((chainId) => ({
-            chain: { connect: { id: chainId } },
-          })),
-        },
+  // async update(id: string, dto: UpdateProjectDto, userId: string) {
+  //   const {
+  //     chainIds,
+  //     allocations,
+  //     socials,
+  //     presales,
+  //     additionalReward,
+  //     ...projectData
+  //   } = dto;
+  //   return this.prisma.project.update({
+  //     where: { id },
+  //     data: {
+  //       ...projectData,
+  //       userId,
+  //       status: 'PENDING',
+  //       chains: {
+  //         deleteMany: {},
+  //         create: chainIds.map((chainId) => ({
+  //           chain: { connect: { id: chainId } },
+  //         })),
+  //       },
 
-        allocations: {
-          deleteMany: {},
-          create: allocations.map((a) => ({
-            ...a,
-          })),
-        },
+  //       allocations: {
+  //         deleteMany: {},
+  //         create: allocations.map((a) => ({
+  //           ...a,
+  //         })),
+  //       },
 
-        socials: {
-          deleteMany: {},
-          create: socials.map((s) => ({
-            url: s.url,
-            social: { connect: { id: s.socialId } },
-          })),
-        },
+  //       socials: {
+  //         deleteMany: {},
+  //         create: socials.map((s) => ({
+  //           url: s.url,
+  //           social: { connect: { id: s.socialId } },
+  //         })),
+  //       },
 
-        presales: presales
-          ? {
-              upsert: {
-                update: {
-                  ...presales,
-                },
-                create: {
-                  ...presales,
-                },
-              },
-            }
-          : {
-              delete: true,
-            },
-        additionalReward: additionalReward
-          ? {
-              upsert: additionalReward.map((reward) => ({
-                where: { id: reward.userId ?? '' },
-                update: {
-                  address: reward.address,
-                  amount: reward.amount,
-                  typeId: reward.typeId,
-                  userId,
-                  startDateCliam: reward.startDateCliam,
-                  endDateCliam: reward.endDateCliam,
-                },
-                create: {
-                  address: reward.address,
-                  amount: reward.amount,
-                  typeId: reward.typeId,
-                  userId,
-                  startDateCliam: reward.startDateCliam,
-                  endDateCliam: reward.endDateCliam,
-                },
-              })),
-            }
-          : {
-              deleteMany: {},
-            },
-      },
-      include: {
-        chains: { include: { chain: true } },
-        allocations: true,
-        socials: { include: { social: true } },
-        presales: true,
-        additionalReward: true,
-      },
-    });
-  }
+  //       presales: presales
+  //         ? {
+  //             upsert: {
+  //               update: {
+  //                 ...presales,
+  //               },
+  //               create: {
+  //                 ...presales,
+  //               },
+  //             },
+  //           }
+  //         : {
+  //             delete: true,
+  //           },
+  //       additionalReward: additionalReward
+  //         ? {
+  //             upsert: additionalReward.map((reward) => ({
+  //               where: { id: reward.userId ?? '' },
+  //               update: {
+  //                 address: reward.address,
+  //                 amount: reward.amount,
+  //                 typeId: reward.typeId,
+  //                 userId,
+  //                 startDateCliam: reward.startDateCliam,
+  //                 endDateCliam: reward.endDateCliam,
+  //               },
+  //               create: {
+  //                 address: reward.address,
+  //                 amount: reward.amount,
+  //                 typeId: reward.typeId,
+  //                 userId,
+  //                 startDateCliam: reward.startDateCliam,
+  //                 endDateCliam: reward.endDateCliam,
+  //               },
+  //             })),
+  //           }
+  //         : {
+  //             deleteMany: {},
+  //           },
+  //     },
+  //     include: {
+  //       chains: { include: { chain: true } },
+  //       allocations: true,
+  //       socials: { include: { social: true } },
+  //       presales: true,
+  //       additionalReward: true,
+  //     },
+  //   });
+  // }
 
   async findMany(query: QueryParamDto) {
     if (parseBoolean(query.noPaginate)) {
@@ -211,6 +216,9 @@ export class ProjectsService {
         lockerDistributed: true,
         lockerDistributeHash: true,
         rewardContractAddress: true,
+        presaleAddress: true,
+        whitelistsAddress: true,
+        paused: true,
         projectType: {
           select: {
             id: true,
@@ -273,9 +281,24 @@ export class ProjectsService {
             isPresale: true,
             contractAddress: true,
             isDeploying: true,
+            isFinalized: true,
+            addresses: {
+              select: {
+                id: true,
+                address: true,
+                amount: true,
+                isClaimed: true,
+              },
+            },
+            _count: {
+              select: {
+                addresses: true,
+              },
+            },
           },
         },
         presales: {
+          where: { deletedAt: null },
           select: {
             id: true,
             hardcap: true,
@@ -290,6 +313,8 @@ export class ProjectsService {
             startDate: true,
             endDate: true,
             whitelistDuration: true,
+            isActive: true,
+            presaleSCID: true,
             whitelists: {
               select: {
                 id: true,
@@ -428,6 +453,7 @@ export class ProjectsService {
           userId: true,
           contractAddress: true,
           rewardContractAddress: true,
+          paused: true,
           socials: {
             select: {
               url: true,
@@ -496,6 +522,7 @@ export class ProjectsService {
         userId: true,
         contractAddress: true,
         rewardContractAddress: true,
+        paused: true,
         socials: {
           select: {
             url: true,
@@ -534,6 +561,20 @@ export class ProjectsService {
             },
           },
         },
+      },
+    });
+  }
+
+  async setAssetPause(dto: SetPausedProjectDto) {
+    const project = await this.prisma.project.findUnique({
+      where: { id: dto.id },
+    });
+    return this.prisma.project.update({
+      where: {
+        id: dto.id,
+      },
+      data: {
+        paused: !project.paused,
       },
     });
   }
@@ -652,6 +693,61 @@ export class ProjectsService {
       },
       data: {
         scheduleId: dto.scheduleId,
+      },
+    });
+    return result;
+  }
+  async createProjectAllocationAddress(dto: CreateProjectAllocationAddressDto) {
+    const newData = dto.items.map((item) => {
+      return {
+        ...item,
+        projectAllocationId: dto.projectAllocationId,
+      };
+    });
+    const result = await this.prisma.projectAllocationAddress.createMany({
+      data: newData,
+      skipDuplicates: true,
+    });
+    return result;
+  }
+  async deleteIdsProjectAllocationAddress(
+    dto: DeleteProjectAllocationAddressIdsDto,
+  ) {
+    const result = await this.prisma.projectAllocationAddress.deleteMany({
+      where: {
+        id: {
+          in: dto.ids,
+        },
+      },
+    });
+    return result;
+  }
+  async deleteProjectAllocationAddress(dto: DeleteProjectAllocationAddressDto) {
+    const result = await this.prisma.projectAllocationAddress.deleteMany({
+      where: {
+        address: {
+          in: dto.adresses,
+        },
+      },
+    });
+    return result;
+  }
+  async finalizeProjectAllocation(id: string) {
+    const result = await this.prisma.projectAllocation.update({
+      where: { id },
+      data: {
+        isFinalized: true,
+      },
+    });
+    return result;
+  }
+  async setContractPresaleProject(dto: SetContractPresaleProjectDto) {
+    const result = await this.prisma.project.update({
+      where: {
+        id: dto.id,
+      },
+      data: {
+        presaleAddress: dto.presaleAddress,
       },
     });
     return result;

@@ -2,6 +2,7 @@ import { PartialType } from '@nestjs/mapped-types';
 import { EnumProjectStatus } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
+  ArrayNotEmpty,
   IsArray,
   IsBoolean,
   IsDateString,
@@ -255,5 +256,49 @@ export class SetRewardContractPresaleScheduleIdDto {
   @IsString()
   @MaxLength(128)
   scheduleId: string;
+}
+
+export class ProjectAllocationAddressItemDto {
+  @IsString()
+  address: string;
+  @IsString()
+  amount: string;
+}
+export class CreateProjectAllocationAddressDto {
+  @IsUUID()
+  projectAllocationId: string;
+
+  @IsArray()
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => ProjectAllocationAddressItemDto)
+  items: ProjectAllocationAddressItemDto[];
+}
+export class DeleteProjectAllocationAddressIdsDto {
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsUUID('4', { each: true })
+  ids: string[];
+}
+export class DeleteProjectAllocationAddressDto {
+  @IsArray()
+  @ArrayNotEmpty()
+  adresses: string[];
+}
+
+export class SetPausedProjectDto {
+  @IsString()
+  @MaxLength(128)
+  id: string;
+}
+
+export class SetContractPresaleProjectDto {
+  @IsString()
+  @MaxLength(128)
+  id: string;
+
+  @IsString()
+  @MaxLength(128)
+  presaleAddress: string;
 }
 export class UpdateProjectDto extends PartialType(CreateProjectDto) {}

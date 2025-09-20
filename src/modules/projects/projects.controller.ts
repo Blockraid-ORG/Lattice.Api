@@ -5,7 +5,6 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  Patch,
   Post,
   Query,
   UseGuards,
@@ -15,16 +14,21 @@ import { CurrentUserId } from 'src/common/decorators/current-user.decorator';
 import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
 import {
   AddAirdropDto,
+  CreateProjectAllocationAddressDto,
   CreateProjectDto,
   CreateReviewProjectDto,
+  DeleteProjectAllocationAddressDto,
+  DeleteProjectAllocationAddressIdsDto,
   SetAllocationDeployingDto,
   SetContractPresaleDto,
+  SetContractPresaleProjectDto,
   SetContractWhitelistDto,
   SetDistributedLockerDto,
+  SetPausedProjectDto,
   SetRewardContractPresaleDto,
   SetRewardContractPresaleScheduleIdDto,
   UpdateAllocationDto,
-  UpdateProjectDto,
+  // UpdateProjectDto,
 } from './dto/create-project-dto';
 import { ProjectsService } from './projects.service';
 import { PermissionGuard } from 'src/auth/auth.guard';
@@ -48,15 +52,16 @@ export class ProjectsController {
   async create(@Body() dto: CreateProjectDto, @CurrentUserId() userId: string) {
     return this.projectsService.create(dto, userId);
   }
-  @UseGuards(AuthGuard('jwt'), PermissionGuard)
-  @Patch(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() dto: UpdateProjectDto,
-    @CurrentUserId() userId: string,
-  ) {
-    return this.projectsService.update(id, dto, userId);
-  }
+
+  // @UseGuards(AuthGuard('jwt'), PermissionGuard)
+  // @Patch(':id')
+  // async update(
+  //   @Param('id') id: string,
+  //   @Body() dto: UpdateProjectDto,
+  //   @CurrentUserId() userId: string,
+  // ) {
+  //   return this.projectsService.update(id, dto, userId);
+  // }
 
   @UseGuards(AuthGuard('jwt'), PermissionGuard)
   @Get()
@@ -74,6 +79,12 @@ export class ProjectsController {
       ...query,
       userId,
     });
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @Post('set-pause')
+  @HttpCode(HttpStatus.OK)
+  async setAssetPause(@Body() dto: SetPausedProjectDto) {
+    return this.projectsService.setAssetPause(dto);
   }
 
   // @UseGuards(AuthGuard('jwt'))
@@ -143,5 +154,42 @@ export class ProjectsController {
     @Body() dto: SetRewardContractPresaleScheduleIdDto,
   ) {
     return this.projectsService.setRewardContractAddressScheduleId(dto);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('create-locker-allocation-address')
+  @HttpCode(HttpStatus.OK)
+  async createProjectAllocationAddress(
+    @Body() dto: CreateProjectAllocationAddressDto,
+  ) {
+    return this.projectsService.createProjectAllocationAddress(dto);
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @Post('delete-ids-locker-allocation-address')
+  @HttpCode(HttpStatus.OK)
+  async deleteIdsProjectAllocationAddress(
+    @Body() dto: DeleteProjectAllocationAddressIdsDto,
+  ) {
+    return this.projectsService.deleteIdsProjectAllocationAddress(dto);
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @Post('delete-locker-allocation-address')
+  @HttpCode(HttpStatus.OK)
+  async deleteProjectAllocationAddress(
+    @Body() dto: DeleteProjectAllocationAddressDto,
+  ) {
+    return this.projectsService.deleteProjectAllocationAddress(dto);
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @Post('finalize-locker-allocation')
+  @HttpCode(HttpStatus.OK)
+  async finalizeProjectAllocation(@Body('id') id: string) {
+    return this.projectsService.finalizeProjectAllocation(id);
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @Post('set-contract-presale-project')
+  @HttpCode(HttpStatus.OK)
+  async setContractPresaleProject(@Body() dto: SetContractPresaleProjectDto) {
+    return this.projectsService.setContractPresaleProject(dto);
   }
 }

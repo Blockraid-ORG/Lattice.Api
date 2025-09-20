@@ -4,6 +4,8 @@ import { createPaginator } from 'prisma-pagination';
 import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
+  ActivateNewPresaleDto,
+  CreateNewPresaleDto,
   CreatePresaleDto,
   FindMyContributeDto,
 } from './dto/create-presale.dto';
@@ -11,6 +13,8 @@ import {
   CreateClaimPresaleDto,
   GetClaimPresaleDto,
 } from '../client/presale/dto/create-presale.dto';
+import { add } from 'date-fns';
+import { UpdateNewPresaleDto } from './dto/update-presale.dto';
 
 @Injectable()
 export class PresalesService {
@@ -391,6 +395,58 @@ export class PresalesService {
       where: {
         presaleId: dto.presaleId,
         userId: userId,
+      },
+    });
+  }
+
+  // Manage Presale
+  async createNewPresale(dto: CreateNewPresaleDto) {
+    const project = await this.prisma.project.findUnique({
+      where: { id: dto.projectId },
+      include: {
+        chains: true,
+      },
+    });
+
+    return this.prisma.presales.create({
+      data: {
+        projectId: dto.projectId,
+        chainId: project.chains[0].chainId,
+        hardcap: dto.hardcap,
+        price: dto.price,
+        maxContribution: dto.maxContribution,
+        unit: dto.unit,
+        claimTime: dto.claimTime,
+        contractAddress: dto.contractAddress,
+        duration: dto.duration,
+        startDate: dto.startDate,
+        endDate: add(new Date(dto.startDate), { days: dto.duration }),
+        presaleSCID: dto.presaleSCID,
+        sweepDuration: dto.sweepDuration,
+      },
+    });
+  }
+
+  deletePresale(id: string) {
+    return this.prisma.presales.delete({
+      where: { id },
+    });
+  }
+  updatePresale(id: string, data: UpdateNewPresaleDto) {
+    const duration = data.duration;
+    return this.prisma.presales.update({
+      where: { id },
+      data: {
+        ...data,
+        endDate: duration && add(new Date(data.startDate), { days: duration }),
+      },
+    });
+  }
+  activatePresale(data: ActivateNewPresaleDto) {
+    return this.prisma.presales.update({
+      where: { id: data.id },
+      data: {
+        presaleSCID: Number(data.presaleSCID),
       },
     });
   }

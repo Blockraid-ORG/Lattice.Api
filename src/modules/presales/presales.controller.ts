@@ -1,14 +1,17 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
 import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
 import {
+  CreateNewPresaleDto,
   CreatePresaleDto,
   FindMyContributeDto,
 } from './dto/create-presale.dto';
@@ -19,6 +22,7 @@ import {
   CreateClaimPresaleDto,
   GetClaimPresaleDto,
 } from '../client/presale/dto/create-presale.dto';
+import { UpdateNewPresaleDto } from './dto/update-presale.dto';
 
 @Controller('presales')
 export class PresalesController {
@@ -84,5 +88,23 @@ export class PresalesController {
     @CurrentUserId() userId: string,
   ) {
     return this.presalesService.getMyClaimPresale(dto, userId);
+  }
+
+  // Manage Presale
+  @UseGuards(AuthGuard('jwt'))
+  @Post('create-new-presale')
+  createNewPresale(@Body() dto: CreateNewPresaleDto) {
+    return this.presalesService.createNewPresale(dto);
+  }
+  // Manage Presale
+  @UseGuards(AuthGuard('jwt'))
+  @Delete(':id')
+  deletePresale(@Param('id') id: string) {
+    return this.presalesService.deletePresale(id);
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @Patch(':id')
+  updatePresale(@Param('id') id: string, @Body() dto: UpdateNewPresaleDto) {
+    return this.presalesService.updatePresale(id, dto);
   }
 }

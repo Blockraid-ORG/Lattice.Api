@@ -333,24 +333,26 @@ model Chain {
 }
 
 model Project {
-  id                    String                @id @default(uuid())
-  name                  String                @db.VarChar(128)
-  slug                  String                @db.VarChar(128)
-  logo                  String
-  banner                String?
-  ticker                String?
-  decimals              Int                   @default(18)
-  totalSupply           Decimal               @db.Decimal(65, 18)
-  detail                String                @db.Text()
-  status                EnumProjectStatus     @default(PENDING)
-  userId                String
-  user                  User                  @relation(fields: [userId], references: [id])
-  categoryId            String
-  category              Category              @relation(fields: [categoryId], references: [id])
-  projectTypeId         String?
-  projectType           ProjectType?          @relation(fields: [projectTypeId], references: [id])
-  contractAddress       String?
-  factoryAddress        String?
+  id              String            @id @default(uuid())
+  name            String            @db.VarChar(128)
+  slug            String            @db.VarChar(128)
+  logo            String
+  banner          String?
+  ticker          String?
+  decimals        Int               @default(18)
+  totalSupply     Decimal           @db.Decimal(65, 18)
+  detail          String            @db.Text()
+  status          EnumProjectStatus @default(PENDING)
+  userId          String
+  user            User              @relation(fields: [userId], references: [id])
+  categoryId      String
+  category        Category          @relation(fields: [categoryId], references: [id])
+  projectTypeId   String?
+  projectType     ProjectType?      @relation(fields: [projectTypeId], references: [id])
+  contractAddress String?
+  factoryAddress  String?
+  whitelistsAddress  String?
+
   createdAt             DateTime              @default(now())
   updatedAt             DateTime              @updatedAt
   deletedAt             DateTime?
@@ -365,8 +367,13 @@ model Project {
   reviewLogs            ProjectReviewLog[]
   socials               ProjectSocial[]
   transactionPresales   TransactionPresales[]
-  presales              Presales?
+  presales              Presales[]
   additionalReward      AdditionalReward[]
+  paused                Boolean?              @default(false)
+
+  presaleAddress    String?
+  presaleUnit       String?
+  whitelistDuration Int?
 
   @@map("projects")
 }
@@ -409,19 +416,20 @@ model ProjectChain {
 }
 
 model ProjectAllocation {
-  id          String   @id @default(uuid())
-  projectId   String
-  name        String   @db.VarChar(128)
-  supply      Int
-  vesting     Int
-  startDate   DateTime
-  isPresale   Boolean  @default(false)
-  isDeploying Boolean  @default(false)
-  sortNumber  Int      @default(0)
-  project     Project  @relation(fields: [projectId], references: [id])
-
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id              String                     @id @default(uuid())
+  projectId       String
+  name            String                     @db.VarChar(128)
+  supply          Int
+  vesting         Int
+  startDate       DateTime
+  isPresale       Boolean                    @default(false)
+  isDeploying     Boolean                    @default(false)
+  sortNumber      Int                        @default(0)
+  project         Project                    @relation(fields: [projectId], references: [id])
+  isFinalized     Boolean?                   @default(false)
+  addresses       ProjectAllocationAddress[]
+  createdAt       DateTime                   @default(now())
+  updatedAt       DateTime                   @updatedAt
   deletedAt       DateTime?
   contractAddress String?
   createdBy       String?
@@ -429,6 +437,26 @@ model ProjectAllocation {
   deletedBy       String?
 
   @@map("project_allocations")
+}
+
+model ProjectAllocationAddress {
+  id                  String             @id @default(uuid())
+  address             String
+  amount              Decimal            @db.Decimal(65, 18)
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  deletedAt           DateTime?
+  contractAddress     String?
+  createdBy           String?
+  updatedBy           String?
+  deletedBy           String?
+  ProjectAllocation   ProjectAllocation? @relation(fields: [projectAllocationId], references: [id])
+  projectAllocationId String?
+  isClaimed           Boolean?           @default(false)
+
+  @@unique([projectAllocationId, address])
+  @@index([address])
+  @@map("project_allocation_address")
 }
 
 // ReviewProjectLog
@@ -473,7 +501,7 @@ model ProjectSocial {
 // Presales
 model Presales {
   id              String    @id @default(uuid())
-  projectId       String    @unique
+  projectId       String
   chainId         String
   hardcap         Decimal   @db.Decimal(65, 18)
   price           Decimal   @db.Decimal(65, 18)
@@ -483,8 +511,8 @@ model Presales {
   duration        Int       @default(1)
   claimTime       Int       @default(1)
 
-  unit String @db.VarChar(64)
-
+  unit              String                    @db.VarChar(64)
+  presaleSCID       Int?
   project           Project                   @relation(fields: [projectId], references: [id])
   contractAddress   String?
   whitelistContract String?
@@ -494,6 +522,7 @@ model Presales {
   createdAt         DateTime                  @default(now())
   updatedAt         DateTime                  @updatedAt
   deletedAt         DateTime?
+  isActive          Boolean?                  @default(false)
 
   createdBy           String?
   updatedBy           String?

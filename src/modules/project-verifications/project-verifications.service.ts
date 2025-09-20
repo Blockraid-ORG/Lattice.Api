@@ -13,6 +13,7 @@ import {
 export class ProjectVerificationsService {
   constructor(private readonly prisma: PrismaService) {}
   async create(dto: CreateProjectVerificationDto) {
+    console.log({ dto });
     const projectItem = await this.prisma.project.findUnique({
       where: {
         id: dto.projectId,
@@ -42,6 +43,8 @@ export class ProjectVerificationsService {
           status: dto.status,
           contractAddress: dto.contractAddress,
           factoryAddress: dto.factoryAddress,
+          presaleAddress: dto.presaleAddress,
+          whitelistsAddress: dto.whitelistsAddress,
         },
         select: {
           id: true,

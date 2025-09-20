@@ -172,6 +172,11 @@ export class AdditionalAssetRewardsService {
         startDateClaim: true,
         contactAddress: true,
         scheduleId: true,
+        _count: {
+          select: {
+            userAdditionalReward: true,
+          },
+        },
         project: {
           select: {
             id: true,
@@ -254,63 +259,20 @@ export class AdditionalAssetRewardsService {
       },
     });
   }
-
-  // async findEligibleAirdrop(query: QueryParamDto, userId: string) {
-  //   const now = new Date();
-  //   const rewards = await this.prisma.userAdditionalReward.findMany({
-  //     where: {
-  //       userId: userId,
-  //       isClaimed: false,
-  //       additionalReward: {
-  //         endDateClaim: {
-  //           gte: now,
-  //         },
-  //         startDateClaim: {
-  //           lte: now,
-  //         },
-  //       },
-  //     },
-  //     include: {
-  //       additionalReward: {
-  //         include: {
-  //           project: {
-  //             select: {
-  //               id: true,
-  //               name: true,
-  //               ticker: true,
-  //               contractAddress: true,
-  //               decimals: true,
-  //               chains: {
-  //                 select: {
-  //                   chain: {
-  //                     select: {
-  //                       id: true,
-  //                       urlScanner: true,
-  //                     },
-  //                   },
-  //                 },
-  //               },
-  //             },
-  //           },
-  //           type: {
-  //             select: {
-  //               name: true,
-  //             },
-  //           },
-  //         },
-  //       },
-  //     },
-  //   });
-  //   return rewards;
-  // }
   async findEligibleAirdrop(query: QueryParamDto, userId: string) {
     const now = new Date();
+    const where: Prisma.UserAdditionalRewardWhereInput = {};
+
+    where.userId = userId;
+    if (query.isClaimed == 1) {
+      where.isClaimed = true;
+    } else if (query.isClaimed == 0) {
+      where.isClaimed = false;
+    }
+
     const userAdditionalRewards =
       await this.prisma.userAdditionalReward.findMany({
-        where: {
-          userId: userId,
-          isClaimed: false,
-        },
+        where,
         select: {
           additionalRewardId: true,
         },
@@ -367,6 +329,9 @@ export class AdditionalAssetRewardsService {
             startDateClaim: { lte: now },
             endDateClaim: { gte: now },
           },
+          orderBy: {
+            createdAt: 'desc',
+          },
           select: {
             id: true,
             amount: true,
@@ -387,7 +352,7 @@ export class AdditionalAssetRewardsService {
             userAdditionalReward: {
               where: {
                 userId: userId,
-                isClaimed: false,
+                // isClaimed: query.isClaimed || false,
               },
               select: {
                 id: true,
@@ -425,6 +390,10 @@ export class AdditionalAssetRewardsService {
         totalEligible: item.additionalReward.reduce((a, b) => {
           return a + Number(b.userAdditionalReward[0]?.amount || 0);
         }, 0),
+        isClaimedAll:
+          item.additionalReward.filter((i) => {
+            return !i.userAdditionalReward[0].isClaimed;
+          }).length < 1,
       };
     });
 

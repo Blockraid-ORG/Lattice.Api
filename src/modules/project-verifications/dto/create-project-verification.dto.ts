@@ -17,6 +17,14 @@ export class CreateProjectVerificationDto {
   @IsString()
   factoryAddress?: string;
 
+  @IsOptional()
+  @IsString()
+  presaleAddress?: string;
+
+  @IsOptional()
+  @IsString()
+  whitelistsAddress?: string;
+
   @IsUUID()
   projectId: string;
 }

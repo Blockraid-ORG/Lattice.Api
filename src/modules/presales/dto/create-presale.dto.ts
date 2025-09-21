@@ -13,9 +13,6 @@ export class CreatePresaleDto {
   @IsUUID()
   presaleId: string;
 
-  // @IsUUID()
-  // userId: string;
-
   @IsString()
   @IsNotEmpty()
   price: string;
@@ -99,4 +96,11 @@ export class ActivateNewPresaleDto {
   @IsNumber()
   @IsOptional()
   presaleSCID: number;
+}
+export class AddProjectAddressWhitelistDto {
+  @IsUUID()
+  projectId: string;
+
+  @IsString()
+  walletAddress: string;
 }

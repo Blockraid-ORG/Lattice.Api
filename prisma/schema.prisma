@@ -333,25 +333,25 @@ model Chain {
 }
 
 model Project {
-  id              String            @id @default(uuid())
-  name            String            @db.VarChar(128)
-  slug            String            @db.VarChar(128)
-  logo            String
-  banner          String?
-  ticker          String?
-  decimals        Int               @default(18)
-  totalSupply     Decimal           @db.Decimal(65, 18)
-  detail          String            @db.Text()
-  status          EnumProjectStatus @default(PENDING)
-  userId          String
-  user            User              @relation(fields: [userId], references: [id])
-  categoryId      String
-  category        Category          @relation(fields: [categoryId], references: [id])
-  projectTypeId   String?
-  projectType     ProjectType?      @relation(fields: [projectTypeId], references: [id])
-  contractAddress String?
-  factoryAddress  String?
-  whitelistsAddress  String?
+  id                String            @id @default(uuid())
+  name              String            @db.VarChar(128)
+  slug              String            @db.VarChar(128)
+  logo              String
+  banner            String?
+  ticker            String?
+  decimals          Int               @default(18)
+  totalSupply       Decimal           @db.Decimal(65, 18)
+  detail            String            @db.Text()
+  status            EnumProjectStatus @default(PENDING)
+  userId            String
+  user              User              @relation(fields: [userId], references: [id])
+  categoryId        String
+  category          Category          @relation(fields: [categoryId], references: [id])
+  projectTypeId     String?
+  projectType       ProjectType?      @relation(fields: [projectTypeId], references: [id])
+  contractAddress   String?
+  factoryAddress    String?
+  whitelistsAddress String?
 
   createdAt             DateTime              @default(now())
   updatedAt             DateTime              @updatedAt
@@ -371,9 +371,10 @@ model Project {
   additionalReward      AdditionalReward[]
   paused                Boolean?              @default(false)
 
-  presaleAddress    String?
-  presaleUnit       String?
-  whitelistDuration Int?
+  presaleAddress                 String?
+  presaleUnit                    String?
+  whitelistDuration              Int?
+  ProjectPresaleWhitelistAddress ProjectPresaleWhitelistAddress[]
 
   @@map("projects")
 }
@@ -547,6 +548,23 @@ model PresaleAddressWhitelist {
   presaleId String?
 
   @@map("presale_address_whitelist")
+}
+
+// new presale
+model ProjectPresaleWhitelistAddress {
+  id            String    @id @default(uuid())
+  walletAddress String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  createdBy String?
+  updatedBy String?
+  deletedBy String?
+  project   Project? @relation(fields: [projectId], references: [id])
+  projectId String?
+
+  @@map("project_presale_whitelist_address")
 }
 
 // TransactionPresales

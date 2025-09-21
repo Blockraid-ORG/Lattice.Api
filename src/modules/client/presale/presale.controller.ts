@@ -1,12 +1,32 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
-import { AddWhitelistDto, CreatePresaleDto } from './dto/create-presale.dto';
+import {
+  AddWhitelistDto,
+  CreatePresaleDto,
+  CreateTransactionPresaleDto,
+} from './dto/create-presale.dto';
 import { PresaleService } from './presale.service';
+import { CurrentUserId } from 'src/common/decorators/current-user.decorator';
+import { AuthGuard } from '@nestjs/passport';
+import { FindMyContributeDto } from './dto/find-presale.dto';
 
 @Controller('presale')
 export class PresaleController {
   constructor(private readonly presaleService: PresaleService) {}
-
+  @Get('active')
+  findActivePresale(@Query() query: QueryParamDto) {
+    return this.presaleService.findActivePresale(query);
+  }
+  // Main
+  @UseGuards(AuthGuard('jwt'))
   @Post()
   create(@Body() createPresaleDto: CreatePresaleDto) {
     return this.presaleService.create(createPresaleDto);
@@ -22,8 +42,25 @@ export class PresaleController {
     return this.presaleService.findOne(id);
   }
   // Extra
+  @UseGuards(AuthGuard('jwt'))
   @Post('whitelist')
   addWhitelist(@Body() dto: AddWhitelistDto) {
     return this.presaleService.addWhitelist(dto);
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @Post('create-contribute-presale')
+  createContributePresale(
+    @Body() dto: CreateTransactionPresaleDto,
+    @CurrentUserId() userId: string,
+  ) {
+    return this.presaleService.createContributePresale(dto, userId);
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @Get('my-contribution')
+  getMyContribution(
+    @Query() query: FindMyContributeDto,
+    @CurrentUserId() userId: string,
+  ) {
+    return this.presaleService.getMyContribution(query, userId);
   }
 }

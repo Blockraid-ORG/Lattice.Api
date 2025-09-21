@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
 import {
+  AddProjectAddressWhitelistDto,
   CreateNewPresaleDto,
   CreatePresaleDto,
   FindMyContributeDto,
@@ -96,7 +97,6 @@ export class PresalesController {
   createNewPresale(@Body() dto: CreateNewPresaleDto) {
     return this.presalesService.createNewPresale(dto);
   }
-  // Manage Presale
   @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
   deletePresale(@Param('id') id: string) {
@@ -107,4 +107,18 @@ export class PresalesController {
   updatePresale(@Param('id') id: string, @Body() dto: UpdateNewPresaleDto) {
     return this.presalesService.updatePresale(id, dto);
   }
+  // Manage Presale Whitelist
+  @UseGuards(AuthGuard('jwt'))
+  @Post('add-project-presale-whitelist-address')
+  addProjectPresaleWhitelistAddress(
+    @Body() dto: AddProjectAddressWhitelistDto[],
+  ) {
+    return this.presalesService.addProjectPresaleWhitelistAddress(dto);
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @Post('remove-project-presale-whitelist-address')
+  removeProjectPresaleWhitelistAddress(@Body() dto: string[]) {
+    return this.presalesService.removeProjectPresaleWhitelistAddress(dto);
+  }
+  // Manage Presale
 }

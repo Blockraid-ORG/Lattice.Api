@@ -1,4 +1,11 @@
-import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 
 export class CreatePresaleDto {}
 
@@ -34,4 +41,23 @@ export class GetClaimPresaleDto {
   @IsNotEmpty()
   @IsString()
   presaleId: string;
+}
+export class CreateTransactionPresaleDto {
+  @IsUUID()
+  projectId: string;
+
+  @IsUUID()
+  presaleId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  price: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  count: number;
+
+  @IsNotEmpty()
+  @IsString()
+  transactionHash: string;
 }

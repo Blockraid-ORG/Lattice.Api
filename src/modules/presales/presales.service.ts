@@ -1,19 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { Presales, Prisma } from '@prisma/client';
+import { add } from 'date-fns';
 import { createPaginator } from 'prisma-pagination';
 import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
+  CreateClaimPresaleDto,
+  GetClaimPresaleDto,
+} from '../client/presale/dto/create-presale.dto';
+import {
   ActivateNewPresaleDto,
+  AddProjectAddressWhitelistDto,
   CreateNewPresaleDto,
   CreatePresaleDto,
   FindMyContributeDto,
 } from './dto/create-presale.dto';
-import {
-  CreateClaimPresaleDto,
-  GetClaimPresaleDto,
-} from '../client/presale/dto/create-presale.dto';
-import { add } from 'date-fns';
 import { UpdateNewPresaleDto } from './dto/update-presale.dto';
 
 @Injectable()
@@ -407,6 +408,14 @@ export class PresalesService {
         chains: true,
       },
     });
+    const initialPresale = await this.prisma.presales.findFirst({
+      where: {
+        projectId: project.id,
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
 
     return this.prisma.presales.create({
       data: {
@@ -415,14 +424,16 @@ export class PresalesService {
         hardcap: dto.hardcap,
         price: dto.price,
         maxContribution: dto.maxContribution,
-        unit: dto.unit,
+        unit: initialPresale.unit || dto.unit,
         claimTime: dto.claimTime,
         contractAddress: dto.contractAddress,
         duration: dto.duration,
         startDate: dto.startDate,
         endDate: add(new Date(dto.startDate), { days: dto.duration }),
         presaleSCID: dto.presaleSCID,
-        sweepDuration: dto.sweepDuration,
+        sweepDuration: initialPresale.sweepDuration || dto.sweepDuration,
+        whitelistDuration:
+          initialPresale.whitelistDuration || dto.whitelistDuration,
       },
     });
   }
@@ -447,6 +458,22 @@ export class PresalesService {
       where: { id: data.id },
       data: {
         presaleSCID: Number(data.presaleSCID),
+      },
+    });
+  }
+  async addProjectPresaleWhitelistAddress(
+    data: AddProjectAddressWhitelistDto[],
+  ) {
+    return this.prisma.projectPresaleWhitelistAddress.createMany({
+      data: data,
+    });
+  }
+  async removeProjectPresaleWhitelistAddress(dto: string[]) {
+    return this.prisma.projectPresaleWhitelistAddress.deleteMany({
+      where: {
+        id: {
+          in: dto,
+        },
       },
     });
   }

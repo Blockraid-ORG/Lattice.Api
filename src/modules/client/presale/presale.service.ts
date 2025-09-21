@@ -3,7 +3,12 @@ import { Prisma, Project } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AddWhitelistDto, CreatePresaleDto } from './dto/create-presale.dto';
+import {
+  AddWhitelistDto,
+  CreatePresaleDto,
+  CreateTransactionPresaleDto,
+} from './dto/create-presale.dto';
+import { FindMyContributeDto } from './dto/find-presale.dto';
 
 @Injectable()
 export class PresaleService {
@@ -33,6 +38,9 @@ export class PresaleService {
         factoryAddress: true,
         lockerDistributed: true,
         lockerDistributeHash: true,
+        presaleAddress: true,
+        rewardContractAddress: true,
+        whitelistsAddress: true,
         reviewLogs: {
           select: {
             id: true,
@@ -91,6 +99,13 @@ export class PresaleService {
           },
         },
         presales: {
+          where: {
+            isActive: true,
+          },
+          orderBy: {
+            presaleSCID: 'desc',
+          },
+          take: 1,
           select: {
             id: true,
             hardcap: true,
@@ -103,23 +118,14 @@ export class PresaleService {
             whitelistContract: true,
             sweepDuration: true,
             startDate: true,
+            endDate: true,
             whitelistDuration: true,
+            presaleSCID: true,
+            isActive: true,
             whitelists: {
               select: {
                 id: true,
                 walletAddress: true,
-              },
-            },
-          },
-        },
-        transactionPresales: {
-          select: {
-            id: true,
-            user: {
-              select: {
-                id: true,
-                walletAddress: true,
-                fullname: true,
               },
             },
           },
@@ -246,5 +252,129 @@ export class PresaleService {
       return { deletedAddress, createdAddress };
     });
     return result;
+  }
+
+  async findActivePresale(query: QueryParamDto) {
+    const paginate = createPaginator({
+      page: query.page,
+      perPage: query.pageSize,
+    });
+    const result = await paginate<Project, Prisma.ProjectFindManyArgs>(
+      this.prisma.project,
+      {
+        where: {
+          status: 'DEPLOYED',
+          presales: {
+            some: {
+              isActive: true,
+            },
+          },
+        },
+        orderBy: {
+          updatedAt: 'desc',
+        },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          logo: true,
+          banner: true,
+          ticker: true,
+          decimals: true,
+          totalSupply: true,
+          detail: true,
+          status: true,
+          userId: true,
+          contractAddress: true,
+          category: {
+            select: {
+              id: true,
+              name: true,
+              icon: true,
+            },
+          },
+          presales: {
+            where: {
+              isActive: true,
+            },
+            orderBy: {
+              presaleSCID: 'desc',
+            },
+            take: 1,
+            select: {
+              id: true,
+              projectId: true,
+              chainId: true,
+              hardcap: true,
+              price: true,
+              maxContribution: true,
+              startDate: true,
+              duration: true,
+              claimTime: true,
+              unit: true,
+              contractAddress: true,
+            },
+          },
+          socials: {
+            select: {
+              url: true,
+              social: {
+                select: {
+                  id: true,
+                  name: true,
+                  icon: true,
+                },
+              },
+            },
+          },
+          chains: {
+            select: {
+              chain: {
+                select: {
+                  id: true,
+                  name: true,
+                  logo: true,
+                  type: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    );
+    return result;
+  }
+  createContributePresale(dto: CreateTransactionPresaleDto, userId: string) {
+    return this.prisma.transactionPresales.create({
+      data: {
+        presaleId: dto.presaleId,
+        price: dto.price,
+        projectId: dto.projectId,
+        count: dto.count,
+        userId,
+        transactionHash: dto.transactionHash,
+      },
+    });
+  }
+  async getMyContribution(query: FindMyContributeDto, userId: string) {
+    return this.prisma.transactionPresales.findMany({
+      where: {
+        presaleId: query.presaleId,
+        projectId: query.projectId,
+        userId,
+      },
+      include: {
+        presale: true,
+        project: {
+          select: {
+            chains: {
+              select: {
+                chain: true,
+              },
+            },
+          },
+        },
+      },
+    });
   }
 }

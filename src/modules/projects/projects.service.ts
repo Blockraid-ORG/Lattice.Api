@@ -218,6 +218,13 @@ export class ProjectsService {
         rewardContractAddress: true,
         presaleAddress: true,
         whitelistsAddress: true,
+        ProjectPresaleWhitelistAddress: {
+          select: {
+            id: true,
+            walletAddress: true,
+            projectId: true,
+          },
+        },
         paused: true,
         projectType: {
           select: {
@@ -298,7 +305,6 @@ export class ProjectsService {
           },
         },
         presales: {
-          where: { deletedAt: null },
           select: {
             id: true,
             hardcap: true,

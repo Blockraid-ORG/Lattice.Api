@@ -54,7 +54,7 @@ export class ProjectsService {
     return this.prisma.project.create({
       data: {
         ...projectData,
-        ticker: `${dto.ticker}_${prefixTypeName}`,
+        ticker: `${prefixTypeName}${dto.ticker}`,
         userId,
 
         chains: {

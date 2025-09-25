@@ -105,7 +105,7 @@ export class PresaleService {
           orderBy: {
             presaleSCID: 'desc',
           },
-          take: 1,
+          // take: 1,
           select: {
             id: true,
             hardcap: true,

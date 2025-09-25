@@ -300,7 +300,6 @@ export class PresaleService {
             orderBy: {
               presaleSCID: 'desc',
             },
-            take: 1,
             select: {
               id: true,
               projectId: true,

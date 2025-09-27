@@ -14,4 +14,5 @@ export const softDeleteModels = [
   'Project',
   'ProjectType',
   'Presales',
+  'AddressPoolPaymentLog',
 ];

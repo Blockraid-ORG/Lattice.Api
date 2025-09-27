@@ -71,6 +71,7 @@ export class ChainsService {
           chainid: true,
           urlApi: true,
           urlRpc: true,
+          aliasName: true,
         },
       },
     );
@@ -97,6 +98,7 @@ export class ChainsService {
         chainid: true,
         urlApi: true,
         urlRpc: true,
+        aliasName: true,
       },
     });
   }

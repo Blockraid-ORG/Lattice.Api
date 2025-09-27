@@ -14,6 +14,7 @@ import { CurrentUserId } from 'src/common/decorators/current-user.decorator';
 import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
 import {
   AddAirdropDto,
+  CreatePaymentFeeProjectDto,
   CreateProjectAllocationAddressDto,
   CreateProjectDto,
   CreateReviewProjectDto,
@@ -191,5 +192,11 @@ export class ProjectsController {
   @HttpCode(HttpStatus.OK)
   async setContractPresaleProject(@Body() dto: SetContractPresaleProjectDto) {
     return this.projectsService.setContractPresaleProject(dto);
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @Post('create-payment-fee-project')
+  @HttpCode(HttpStatus.OK)
+  async createPaymentFeeProject(@Body() dto: CreatePaymentFeeProjectDto) {
+    return this.projectsService.createPaymentFeeProject(dto);
   }
 }

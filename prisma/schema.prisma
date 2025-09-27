@@ -312,6 +312,7 @@ model Chain {
   id         String    @id @default(uuid())
   chainid    Int       @default(1)
   name       String    @db.VarChar(32)
+  aliasName  String?
   ticker     String    @db.VarChar(8)
   logo       String?
   urlScanner String?
@@ -375,6 +376,7 @@ model Project {
   presaleUnit                    String?
   whitelistDuration              Int?
   ProjectPresaleWhitelistAddress ProjectPresaleWhitelistAddress[]
+  addressPoolPaymentLog          AddressPoolPaymentLog[]
 
   @@map("projects")
 }
@@ -717,6 +719,41 @@ model UserAdditionalReward {
 
   @@unique([additionalRewardId, userId])
   @@map("user_additional_rewars")
+}
+
+model AddressPoolPayment {
+  id                    String                  @id @default(uuid())
+  name                  String
+  address               String
+  ticker                String                  @db.VarChar(10)
+  balance               String                  @default("0")
+  amountFee             String                  @default("0")
+  decimal               Int                     @default(6)
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+  deletedAt             DateTime?
+  createdBy             String?
+  updatedBy             String?
+  deletedBy             String?
+  addressPoolPaymentLog AddressPoolPaymentLog[]
+
+  @@map("address_pool_payments")
+}
+
+model AddressPoolPaymentLog {
+  id                   String             @id @default(uuid())
+  projectId            String
+  addressPoolPaymentId String
+  transactionHash      String?
+  amount               String
+  project              Project            @relation(fields: [projectId], references: [id])
+  payment              AddressPoolPayment @relation(fields: [addressPoolPaymentId], references: [id])
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  deletedAt            DateTime?
+  createdBy            String?
+  updatedBy            String?
+  deletedBy            String?
 }
 
 // Project Here...

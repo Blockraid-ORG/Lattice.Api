@@ -301,4 +301,14 @@ export class SetContractPresaleProjectDto {
   @MaxLength(128)
   presaleAddress: string;
 }
+export class CreatePaymentFeeProjectDto {
+  @IsUUID()
+  projectId: string;
+
+  @IsUUID()
+  addressPoolPaymentId: string;
+
+  @IsString()
+  transactionHash: string;
+}
 export class UpdateProjectDto extends PartialType(CreateProjectDto) {}

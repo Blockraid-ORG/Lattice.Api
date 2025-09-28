@@ -25,7 +25,7 @@ import {
   SetRewardContractPresaleDto,
   SetRewardContractPresaleScheduleIdDto,
   UpdateAllocationDto,
-  // UpdateProjectDto,
+  UpdateProjectDto,
 } from './dto/create-project-dto';
 import { add } from 'date-fns';
 @Injectable()
@@ -105,92 +105,88 @@ export class ProjectsService {
     });
   }
 
-  // async update(id: string, dto: UpdateProjectDto, userId: string) {
-  //   const {
-  //     chainIds,
-  //     allocations,
-  //     socials,
-  //     presales,
-  //     additionalReward,
-  //     ...projectData
-  //   } = dto;
-  //   return this.prisma.project.update({
-  //     where: { id },
-  //     data: {
-  //       ...projectData,
-  //       userId,
-  //       status: 'PENDING',
-  //       chains: {
-  //         deleteMany: {},
-  //         create: chainIds.map((chainId) => ({
-  //           chain: { connect: { id: chainId } },
-  //         })),
-  //       },
+  async update(id: string, dto: UpdateProjectDto, userId: string) {
+    const {
+      chainIds,
+      allocations,
+      socials,
+      presales,
+      additionalReward,
+      ...projectData
+    } = dto;
+    return this.prisma.project.update({
+      where: { id },
+      data: {
+        ...projectData,
+        userId,
+        status: 'PENDING',
+        chains: {
+          deleteMany: {},
+          create: chainIds.map((chainId) => ({
+            chain: { connect: { id: chainId } },
+          })),
+        },
 
-  //       allocations: {
-  //         deleteMany: {},
-  //         create: allocations.map((a) => ({
-  //           ...a,
-  //         })),
-  //       },
+        allocations: {
+          deleteMany: {},
+          create: allocations.map((a) => ({
+            ...a,
+          })),
+        },
 
-  //       socials: {
-  //         deleteMany: {},
-  //         create: socials.map((s) => ({
-  //           url: s.url,
-  //           social: { connect: { id: s.socialId } },
-  //         })),
-  //       },
-
-  //       presales: presales
-  //         ? {
-  //             upsert: {
-  //               update: {
-  //                 ...presales,
-  //               },
-  //               create: {
-  //                 ...presales,
-  //               },
-  //             },
-  //           }
-  //         : {
-  //             delete: true,
-  //           },
-  //       additionalReward: additionalReward
-  //         ? {
-  //             upsert: additionalReward.map((reward) => ({
-  //               where: { id: reward.userId ?? '' },
-  //               update: {
-  //                 address: reward.address,
-  //                 amount: reward.amount,
-  //                 typeId: reward.typeId,
-  //                 userId,
-  //                 startDateCliam: reward.startDateCliam,
-  //                 endDateCliam: reward.endDateCliam,
-  //               },
-  //               create: {
-  //                 address: reward.address,
-  //                 amount: reward.amount,
-  //                 typeId: reward.typeId,
-  //                 userId,
-  //                 startDateCliam: reward.startDateCliam,
-  //                 endDateCliam: reward.endDateCliam,
-  //               },
-  //             })),
-  //           }
-  //         : {
-  //             deleteMany: {},
-  //           },
-  //     },
-  //     include: {
-  //       chains: { include: { chain: true } },
-  //       allocations: true,
-  //       socials: { include: { social: true } },
-  //       presales: true,
-  //       additionalReward: true,
-  //     },
-  //   });
-  // }
+        socials: {
+          deleteMany: {},
+          create: socials.map((s) => ({
+            url: s.url,
+            social: { connect: { id: s.socialId } },
+          })),
+        },
+        presales: presales
+          ? {
+              deleteMany: {}, // hapus semua dulu
+              create: {
+                ...presales,
+                endDate: add(new Date(presales.startDate), {
+                  days: presales.duration,
+                }),
+              },
+            }
+          : { deleteMany: {} },
+        additionalReward: additionalReward
+          ? {
+              upsert: additionalReward.map((reward) => ({
+                where: { id: reward.userId ?? '' },
+                update: {
+                  address: reward.address,
+                  amount: reward.amount,
+                  typeId: reward.typeId,
+                  userId,
+                  startDateCliam: reward.startDateCliam,
+                  endDateCliam: reward.endDateCliam,
+                },
+                create: {
+                  address: reward.address,
+                  amount: reward.amount,
+                  typeId: reward.typeId,
+                  userId,
+                  startDateCliam: reward.startDateCliam,
+                  endDateCliam: reward.endDateCliam,
+                },
+              })),
+            }
+          : {
+              deleteMany: {},
+            },
+      },
+      include: {
+        chains: { include: { chain: true } },
+        allocations: true,
+        socials: { include: { social: true } },
+        presales: true,
+        additionalReward: true,
+      },
+    });
+  }
 
   async findMany(query: QueryParamDto) {
     if (parseBoolean(query.noPaginate)) {

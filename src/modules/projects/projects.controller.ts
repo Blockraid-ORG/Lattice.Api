@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -29,7 +30,7 @@ import {
   SetRewardContractPresaleDto,
   SetRewardContractPresaleScheduleIdDto,
   UpdateAllocationDto,
-  // UpdateProjectDto,
+  UpdateProjectDto,
 } from './dto/create-project-dto';
 import { ProjectsService } from './projects.service';
 import { PermissionGuard } from 'src/auth/auth.guard';
@@ -54,15 +55,15 @@ export class ProjectsController {
     return this.projectsService.create(dto, userId);
   }
 
-  // @UseGuards(AuthGuard('jwt'), PermissionGuard)
-  // @Patch(':id')
-  // async update(
-  //   @Param('id') id: string,
-  //   @Body() dto: UpdateProjectDto,
-  //   @CurrentUserId() userId: string,
-  // ) {
-  //   return this.projectsService.update(id, dto, userId);
-  // }
+  @UseGuards(AuthGuard('jwt'), PermissionGuard)
+  @Patch(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() dto: UpdateProjectDto,
+    @CurrentUserId() userId: string,
+  ) {
+    return this.projectsService.update(id, dto, userId);
+  }
 
   @UseGuards(AuthGuard('jwt'), PermissionGuard)
   @Get()

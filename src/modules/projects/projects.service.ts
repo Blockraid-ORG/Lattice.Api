@@ -303,6 +303,8 @@ export class ProjectsService {
           },
         },
         presales: {
+          where: { deletedAt: null },
+          orderBy: [{ presaleSCID: 'desc' }, { createdAt: 'desc' }],
           select: {
             id: true,
             hardcap: true,

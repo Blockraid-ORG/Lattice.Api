@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Presales, Prisma } from '@prisma/client';
-import { add } from 'date-fns';
+// import { add } from 'date-fns';
 import { createPaginator } from 'prisma-pagination';
 import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -429,7 +429,8 @@ export class PresalesService {
         contractAddress: dto.contractAddress,
         duration: dto.duration,
         startDate: dto.startDate,
-        endDate: add(new Date(dto.startDate), { days: dto.duration }),
+        endDate: dto.endDate,
+        // endDate: add(new Date(dto.startDate), { days: dto.duration }),
         presaleSCID: dto.presaleSCID,
         sweepDuration: initialPresale.sweepDuration || dto.sweepDuration,
         whitelistDuration:
@@ -444,12 +445,12 @@ export class PresalesService {
     });
   }
   updatePresale(id: string, data: UpdateNewPresaleDto) {
-    const duration = data.duration;
+    // const duration = data.duration;
     return this.prisma.presales.update({
       where: { id },
       data: {
         ...data,
-        endDate: duration && add(new Date(data.startDate), { days: duration }),
+        // endDate: duration && add(new Date(data.startDate), { days: duration }),
       },
     });
   }

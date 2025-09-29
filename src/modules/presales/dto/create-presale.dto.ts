@@ -65,9 +65,9 @@ export class CreateNewPresaleDto {
   @IsNotEmpty()
   startDate: string;
 
-  // @IsString()
-  // @IsNotEmpty()
-  // endDate: string;
+  @IsString()
+  @IsNotEmpty()
+  endDate: string;
 
   @IsNumber()
   @IsNotEmpty()

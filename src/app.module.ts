@@ -26,6 +26,8 @@ import { ProjectTypesModule } from './modules/project-types/project-types.module
 import { AdditionalRewardTypesModule } from './modules/additional-reward-types/additional-reward-types.module';
 import { AdditionalAssetRewardsModule } from './modules/additional-asset-rewards/additional-asset-rewards.module';
 import { AddressPoolPaymentsModule } from './modules/address-pool-payments/address-pool-payments.module';
+import { StableCoinGroupModule } from './modules/stable-coin-group/stable-coin-group.module';
+import { StableCoinModule } from './modules/stable-coin/stable-coin.module';
 @Module({
   imports: [
     PrismaModule,
@@ -57,6 +59,8 @@ import { AddressPoolPaymentsModule } from './modules/address-pool-payments/addre
     AdditionalRewardTypesModule,
     AdditionalAssetRewardsModule,
     AddressPoolPaymentsModule,
+    StableCoinGroupModule,
+    StableCoinModule,
   ],
   controllers: [],
   providers: [],

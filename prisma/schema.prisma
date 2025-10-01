@@ -325,10 +325,11 @@ model Chain {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  createdBy String?
-  updatedBy String?
-  deletedBy String?
-  projects  ProjectChain[]
+  createdBy   String?
+  updatedBy   String?
+  deletedBy   String?
+  projects    ProjectChain[]
+  mStableCoin MStableCoin[]
 
   @@map("chains")
 }
@@ -754,6 +755,38 @@ model AddressPoolPaymentLog {
   createdBy            String?
   updatedBy            String?
   deletedBy            String?
+}
+
+model StableCoinGroup {
+  id          String        @id @default(uuid())
+  name        String        @db.VarChar(8)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  deletedAt   DateTime?
+  createdBy   String?
+  updatedBy   String?
+  deletedBy   String?
+  mStableCoin MStableCoin[]
+
+  @@map("m_stable_coin_groups")
+}
+
+model MStableCoin {
+  id                String          @id @default(uuid())
+  chainId           String
+  stableCoinGroupId String
+  address           String
+  decimal           Int
+  chain             Chain           @relation(fields: [chainId], references: [id])
+  stableCoin        StableCoinGroup @relation(fields: [stableCoinGroupId], references: [id])
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  deletedAt         DateTime?
+  createdBy         String?
+  updatedBy         String?
+  deletedBy         String?
+
+  @@map("m_stable_coins")
 }
 
 // Project Here...

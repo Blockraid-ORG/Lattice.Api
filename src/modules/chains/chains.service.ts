@@ -49,7 +49,7 @@ export class ChainsService {
       page: query.page,
       perPage: query.pageSize,
     });
-    const orderField = query.sortBy || 'createdAt';
+    const orderField = query.sortBy || 'chainid';
     const orderType = query.sortType || 'asc';
     const orderBy = { [orderField]: orderType };
     const result = await paginate<Chain, Prisma.ChainFindManyArgs>(
@@ -78,8 +78,8 @@ export class ChainsService {
     return result;
   }
   private async noPagination(query: QueryParamDto) {
-    const orderField = query.sortBy || 'createdAt';
-    const orderType = query.sortType || 'desc';
+    const orderField = query.sortBy || 'chainid';
+    const orderType = query.sortType || 'asc';
     const orderBy = { [orderField]: orderType };
     return this.prisma.chain.findMany({
       where: {

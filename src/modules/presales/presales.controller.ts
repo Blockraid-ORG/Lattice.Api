@@ -120,5 +120,10 @@ export class PresalesController {
   removeProjectPresaleWhitelistAddress(@Body() dto: string[]) {
     return this.presalesService.removeProjectPresaleWhitelistAddress(dto);
   }
+  @UseGuards(AuthGuard('jwt'))
+  @Post('setWdPresale')
+  setWdPresale(@Body('id') id: string) {
+    return this.presalesService.setWdPresale(id);
+  }
   // Manage Presale
 }

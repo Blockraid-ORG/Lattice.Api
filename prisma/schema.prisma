@@ -515,19 +515,19 @@ model Presales {
   duration        Int       @default(1)
   claimTime       Int       @default(1)
 
-  unit              String                    @db.VarChar(64)
-  presaleSCID       Int?
-  project           Project                   @relation(fields: [projectId], references: [id])
-  contractAddress   String?
-  whitelistContract String?
-  whitelists        PresaleAddressWhitelist[]
-  whitelistDuration Int?
-  sweepDuration     Int?
-  createdAt         DateTime                  @default(now())
-  updatedAt         DateTime                  @updatedAt
-  deletedAt         DateTime?
-  isActive          Boolean?                  @default(false)
-
+  unit                String                    @db.VarChar(64)
+  presaleSCID         Int?
+  project             Project                   @relation(fields: [projectId], references: [id])
+  contractAddress     String?
+  whitelistContract   String?
+  whitelists          PresaleAddressWhitelist[]
+  whitelistDuration   Int?
+  sweepDuration       Int?
+  createdAt           DateTime                  @default(now())
+  updatedAt           DateTime                  @updatedAt
+  deletedAt           DateTime?
+  isActive            Boolean?                  @default(false)
+  isWithdrawn         Boolean                   @default(false)
   createdBy           String?
   updatedBy           String?
   deletedBy           String?

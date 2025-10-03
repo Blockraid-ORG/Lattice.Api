@@ -478,4 +478,12 @@ export class PresalesService {
       },
     });
   }
+  async setWdPresale(id: string) {
+    return this.prisma.presales.update({
+      where: { id: id },
+      data: {
+        isWithdrawn: true,
+      },
+    });
+  }
 }

@@ -1,21 +1,25 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
   Query,
 } from '@nestjs/common';
-import { StableCoinService } from './stable-coin.service';
+import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
 import { CreateStableCoinDto } from './dto/create-stable-coin.dto';
 import { UpdateStableCoinDto } from './dto/update-stable-coin.dto';
-import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
+import { StableCoinService } from './stable-coin.service';
 
 @Controller('stable-coin')
 export class StableCoinController {
   constructor(private readonly stableCoinService: StableCoinService) {}
+  @Get('used')
+  getStableUsed(@Param() query: QueryParamDto) {
+    return this.stableCoinService.getStableUsed(query);
+  }
 
   @Post()
   create(@Body() dto: CreateStableCoinDto) {

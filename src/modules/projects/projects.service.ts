@@ -321,6 +321,7 @@ export class ProjectsService {
             whitelistDuration: true,
             isActive: true,
             presaleSCID: true,
+            isWithdrawn: true,
             whitelists: {
               select: {
                 id: true,

@@ -145,4 +145,29 @@ export class StableCoinService {
       },
     });
   }
+  async getStableUsed(query: QueryParamDto) {
+    const group = await this.prisma.stableCoinGroup.findFirst({
+      where: {
+        name: query.name,
+      },
+    });
+
+    return this.prisma.mStableCoin.findFirst({
+      where: {
+        stableCoinGroupId: group.id,
+        chainId: query.chainId,
+      },
+      select: {
+        id: true,
+        address: true,
+        decimal: true,
+        stableCoin: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+  }
 }

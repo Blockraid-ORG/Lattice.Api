@@ -10,7 +10,7 @@ import { parseBoolean } from 'src/common/utils/parse-data-type';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   AddAirdropDto,
-  CreatePaymentFeeProjectDto,
+  CreatePaymentHistoryDto,
   CreateProjectAllocationAddressDto,
   CreateProjectDto,
   CreateReviewProjectDto,
@@ -215,7 +215,7 @@ export class ProjectsService {
         rewardContractAddress: true,
         presaleAddress: true,
         whitelistsAddress: true,
-        addressPoolPaymentLog: true,
+        PaymentHistory: true,
         ProjectPresaleWhitelistAddress: {
           select: {
             id: true,
@@ -461,7 +461,7 @@ export class ProjectsService {
           contractAddress: true,
           rewardContractAddress: true,
           paused: true,
-          addressPoolPaymentLog: true,
+          PaymentHistory: true,
           socials: {
             select: {
               url: true,
@@ -530,7 +530,7 @@ export class ProjectsService {
         userId: true,
         contractAddress: true,
         rewardContractAddress: true,
-        addressPoolPaymentLog: true,
+        PaymentHistory: true,
         paused: true,
         socials: {
           select: {
@@ -761,15 +761,9 @@ export class ProjectsService {
     });
     return result;
   }
-  async createPaymentFeeProject(dto: CreatePaymentFeeProjectDto) {
-    const addressPool = await this.prisma.addressPoolPayment.findUnique({
-      where: { id: dto.addressPoolPaymentId },
-    });
-    const result = await this.prisma.addressPoolPaymentLog.create({
-      data: {
-        ...dto,
-        amount: addressPool.amountFee,
-      },
+  async createPaymentHistory(dto: CreatePaymentHistoryDto) {
+    const result = await this.prisma.paymentHistory.create({
+      data: dto,
     });
     return result;
   }

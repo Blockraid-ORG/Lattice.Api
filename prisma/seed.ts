@@ -12,9 +12,13 @@ import { createVerifications } from './seeds/create-verifications';
 import { createChains } from './seeds/create-chains';
 import { createProject } from './seeds/create-project';
 import { signRolePublicPermission } from './seeds/sign-role-public-permissions';
+import { createProjectType } from './seeds/create-project-type';
+import { createStableCoinGroup } from './seeds/create-stable-coin-group';
+import { createStableCoins } from './seeds/create-stable-coin';
 const prisma = new PrismaClient();
 
 async function main() {
+  const projectTypes = await createProjectType();
   const chains = await createChains();
   const socials = await createSocials();
   const verifications = await createVerifications();
@@ -27,6 +31,8 @@ async function main() {
   const mapRoleMenu = await signRoleMenu();
   const signRolePermissions = await signRolePermission();
   const signRolePublicPermissions = await signRolePublicPermission();
+  const stableCoinGroup = await createStableCoinGroup();
+  const stableCoins = await createStableCoins(stableCoinGroup);
   await createProject();
   console.log({
     chains,
@@ -41,6 +47,9 @@ async function main() {
     mapRoleMenu,
     signRolePermissions,
     signRolePublicPermissions,
+    projectTypes,
+    stableCoinGroup,
+    stableCoins,
   });
 }
 

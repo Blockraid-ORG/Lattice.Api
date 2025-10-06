@@ -7,6 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum PaymentHistoryType {
+  PROJECT_LISTING_FEE
+  PRESALE_FEE
+}
+
 enum FileStorage {
   LOCAL
   AWS
@@ -377,7 +382,7 @@ model Project {
   presaleUnit                    String?
   whitelistDuration              Int?
   ProjectPresaleWhitelistAddress ProjectPresaleWhitelistAddress[]
-  addressPoolPaymentLog          AddressPoolPaymentLog[]
+  PaymentHistory                 PaymentHistory[]
 
   @@map("projects")
 }
@@ -385,7 +390,7 @@ model Project {
 model ProjectType {
   id          String    @id @default(uuid())
   name        String    @db.VarChar(128)
-  description String
+  description String    @db.Text()
   icon        String?
   order       Int       @default(1)
   createdAt   DateTime  @default(now())
@@ -533,6 +538,7 @@ model Presales {
   deletedBy           String?
   trasactions         TransactionPresales[]
   PresaleClaimedToken PresaleClaimedToken[]
+  PaymentHistory      PaymentHistory[]
 
   @@map("project_presales")
 }
@@ -723,38 +729,22 @@ model UserAdditionalReward {
 }
 
 model AddressPoolPayment {
-  id                    String                  @id @default(uuid())
-  name                  String
-  address               String
-  ticker                String                  @db.VarChar(10)
-  balance               String                  @default("0")
-  amountFee             String                  @default("0")
-  decimal               Int                     @default(6)
-  createdAt             DateTime                @default(now())
-  updatedAt             DateTime                @updatedAt
-  deletedAt             DateTime?
-  createdBy             String?
-  updatedBy             String?
-  deletedBy             String?
-  addressPoolPaymentLog AddressPoolPaymentLog[]
+  id           String       @id @default(uuid())
+  paymentSc    String       @default("0x779aa5C7ff04B6Ba48464bcEA0a60134Df9E6AFf")
+  stableCoinId String?
+  listingFee   String       @default("0")
+  presaleFee   Int          @default(1)
+  decimal      Int          @default(6)
+  status       Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  deletedAt    DateTime?
+  createdBy    String?
+  updatedBy    String?
+  deletedBy    String?
+  stableCoin   MStableCoin? @relation(fields: [stableCoinId], references: [id])
 
   @@map("address_pool_payments")
-}
-
-model AddressPoolPaymentLog {
-  id                   String             @id @default(uuid())
-  projectId            String
-  addressPoolPaymentId String
-  transactionHash      String?
-  amount               String
-  project              Project            @relation(fields: [projectId], references: [id])
-  payment              AddressPoolPayment @relation(fields: [addressPoolPaymentId], references: [id])
-  createdAt            DateTime           @default(now())
-  updatedAt            DateTime           @updatedAt
-  deletedAt            DateTime?
-  createdBy            String?
-  updatedBy            String?
-  deletedBy            String?
 }
 
 model StableCoinGroup {
@@ -772,21 +762,43 @@ model StableCoinGroup {
 }
 
 model MStableCoin {
-  id                String          @id @default(uuid())
-  chainId           String
-  stableCoinGroupId String
-  address           String
-  decimal           Int
-  chain             Chain           @relation(fields: [chainId], references: [id])
-  stableCoin        StableCoinGroup @relation(fields: [stableCoinGroupId], references: [id])
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-  deletedAt         DateTime?
-  createdBy         String?
-  updatedBy         String?
-  deletedBy         String?
+  id                 String               @id @default(uuid())
+  chainId            String
+  stableCoinGroupId  String
+  address            String
+  decimal            Int
+  chain              Chain                @relation(fields: [chainId], references: [id])
+  stableCoin         StableCoinGroup      @relation(fields: [stableCoinGroupId], references: [id])
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  deletedAt          DateTime?
+  createdBy          String?
+  updatedBy          String?
+  deletedBy          String?
+  addressPoolPayment AddressPoolPayment[]
 
   @@map("m_stable_coins")
+}
+
+model PaymentHistory {
+  id              String             @id @default(uuid())
+  type            PaymentHistoryType
+  address         String
+  projectId       String? // optional
+  presaleId       String? // optional
+  project         Project?           @relation(fields: [projectId], references: [id])
+  presale         Presales?          @relation(fields: [presaleId], references: [id])
+  amount          String
+  unit            String
+  transactionHash String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  deletedAt       DateTime?
+  createdBy       String?
+  updatedBy       String?
+  deletedBy       String?
+
+  @@map("payment_histories")
 }
 
 // Project Here...

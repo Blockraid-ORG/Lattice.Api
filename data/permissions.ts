@@ -409,4 +409,128 @@ export const permissionData = [
     path: 'transaction-presale/:id',
     method: 'GET',
   },
+  // ===
+  {
+    name: 'POST_project-types',
+    code: 'POST_project-types',
+    path: 'project-types',
+    method: 'POST',
+  },
+  {
+    name: 'GET_project-types',
+    code: 'GET_project-types',
+    path: 'project-types',
+    method: 'GET',
+  },
+  {
+    name: 'GET_project-types/:id',
+    code: 'GET_project-types/:id',
+    path: 'project-types/:id',
+    method: 'GET',
+  },
+  {
+    name: 'PATCH_project-types/:id',
+    code: 'PATCH_project-types/:id',
+    path: 'project-types/:id',
+    method: 'PATCH',
+  },
+  {
+    name: 'DELETE_project-types/:id',
+    code: 'DELETE_project-types/:id',
+    path: 'project-types/:id',
+    method: 'DELETE',
+  },
+  // ===
+  {
+    name: 'POST_address-pool-payments',
+    code: 'POST_address-pool-payments',
+    path: 'address-pool-payments',
+    method: 'POST',
+  },
+  {
+    name: 'GET_address-pool-payments',
+    code: 'GET_address-pool-payments',
+    path: 'address-pool-payments',
+    method: 'GET',
+  },
+  {
+    name: 'GET_address-pool-payments/:id',
+    code: 'GET_address-pool-payments/:id',
+    path: 'address-pool-payments/:id',
+    method: 'GET',
+  },
+  {
+    name: 'PATCH_address-pool-payments/:id',
+    code: 'PATCH_address-pool-payments/:id',
+    path: 'address-pool-payments/:id',
+    method: 'PATCH',
+  },
+  {
+    name: 'DELETE_address-pool-payments/:id',
+    code: 'DELETE_address-pool-payments/:id',
+    path: 'address-pool-payments/:id',
+    method: 'DELETE',
+  },
+  // ===
+  {
+    name: 'POST_stable-coin',
+    code: 'POST_stable-coin',
+    path: 'stable-coin',
+    method: 'POST',
+  },
+  {
+    name: 'GET_stable-coin',
+    code: 'GET_stable-coin',
+    path: 'stable-coin',
+    method: 'GET',
+  },
+  {
+    name: 'GET_stable-coin/:id',
+    code: 'GET_stable-coin/:id',
+    path: 'stable-coin/:id',
+    method: 'GET',
+  },
+  {
+    name: 'PATCH_stable-coin/:id',
+    code: 'PATCH_stable-coin/:id',
+    path: 'stable-coin/:id',
+    method: 'PATCH',
+  },
+  {
+    name: 'DELETE_stable-coin/:id',
+    code: 'DELETE_stable-coin/:id',
+    path: 'stable-coin/:id',
+    method: 'DELETE',
+  },
+  // ===
+  {
+    name: 'POST_stable-coin-group',
+    code: 'POST_stable-coin-group',
+    path: 'stable-coin-group',
+    method: 'POST',
+  },
+  {
+    name: 'GET_stable-coin-group',
+    code: 'GET_stable-coin-group',
+    path: 'stable-coin-group',
+    method: 'GET',
+  },
+  {
+    name: 'GET_stable-coin-group/:id',
+    code: 'GET_stable-coin-group/:id',
+    path: 'stable-coin-group/:id',
+    method: 'GET',
+  },
+  {
+    name: 'PATCH_stable-coin-group/:id',
+    code: 'PATCH_stable-coin-group/:id',
+    path: 'stable-coin-group/:id',
+    method: 'PATCH',
+  },
+  {
+    name: 'DELETE_stable-coin-group/:id',
+    code: 'DELETE_stable-coin-group/:id',
+    path: 'stable-coin-group/:id',
+    method: 'DELETE',
+  },
 ];

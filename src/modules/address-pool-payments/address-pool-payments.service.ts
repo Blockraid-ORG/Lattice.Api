@@ -26,21 +26,6 @@ export class AddressPoolPaymentsService {
   findOne(id: string) {
     return this.prisma.addressPoolPayment.findUnique({
       where: { id },
-      select: {
-        id: true,
-        name: true,
-        address: true,
-        balance: true,
-        ticker: true,
-        decimal: true,
-        amountFee: true,
-        addressPoolPaymentLog: {
-          select: {
-            id: true,
-            project: true,
-          },
-        },
-      },
     });
   }
 
@@ -70,18 +55,42 @@ export class AddressPoolPaymentsService {
     >(this.prisma.addressPoolPayment, {
       where: {
         OR: query?.search
-          ? [{ name: { contains: query.search, mode: 'insensitive' } }]
+          ? [
+              {
+                stableCoin: {
+                  address: { contains: query.search, mode: 'insensitive' },
+                },
+              },
+            ]
           : undefined,
       },
       orderBy,
       select: {
         id: true,
-        name: true,
-        address: true,
-        balance: true,
-        ticker: true,
+        paymentSc: true,
+        listingFee: true,
+        presaleFee: true,
         decimal: true,
-        amountFee: true,
+        status: true,
+        stableCoin: {
+          select: {
+            id: true,
+            address: true,
+            chain: {
+              select: {
+                id: true,
+                name: true,
+                ticker: true,
+              },
+            },
+            stableCoin: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
     return result;
@@ -92,20 +101,89 @@ export class AddressPoolPaymentsService {
     const orderBy = { [orderField]: orderType };
     return this.prisma.addressPoolPayment.findMany({
       where: {
-        OR: query?.search
-          ? [{ name: { contains: query.search, mode: 'insensitive' } }]
-          : undefined,
+        status: true,
+        AND: [
+          query?.stableCoinGroupId
+            ? { stableCoin: { stableCoinGroupId: query.stableCoinGroupId } }
+            : {},
+          query?.chainId ? { stableCoin: { chainId: query.chainId } } : {},
+        ],
       },
       orderBy,
       select: {
         id: true,
-        name: true,
-        address: true,
-        balance: true,
-        ticker: true,
+        paymentSc: true,
+        listingFee: true,
+        presaleFee: true,
         decimal: true,
-        amountFee: true,
+        status: true,
+        stableCoin: {
+          select: {
+            id: true,
+            address: true,
+            chain: {
+              select: {
+                id: true,
+                name: true,
+                ticker: true,
+              },
+            },
+            stableCoin: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
+  }
+
+  // extra
+  async getByStableAndChain(query: QueryParamDto) {
+    // const stableGroup = await this.prisma.stableCoinGroup.findFirst({
+    //   where: {
+    //     name: query.group,
+    //   },
+    //   select: { id: true },
+    // });
+    const result = await this.prisma.addressPoolPayment.findFirst({
+      where: {
+        status: true,
+        AND: [
+          // { stableCoin: { stableCoinGroupId: stableGroup.id } },
+          { stableCoin: { chainId: query.chainId } },
+        ],
+      },
+      select: {
+        id: true,
+        paymentSc: true,
+        listingFee: true,
+        presaleFee: true,
+        decimal: true,
+        status: true,
+        stableCoin: {
+          select: {
+            id: true,
+            address: true,
+            chain: {
+              select: {
+                id: true,
+                name: true,
+                ticker: true,
+              },
+            },
+            stableCoin: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    return result;
   }
 }

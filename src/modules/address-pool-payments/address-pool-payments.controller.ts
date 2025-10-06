@@ -21,6 +21,10 @@ export class AddressPoolPaymentsController {
   constructor(
     private readonly addressPoolPaymentsService: AddressPoolPaymentsService,
   ) {}
+  @Get('get-by-stable-and-chain')
+  getByStableAndChain(@Query() query: QueryParamDto) {
+    return this.addressPoolPaymentsService.getByStableAndChain(query);
+  }
   @UseGuards(AuthGuard('jwt'), PermissionGuard)
   @Post()
   create(@Body() dto: CreateAddressPoolPaymentDto) {

@@ -1,5 +1,14 @@
 export const chains = [
   {
+    name: 'Binance',
+    ticker: 'BNB',
+    type: 'Mainnet',
+    logo: 'https://red-careful-koala-550.mypinata.cloud/ipfs/bafybeicluvxrd3rb273v664rjcbhspkpyfbgdqwt6xrkfslyup2i4teife/binance.png',
+    urlScanner: 'https://bscscan.com',
+    chainid: 56,
+    aliasName: 'bnb',
+  },
+  {
     name: 'Ethereum',
     ticker: 'ETH',
     type: 'Mainnet',
@@ -8,14 +17,7 @@ export const chains = [
     urlRpc: '',
     urlApi: 'https://api.etherscan.io/v2/api',
     chainid: 1,
-  },
-  {
-    name: 'Binance',
-    ticker: 'BNB',
-    type: 'Mainnet',
-    logo: 'https://red-careful-koala-550.mypinata.cloud/ipfs/bafybeicluvxrd3rb273v664rjcbhspkpyfbgdqwt6xrkfslyup2i4teife/binance.png',
-    urlScanner: 'https://bscscan.com',
-    chainid: 56,
+    aliasName: 'eth',
   },
   {
     name: 'Base',
@@ -24,6 +26,7 @@ export const chains = [
     logo: 'https://red-careful-koala-550.mypinata.cloud/ipfs/bafybeicluvxrd3rb273v664rjcbhspkpyfbgdqwt6xrkfslyup2i4teife/base.png',
     urlScanner: 'https://basescan.org',
     chainid: 8453,
+    aliasName: 'eth',
   },
   {
     name: 'Arbitrum One',
@@ -32,6 +35,7 @@ export const chains = [
     logo: 'https://red-careful-koala-550.mypinata.cloud/ipfs/bafybeicluvxrd3rb273v664rjcbhspkpyfbgdqwt6xrkfslyup2i4teife/arbitrum.png',
     urlScanner: 'https://arbiscan.io',
     chainid: 42161,
+    aliasName: 'eth',
   },
   {
     name: 'Polygon',
@@ -40,16 +44,7 @@ export const chains = [
     logo: 'https://red-careful-koala-550.mypinata.cloud/ipfs/bafybeicluvxrd3rb273v664rjcbhspkpyfbgdqwt6xrkfslyup2i4teife/polygon.png',
     urlScanner: 'https://polygonscan.com',
     chainid: 137,
-  },
-  {
-    name: 'Ethereum Sepolia',
-    ticker: 'ETH',
-    type: 'Testnet',
-    logo: 'https://red-careful-koala-550.mypinata.cloud/ipfs/bafybeicluvxrd3rb273v664rjcbhspkpyfbgdqwt6xrkfslyup2i4teife/ethereum-sepolia.png',
-    urlScanner: 'https://sepolia.etherscan.io',
-    urlRpc: '',
-    urlApi: 'https://api.etherscan.io/v2/api',
-    chainid: 11155111,
+    aliasName: 'eth',
   },
   {
     name: 'BSC Testnet',
@@ -58,29 +53,6 @@ export const chains = [
     logo: 'https://red-careful-koala-550.mypinata.cloud/ipfs/bafybeicluvxrd3rb273v664rjcbhspkpyfbgdqwt6xrkfslyup2i4teife/binance-tesnet.png',
     urlScanner: 'https://testnet.bscscan.com',
     chainid: 97,
-  },
-  {
-    name: 'OP Mainnet',
-    ticker: 'ETH',
-    type: 'Mainnet',
-    logo: 'https://red-careful-koala-550.mypinata.cloud/ipfs/bafybeicluvxrd3rb273v664rjcbhspkpyfbgdqwt6xrkfslyup2i4teife/op-mainet.png',
-    urlScanner: 'https://optimistic.etherscan.io',
-  },
-  {
-    name: 'Sonic Mainnet',
-    ticker: 'S',
-    type: 'Mainnet',
-    logo: 'https://red-careful-koala-550.mypinata.cloud/ipfs/bafybeicluvxrd3rb273v664rjcbhspkpyfbgdqwt6xrkfslyup2i4teife/sonic-mainet.png',
-    urlScanner: 'https://sonicscan.org',
-    chainid: 10,
-  },
-  {
-    name: 'Gnosis',
-    ticker: 'XDAI',
-    type: 'Mainnet',
-    logo: 'https://red-careful-koala-550.mypinata.cloud/ipfs/bafybeicluvxrd3rb273v664rjcbhspkpyfbgdqwt6xrkfslyup2i4teife/gnosis.png',
-    urlScanner: 'https://gnosisscan.io',
-    urlApi: 'https://api.gnosisscan.io/v2/api',
-    chainid: 100,
+    aliasName: 'bnb',
   },
 ];

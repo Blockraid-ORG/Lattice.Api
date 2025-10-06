@@ -1,19 +1,19 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateAddressPoolPaymentDto {
   @IsNotEmpty()
   @IsString()
-  name: string;
+  paymentSc: string;
+
+  @IsOptional()
+  @IsString()
+  stableCoinId: string;
 
   @IsNotEmpty()
   @IsString()
-  address: string;
+  listingFee: string;
 
   @IsNotEmpty()
-  @IsString()
-  ticker: string;
-
-  @IsNotEmpty()
-  @IsString()
-  amountFee: string;
+  @IsNumber()
+  presaleFee: number;
 }

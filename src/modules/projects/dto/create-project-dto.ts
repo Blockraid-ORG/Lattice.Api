@@ -1,5 +1,5 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { EnumProjectStatus } from '@prisma/client';
+import { EnumProjectStatus, PaymentHistoryType } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
   ArrayNotEmpty,
@@ -301,14 +301,29 @@ export class SetContractPresaleProjectDto {
   @MaxLength(128)
   presaleAddress: string;
 }
-export class CreatePaymentFeeProjectDto {
-  @IsUUID()
-  projectId: string;
-
-  @IsUUID()
-  addressPoolPaymentId: string;
+export class CreatePaymentHistoryDto {
+  @IsEnum(PaymentHistoryType)
+  type: PaymentHistoryType;
 
   @IsString()
-  transactionHash: string;
+  address: string;
+
+  @IsUUID()
+  @IsOptional()
+  projectId?: string;
+
+  @IsUUID()
+  @IsOptional()
+  presaleId?: string;
+
+  @IsString()
+  amount: string;
+
+  @IsString()
+  unit: string;
+
+  @IsOptional()
+  @IsString()
+  transactionHash?: string;
 }
 export class UpdateProjectDto extends PartialType(CreateProjectDto) {}

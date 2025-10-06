@@ -1,4 +1,7 @@
 -- CreateEnum
+CREATE TYPE "PaymentHistoryType" AS ENUM ('PROJECT_LISTING_FEE', 'PRESALE_FEE');
+
+-- CreateEnum
 CREATE TYPE "FileStorage" AS ENUM ('LOCAL', 'AWS', 'GCS', 'DOSpaces');
 
 -- CreateEnum
@@ -182,6 +185,7 @@ CREATE TABLE "categories" (
     "frequency" "FrequencyCategory" NOT NULL,
     "frequencyCount" INTEGER NOT NULL DEFAULT 1,
     "targetYield" TEXT NOT NULL,
+    "status" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
@@ -197,6 +201,7 @@ CREATE TABLE "socials" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "icon" TEXT,
+    "status" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
@@ -231,12 +236,14 @@ CREATE TABLE "chains" (
     "id" TEXT NOT NULL,
     "chainid" INTEGER NOT NULL DEFAULT 1,
     "name" VARCHAR(32) NOT NULL,
+    "aliasName" TEXT,
     "ticker" VARCHAR(8) NOT NULL,
     "logo" TEXT,
     "urlScanner" TEXT,
     "urlRpc" TEXT,
     "urlApi" TEXT,
     "type" "ChianType" NOT NULL,
+    "status" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
@@ -261,18 +268,42 @@ CREATE TABLE "projects" (
     "status" "EnumProjectStatus" NOT NULL DEFAULT 'PENDING',
     "userId" TEXT NOT NULL,
     "categoryId" TEXT NOT NULL,
+    "projectTypeId" TEXT,
     "contractAddress" TEXT,
     "factoryAddress" TEXT,
+    "whitelistsAddress" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
     "lockerDistributed" BOOLEAN NOT NULL DEFAULT false,
     "lockerDistributeHash" TEXT,
+    "rewardContractAddress" TEXT,
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "deletedBy" TEXT,
+    "paused" BOOLEAN DEFAULT false,
+    "presaleAddress" TEXT,
+    "presaleUnit" TEXT,
+    "whitelistDuration" INTEGER,
+
+    CONSTRAINT "projects_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "project_types" (
+    "id" TEXT NOT NULL,
+    "name" VARCHAR(128) NOT NULL,
+    "description" TEXT NOT NULL,
+    "icon" TEXT,
+    "order" INTEGER NOT NULL DEFAULT 1,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
     "createdBy" TEXT,
     "updatedBy" TEXT,
     "deletedBy" TEXT,
 
-    CONSTRAINT "projects_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "project_types_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -300,6 +331,7 @@ CREATE TABLE "project_allocations" (
     "isPresale" BOOLEAN NOT NULL DEFAULT false,
     "isDeploying" BOOLEAN NOT NULL DEFAULT false,
     "sortNumber" INTEGER NOT NULL DEFAULT 0,
+    "isFinalized" BOOLEAN DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
@@ -309,6 +341,24 @@ CREATE TABLE "project_allocations" (
     "deletedBy" TEXT,
 
     CONSTRAINT "project_allocations_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "project_allocation_address" (
+    "id" TEXT NOT NULL,
+    "address" TEXT NOT NULL,
+    "amount" DECIMAL(65,18) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
+    "contractAddress" TEXT,
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "deletedBy" TEXT,
+    "projectAllocationId" TEXT,
+    "isClaimed" BOOLEAN DEFAULT false,
+
+    CONSTRAINT "project_allocation_address_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -351,9 +401,11 @@ CREATE TABLE "project_presales" (
     "price" DECIMAL(65,18) NOT NULL,
     "maxContribution" DECIMAL(65,18) NOT NULL,
     "startDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "endDate" TIMESTAMP(3),
     "duration" INTEGER NOT NULL DEFAULT 1,
     "claimTime" INTEGER NOT NULL DEFAULT 1,
     "unit" VARCHAR(64) NOT NULL,
+    "presaleSCID" INTEGER,
     "contractAddress" TEXT,
     "whitelistContract" TEXT,
     "whitelistDuration" INTEGER,
@@ -361,6 +413,8 @@ CREATE TABLE "project_presales" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
+    "isActive" BOOLEAN DEFAULT false,
+    "isWithdrawn" BOOLEAN NOT NULL DEFAULT false,
     "createdBy" TEXT,
     "updatedBy" TEXT,
     "deletedBy" TEXT,
@@ -384,13 +438,28 @@ CREATE TABLE "presale_address_whitelist" (
 );
 
 -- CreateTable
+CREATE TABLE "project_presale_whitelist_address" (
+    "id" TEXT NOT NULL,
+    "walletAddress" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "deletedBy" TEXT,
+    "projectId" TEXT,
+
+    CONSTRAINT "project_presale_whitelist_address_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "transaction_presales" (
     "id" TEXT NOT NULL,
     "projectId" TEXT NOT NULL,
     "presaleId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "price" DECIMAL(65,18) NOT NULL,
-    "count" INTEGER NOT NULL,
+    "count" DECIMAL(65,18) NOT NULL,
     "transactionHash" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -443,11 +512,143 @@ CREATE TABLE "review_verification_log" (
 );
 
 -- CreateTable
-CREATE TABLE "_TransactionPresalesToUser" (
-    "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL,
+CREATE TABLE "PresaleClaimedToken" (
+    "id" TEXT NOT NULL,
+    "presaleId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "amount" DECIMAL(65,18) NOT NULL,
+    "transactionHash" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "deletedBy" TEXT,
 
-    CONSTRAINT "_TransactionPresalesToUser_AB_pkey" PRIMARY KEY ("A","B")
+    CONSTRAINT "PresaleClaimedToken_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "additional_reward_types" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "status" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "deletedBy" TEXT,
+
+    CONSTRAINT "additional_reward_types_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "additional_asset_rewards" (
+    "id" TEXT NOT NULL,
+    "projectId" TEXT NOT NULL,
+    "amount" DECIMAL(65,18) NOT NULL,
+    "typeId" TEXT NOT NULL,
+    "startDateClaim" TIMESTAMP(3),
+    "endDateClaim" TIMESTAMP(3),
+    "contactAddress" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "deletedBy" TEXT,
+    "scheduleId" TEXT,
+
+    CONSTRAINT "additional_asset_rewards_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "user_additional_rewars" (
+    "id" TEXT NOT NULL,
+    "additionalRewardId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "address" TEXT NOT NULL,
+    "amount" DECIMAL(65,18) NOT NULL,
+    "isClaimed" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "deletedBy" TEXT,
+
+    CONSTRAINT "user_additional_rewars_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "address_pool_payments" (
+    "id" TEXT NOT NULL,
+    "paymentSc" TEXT NOT NULL DEFAULT '0x779aa5C7ff04B6Ba48464bcEA0a60134Df9E6AFf',
+    "stableCoinId" TEXT,
+    "listingFee" TEXT NOT NULL DEFAULT '0',
+    "presaleFee" INTEGER NOT NULL DEFAULT 1,
+    "decimal" INTEGER NOT NULL DEFAULT 6,
+    "status" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "deletedBy" TEXT,
+
+    CONSTRAINT "address_pool_payments_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "m_stable_coin_groups" (
+    "id" TEXT NOT NULL,
+    "name" VARCHAR(8) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "deletedBy" TEXT,
+
+    CONSTRAINT "m_stable_coin_groups_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "m_stable_coins" (
+    "id" TEXT NOT NULL,
+    "chainId" TEXT NOT NULL,
+    "stableCoinGroupId" TEXT NOT NULL,
+    "address" TEXT NOT NULL,
+    "decimal" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "deletedBy" TEXT,
+
+    CONSTRAINT "m_stable_coins_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "payment_histories" (
+    "id" TEXT NOT NULL,
+    "type" "PaymentHistoryType" NOT NULL,
+    "address" TEXT NOT NULL,
+    "projectId" TEXT,
+    "presaleId" TEXT,
+    "amount" TEXT NOT NULL,
+    "unit" TEXT NOT NULL,
+    "transactionHash" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "deletedBy" TEXT,
+
+    CONSTRAINT "payment_histories_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -463,10 +664,13 @@ CREATE INDEX "user_nonce_login_walletAddress_idx" ON "user_nonce_login"("walletA
 CREATE UNIQUE INDEX "permissions_code_key" ON "permissions"("code");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "project_presales_projectId_key" ON "project_presales"("projectId");
+CREATE INDEX "project_allocation_address_address_idx" ON "project_allocation_address"("address");
 
 -- CreateIndex
-CREATE INDEX "_TransactionPresalesToUser_B_index" ON "_TransactionPresalesToUser"("B");
+CREATE UNIQUE INDEX "project_allocation_address_projectAllocationId_address_key" ON "project_allocation_address"("projectAllocationId", "address");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "user_additional_rewars_additionalRewardId_userId_key" ON "user_additional_rewars"("additionalRewardId", "userId");
 
 -- AddForeignKey
 ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -499,6 +703,9 @@ ALTER TABLE "projects" ADD CONSTRAINT "projects_userId_fkey" FOREIGN KEY ("userI
 ALTER TABLE "projects" ADD CONSTRAINT "projects_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "categories"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "projects" ADD CONSTRAINT "projects_projectTypeId_fkey" FOREIGN KEY ("projectTypeId") REFERENCES "project_types"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "project_chains" ADD CONSTRAINT "project_chains_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -506,6 +713,9 @@ ALTER TABLE "project_chains" ADD CONSTRAINT "project_chains_chainId_fkey" FOREIG
 
 -- AddForeignKey
 ALTER TABLE "project_allocations" ADD CONSTRAINT "project_allocations_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "projects"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "project_allocation_address" ADD CONSTRAINT "project_allocation_address_projectAllocationId_fkey" FOREIGN KEY ("projectAllocationId") REFERENCES "project_allocations"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "project_review_logs" ADD CONSTRAINT "project_review_logs_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -523,10 +733,16 @@ ALTER TABLE "project_presales" ADD CONSTRAINT "project_presales_projectId_fkey" 
 ALTER TABLE "presale_address_whitelist" ADD CONSTRAINT "presale_address_whitelist_presaleId_fkey" FOREIGN KEY ("presaleId") REFERENCES "project_presales"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "project_presale_whitelist_address" ADD CONSTRAINT "project_presale_whitelist_address_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "projects"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "transaction_presales" ADD CONSTRAINT "transaction_presales_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "transaction_presales" ADD CONSTRAINT "transaction_presales_presaleId_fkey" FOREIGN KEY ("presaleId") REFERENCES "project_presales"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "transaction_presales" ADD CONSTRAINT "transaction_presales_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "project_owner_verifications" ADD CONSTRAINT "project_owner_verifications_verificationId_fkey" FOREIGN KEY ("verificationId") REFERENCES "verifications"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -538,7 +754,34 @@ ALTER TABLE "project_owner_verifications" ADD CONSTRAINT "project_owner_verifica
 ALTER TABLE "review_verification_log" ADD CONSTRAINT "review_verification_log_projectOwnerVerificationUserId_pro_fkey" FOREIGN KEY ("projectOwnerVerificationUserId", "projectOwnerVerificationVerificationId") REFERENCES "project_owner_verifications"("userId", "verificationId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_TransactionPresalesToUser" ADD CONSTRAINT "_TransactionPresalesToUser_A_fkey" FOREIGN KEY ("A") REFERENCES "transaction_presales"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "PresaleClaimedToken" ADD CONSTRAINT "PresaleClaimedToken_presaleId_fkey" FOREIGN KEY ("presaleId") REFERENCES "project_presales"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_TransactionPresalesToUser" ADD CONSTRAINT "_TransactionPresalesToUser_B_fkey" FOREIGN KEY ("B") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "PresaleClaimedToken" ADD CONSTRAINT "PresaleClaimedToken_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "additional_asset_rewards" ADD CONSTRAINT "additional_asset_rewards_typeId_fkey" FOREIGN KEY ("typeId") REFERENCES "additional_reward_types"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "additional_asset_rewards" ADD CONSTRAINT "additional_asset_rewards_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "projects"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "user_additional_rewars" ADD CONSTRAINT "user_additional_rewars_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "user_additional_rewars" ADD CONSTRAINT "user_additional_rewars_additionalRewardId_fkey" FOREIGN KEY ("additionalRewardId") REFERENCES "additional_asset_rewards"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "address_pool_payments" ADD CONSTRAINT "address_pool_payments_stableCoinId_fkey" FOREIGN KEY ("stableCoinId") REFERENCES "m_stable_coins"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "m_stable_coins" ADD CONSTRAINT "m_stable_coins_chainId_fkey" FOREIGN KEY ("chainId") REFERENCES "chains"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "m_stable_coins" ADD CONSTRAINT "m_stable_coins_stableCoinGroupId_fkey" FOREIGN KEY ("stableCoinGroupId") REFERENCES "m_stable_coin_groups"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "payment_histories" ADD CONSTRAINT "payment_histories_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "projects"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "payment_histories" ADD CONSTRAINT "payment_histories_presaleId_fkey" FOREIGN KEY ("presaleId") REFERENCES "project_presales"("id") ON DELETE SET NULL ON UPDATE CASCADE;

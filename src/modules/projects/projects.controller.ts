@@ -11,11 +11,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { PermissionGuard } from 'src/auth/auth.guard';
 import { CurrentUserId } from 'src/common/decorators/current-user.decorator';
 import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
 import {
   AddAirdropDto,
-  CreatePaymentFeeProjectDto,
+  CreatePaymentHistoryDto,
   CreateProjectAllocationAddressDto,
   CreateProjectDto,
   CreateReviewProjectDto,
@@ -33,7 +34,6 @@ import {
   UpdateProjectDto,
 } from './dto/create-project-dto';
 import { ProjectsService } from './projects.service';
-import { PermissionGuard } from 'src/auth/auth.guard';
 
 @Controller('projects')
 export class ProjectsController {
@@ -195,9 +195,9 @@ export class ProjectsController {
     return this.projectsService.setContractPresaleProject(dto);
   }
   @UseGuards(AuthGuard('jwt'))
-  @Post('create-payment-fee-project')
+  @Post('create-payment-history')
   @HttpCode(HttpStatus.OK)
-  async createPaymentFeeProject(@Body() dto: CreatePaymentFeeProjectDto) {
-    return this.projectsService.createPaymentFeeProject(dto);
+  async createPaymentHistory(@Body() dto: CreatePaymentHistoryDto) {
+    return this.projectsService.createPaymentHistory(dto);
   }
 }

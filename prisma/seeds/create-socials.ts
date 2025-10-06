@@ -13,10 +13,6 @@ export async function createSocials() {
         icon: 'ri:discord-fill',
       },
       {
-        name: 'Instagram',
-        icon: 'ri:instagram-fill',
-      },
-      {
         name: 'Github',
         icon: 'ri:github-fill',
       },

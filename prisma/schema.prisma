@@ -733,7 +733,7 @@ model AddressPoolPayment {
   paymentSc    String       @default("0x779aa5C7ff04B6Ba48464bcEA0a60134Df9E6AFf")
   stableCoinId String?
   listingFee   String       @default("0")
-  presaleFee   Int          @default(1)
+  presaleFee   Float          @default(1)
   decimal      Int          @default(6)
   status       Boolean      @default(false)
   createdAt    DateTime     @default(now())

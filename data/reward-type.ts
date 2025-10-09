@@ -1,4 +1,4 @@
-[
+export const rewardTypeData = [
   {
     name: 'Airdrop',
     description:

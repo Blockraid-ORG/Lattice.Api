@@ -28,6 +28,7 @@ import { AdditionalAssetRewardsModule } from './modules/additional-asset-rewards
 import { AddressPoolPaymentsModule } from './modules/address-pool-payments/address-pool-payments.module';
 import { StableCoinGroupModule } from './modules/stable-coin-group/stable-coin-group.module';
 import { StableCoinModule } from './modules/stable-coin/stable-coin.module';
+import { FaucetModule } from './modules/faucet/faucet.module';
 @Module({
   imports: [
     PrismaModule,
@@ -61,6 +62,7 @@ import { StableCoinModule } from './modules/stable-coin/stable-coin.module';
     AddressPoolPaymentsModule,
     StableCoinGroupModule,
     StableCoinModule,
+    FaucetModule,
   ],
   controllers: [],
   providers: [],

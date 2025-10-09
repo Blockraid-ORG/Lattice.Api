@@ -94,6 +94,7 @@ model User {
   verifications        ProjectOwnerVerification[]
   PresaleClaimedToken  PresaleClaimedToken[]
   UserAdditionalReward UserAdditionalReward[]
+  FaucetHistory        FaucetHistory[]
 
   @@index([email, walletAddress])
   @@map("users")
@@ -733,7 +734,7 @@ model AddressPoolPayment {
   paymentSc    String       @default("0x779aa5C7ff04B6Ba48464bcEA0a60134Df9E6AFf")
   stableCoinId String?
   listingFee   String       @default("0")
-  presaleFee   Float          @default(1)
+  presaleFee   Float        @default(1)
   decimal      Int          @default(6)
   status       Boolean      @default(false)
   createdAt    DateTime     @default(now())
@@ -802,3 +803,21 @@ model PaymentHistory {
 }
 
 // Project Here...
+
+model FaucetHistory {
+  id        String    @id @default(uuid())
+  address   String
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  amount    String
+  unit      String
+  txHash    String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy String?
+  updatedBy String?
+  deletedBy String?
+
+  @@map("faucet_histories")
+}

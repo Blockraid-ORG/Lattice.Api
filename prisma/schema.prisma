@@ -360,6 +360,7 @@ model Project {
   contractAddress   String?
   factoryAddress    String?
   whitelistsAddress String?
+  whitelistDuration Int?
 
   createdAt             DateTime              @default(now())
   updatedAt             DateTime              @updatedAt
@@ -380,8 +381,7 @@ model Project {
   paused                Boolean?              @default(false)
 
   presaleAddress                 String?
-  presaleUnit                    String?
-  whitelistDuration              Int?
+  // presaleUnit                    String?
   ProjectPresaleWhitelistAddress ProjectPresaleWhitelistAddress[]
   PaymentHistory                 PaymentHistory[]
 

@@ -155,6 +155,10 @@ export class CreateProjectDto {
   @Type(() => CreatePresalesDto)
   presales?: CreatePresalesDto;
 
+  @IsNumber()
+  @IsOptional()
+  whitelistDuration?: number;
+
   @IsArray()
   @IsOptional()
   @ValidateNested()

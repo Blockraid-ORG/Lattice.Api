@@ -408,14 +408,14 @@ export class PresalesService {
         chains: true,
       },
     });
-    const initialPresale = await this.prisma.presales.findFirst({
-      where: {
-        projectId: project.id,
-      },
-      orderBy: {
-        createdAt: 'asc',
-      },
-    });
+    // const initialPresale = await this.prisma.presales.findFirst({
+    //   where: {
+    //     projectId: project.id,
+    //   },
+    //   orderBy: {
+    //     createdAt: 'asc',
+    //   },
+    // });
 
     return this.prisma.presales.create({
       data: {
@@ -424,7 +424,7 @@ export class PresalesService {
         hardcap: dto.hardcap,
         price: dto.price,
         maxContribution: dto.maxContribution,
-        unit: initialPresale.unit || dto.unit,
+        unit: dto.unit,
         claimTime: dto.claimTime,
         contractAddress: dto.contractAddress,
         duration: dto.duration,
@@ -432,9 +432,8 @@ export class PresalesService {
         endDate: dto.endDate,
         // endDate: add(new Date(dto.startDate), { days: dto.duration }),
         presaleSCID: dto.presaleSCID,
-        sweepDuration: initialPresale.sweepDuration || dto.sweepDuration,
-        whitelistDuration:
-          initialPresale.whitelistDuration || dto.whitelistDuration,
+        sweepDuration: dto.sweepDuration,
+        whitelistDuration: dto.whitelistDuration,
       },
     });
   }

@@ -361,6 +361,7 @@ model Project {
   factoryAddress    String?
   whitelistsAddress String?
   whitelistDuration Int?
+  sweepDuration     Int?              @default(2592000)
 
   createdAt             DateTime              @default(now())
   updatedAt             DateTime              @updatedAt

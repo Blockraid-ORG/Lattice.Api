@@ -530,6 +530,9 @@ model Presales {
   whitelists          PresaleAddressWhitelist[]
   whitelistDuration   Int?
   sweepDuration       Int?
+  initialReleaseBps   Int?
+  cliffDuration       Int?
+  vestingDuration     Int?
   createdAt           DateTime                  @default(now())
   updatedAt           DateTime                  @updatedAt
   deletedAt           DateTime?

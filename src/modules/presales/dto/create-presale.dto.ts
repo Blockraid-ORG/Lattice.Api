@@ -88,6 +88,18 @@ export class CreateNewPresaleDto {
   @IsNumber()
   @IsOptional()
   presaleSCID?: number;
+
+  @IsNumber()
+  @IsOptional()
+  initialReleaseBps?: number;
+
+  @IsNumber()
+  @IsOptional()
+  cliffDuration?: number;
+
+  @IsNumber()
+  @IsOptional()
+  vestingDuration: number;
 }
 export class ActivateNewPresaleDto {
   @IsUUID()

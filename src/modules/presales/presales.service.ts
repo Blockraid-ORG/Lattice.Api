@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { Presales, Prisma } from '@prisma/client';
-// import { add } from 'date-fns';
 import { createPaginator } from 'prisma-pagination';
 import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -408,15 +407,6 @@ export class PresalesService {
         chains: true,
       },
     });
-    // const initialPresale = await this.prisma.presales.findFirst({
-    //   where: {
-    //     projectId: project.id,
-    //   },
-    //   orderBy: {
-    //     createdAt: 'asc',
-    //   },
-    // });
-
     return this.prisma.presales.create({
       data: {
         projectId: dto.projectId,
@@ -430,10 +420,12 @@ export class PresalesService {
         duration: dto.duration,
         startDate: dto.startDate,
         endDate: dto.endDate,
-        // endDate: add(new Date(dto.startDate), { days: dto.duration }),
         presaleSCID: dto.presaleSCID,
         sweepDuration: dto.sweepDuration,
         whitelistDuration: dto.whitelistDuration,
+        initialReleaseBps: dto.initialReleaseBps,
+        cliffDuration: dto.cliffDuration,
+        vestingDuration: dto.vestingDuration,
       },
     });
   }
@@ -444,13 +436,9 @@ export class PresalesService {
     });
   }
   updatePresale(id: string, data: UpdateNewPresaleDto) {
-    // const duration = data.duration;
     return this.prisma.presales.update({
       where: { id },
-      data: {
-        ...data,
-        // endDate: duration && add(new Date(data.startDate), { days: duration }),
-      },
+      data: data,
     });
   }
   activatePresale(data: ActivateNewPresaleDto) {

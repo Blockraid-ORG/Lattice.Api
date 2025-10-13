@@ -216,6 +216,7 @@ export class ProjectsService {
         presaleAddress: true,
         whitelistsAddress: true,
         PaymentHistory: true,
+        whitelistDuration: true,
         ProjectPresaleWhitelistAddress: {
           select: {
             id: true,
@@ -323,6 +324,9 @@ export class ProjectsService {
             isActive: true,
             presaleSCID: true,
             isWithdrawn: true,
+            initialReleaseBps: true,
+            cliffDuration: true,
+            vestingDuration: true,
             whitelists: {
               select: {
                 id: true,

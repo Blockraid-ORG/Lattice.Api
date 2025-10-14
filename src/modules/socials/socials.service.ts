@@ -30,6 +30,15 @@ export class SocialsService {
     }
     return result;
   }
+  async findByName(name: string) {
+    const result = await this.prisma.social.findFirst({
+      where: { name },
+    });
+    if (!result) {
+      throw new NotFoundException(`data with ${name} not found!`);
+    }
+    return result;
+  }
 
   async update(id: string, data: UpdateSocialDto) {
     await this.findOne(id);

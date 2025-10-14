@@ -720,6 +720,11 @@ export class ProjectsService {
         projectAllocationId: dto.projectAllocationId,
       };
     });
+    await this.prisma.projectAllocationAddress.deleteMany({
+      where: {
+        projectAllocationId: dto.projectAllocationId,
+      },
+    });
     const result = await this.prisma.projectAllocationAddress.createMany({
       data: newData,
       skipDuplicates: true,

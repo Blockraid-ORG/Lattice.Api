@@ -49,8 +49,8 @@ export class ChainsService {
       page: query.page,
       perPage: query.pageSize,
     });
-    const orderField = query.sortBy || 'createdAt';
-    const orderType = query.sortType || 'desc';
+    const orderField = query.sortBy || 'chainid';
+    const orderType = query.sortType || 'asc';
     const orderBy = { [orderField]: orderType };
     const result = await paginate<Chain, Prisma.ChainFindManyArgs>(
       this.prisma.chain,
@@ -68,14 +68,18 @@ export class ChainsService {
           ticker: true,
           type: true,
           urlScanner: true,
+          chainid: true,
+          urlApi: true,
+          urlRpc: true,
+          aliasName: true,
         },
       },
     );
     return result;
   }
   private async noPagination(query: QueryParamDto) {
-    const orderField = query.sortBy || 'createdAt';
-    const orderType = query.sortType || 'desc';
+    const orderField = query.sortBy || 'chainid';
+    const orderType = query.sortType || 'asc';
     const orderBy = { [orderField]: orderType };
     return this.prisma.chain.findMany({
       where: {
@@ -88,6 +92,13 @@ export class ChainsService {
         id: true,
         name: true,
         logo: true,
+        ticker: true,
+        type: true,
+        urlScanner: true,
+        chainid: true,
+        urlApi: true,
+        urlRpc: true,
+        aliasName: true,
       },
     });
   }

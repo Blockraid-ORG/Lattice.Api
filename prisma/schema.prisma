@@ -7,11 +7,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum PaymentHistoryType {
+  PROJECT_LISTING_FEE
+  PRESALE_FEE
+}
+
 enum FileStorage {
   LOCAL
   AWS
   GCS
   DOSpaces
+}
+
+enum EnumVerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 enum EnumUserCategory {
@@ -55,7 +66,7 @@ enum EnumProjectStatus {
 }
 
 enum ChianType {
-  Mainet
+  Mainnet
   Testnet
 }
 
@@ -66,7 +77,7 @@ model User {
   password      String?
   refreshToken  String?
   status        Boolean          @default(true)
-  category      EnumUserCategory @default(UNSIGNED)
+  category      EnumUserCategory @default(PERSONAL)
   type          EnumUserType     @default(PUBLIC)
   walletAddress String?          @db.VarChar(128)
 
@@ -77,11 +88,27 @@ model User {
   updatedBy String?
   deletedBy String?
 
-  roles    UserRole[]
-  projects Project[]
+  roles                UserRole[]
+  projects             Project[]
+  transactionPresales  TransactionPresales[]
+  verifications        ProjectOwnerVerification[]
+  PresaleClaimedToken  PresaleClaimedToken[]
+  UserAdditionalReward UserAdditionalReward[]
+  FaucetHistory        FaucetHistory[]
 
   @@index([email, walletAddress])
   @@map("users")
+}
+
+model NonceLogin {
+  id            String   @id @default(uuid())
+  walletAddress String   @unique @db.VarChar(128)
+  nonce         String
+  expiredAt     DateTime
+  createdAt     DateTime @default(now())
+
+  @@index([walletAddress])
+  @@map("user_nonce_login")
 }
 
 model Role {
@@ -233,6 +260,7 @@ model Category {
   frequency      FrequencyCategory
   frequencyCount Int               @default(1)
   targetYield    String
+  status         Boolean           @default(true)
 
   parent    Category?  @relation("CategoryToSubcategory", fields: [parentId], references: [id])
   children  Category[] @relation("CategoryToSubcategory")
@@ -253,10 +281,11 @@ model Social {
   name String
   icon String?
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  projects  ProjectSocial[]
+  status    Boolean         @default(true)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
   deletedAt DateTime?
-
   createdBy String?
   updatedBy String?
   deletedBy String?
@@ -277,48 +306,26 @@ model Verification {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  createdBy String?
-  updatedBy String?
-  deletedBy String?
+  createdBy     String?
+  updatedBy     String?
+  deletedBy     String?
+  projectOwners ProjectOwnerVerification[]
 
   @@map("verifications")
 }
 
 model Chain {
   id         String    @id @default(uuid())
+  chainid    Int       @default(1)
   name       String    @db.VarChar(32)
+  aliasName  String?
   ticker     String    @db.VarChar(8)
   logo       String?
   urlScanner String?
+  urlRpc     String?
+  urlApi     String?
   type       ChianType
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  createdBy String?
-  updatedBy String?
-  deletedBy String?
-  projects  ProjectChain[]
-
-  @@map("chains")
-}
-
-model Project {
-  id          String            @id @default(uuid())
-  name        String            @db.VarChar(128)
-  slug        String            @db.VarChar(128)
-  logo        String
-  banner      String?
-  ticker      String?
-  decimals    Int               @default(18)
-  totalSupply Decimal           @db.Decimal(65, 18)
-  detail      String            @db.Text()
-  status      EnumProjectStatus
-  userId      String
-  user        User              @relation(fields: [userId], references: [id])
-  categoryId  String
-  category    Category          @relation(fields: [categoryId], references: [id])
+  status     Boolean   @default(true)
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -327,11 +334,77 @@ model Project {
   createdBy   String?
   updatedBy   String?
   deletedBy   String?
-  chains      ProjectChain[]
-  allocations ProjectAllocation[]
-  reviewLogs  ProjectReviewLog[]
+  projects    ProjectChain[]
+  mStableCoin MStableCoin[]
+
+  @@map("chains")
+}
+
+model Project {
+  id                String            @id @default(uuid())
+  name              String            @db.VarChar(128)
+  slug              String            @db.VarChar(128)
+  logo              String
+  banner            String?
+  ticker            String?
+  decimals          Int               @default(18)
+  totalSupply       Decimal           @db.Decimal(65, 18)
+  detail            String            @db.Text()
+  status            EnumProjectStatus @default(PENDING)
+  userId            String
+  user              User              @relation(fields: [userId], references: [id])
+  categoryId        String
+  category          Category          @relation(fields: [categoryId], references: [id])
+  projectTypeId     String?
+  projectType       ProjectType?      @relation(fields: [projectTypeId], references: [id])
+  contractAddress   String?
+  factoryAddress    String?
+  whitelistsAddress String?
+  whitelistDuration Int?
+  sweepDuration     Int?              @default(2592000)
+
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+  deletedAt             DateTime?
+  lockerDistributed     Boolean               @default(false)
+  lockerDistributeHash  String?
+  rewardContractAddress String?
+  createdBy             String?
+  updatedBy             String?
+  deletedBy             String?
+  chains                ProjectChain[]
+  allocations           ProjectAllocation[]
+  reviewLogs            ProjectReviewLog[]
+  socials               ProjectSocial[]
+  transactionPresales   TransactionPresales[]
+  presales              Presales[]
+  additionalReward      AdditionalReward[]
+  paused                Boolean?              @default(false)
+
+  presaleAddress                 String?
+  // presaleUnit                    String?
+  ProjectPresaleWhitelistAddress ProjectPresaleWhitelistAddress[]
+  PaymentHistory                 PaymentHistory[]
 
   @@map("projects")
+}
+
+model ProjectType {
+  id          String    @id @default(uuid())
+  name        String    @db.VarChar(128)
+  description String    @db.Text()
+  icon        String?
+  order       Int       @default(1)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  createdBy String?
+  updatedBy String?
+  deletedBy String?
+  project   Project[]
+
+  @@map("project_types")
 }
 
 model ProjectChain {
@@ -354,33 +427,56 @@ model ProjectChain {
 }
 
 model ProjectAllocation {
-  id        String   @id @default(uuid())
-  projectId String   @unique
-  name      String   @db.VarChar(128)
-  supply    Int
-  vesting   Int
-  startDate DateTime
-  isPresale Boolean  @default(false)
-
-  project Project @relation(fields: [projectId], references: [id])
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  createdBy String?
-  updatedBy String?
-  deletedBy String?
+  id              String                     @id @default(uuid())
+  projectId       String
+  name            String                     @db.VarChar(128)
+  supply          Int
+  vesting         Int
+  startDate       DateTime
+  isPresale       Boolean                    @default(false)
+  isDeploying     Boolean                    @default(false)
+  sortNumber      Int                        @default(0)
+  project         Project                    @relation(fields: [projectId], references: [id])
+  isFinalized     Boolean?                   @default(false)
+  addresses       ProjectAllocationAddress[]
+  createdAt       DateTime                   @default(now())
+  updatedAt       DateTime                   @updatedAt
+  deletedAt       DateTime?
+  contractAddress String?
+  createdBy       String?
+  updatedBy       String?
+  deletedBy       String?
 
   @@map("project_allocations")
 }
 
+model ProjectAllocationAddress {
+  id                  String             @id @default(uuid())
+  address             String
+  amount              Decimal            @db.Decimal(65, 18)
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  deletedAt           DateTime?
+  contractAddress     String?
+  createdBy           String?
+  updatedBy           String?
+  deletedBy           String?
+  ProjectAllocation   ProjectAllocation? @relation(fields: [projectAllocationId], references: [id])
+  projectAllocationId String?
+  isClaimed           Boolean?           @default(false)
+
+  @@unique([projectAllocationId, address])
+  @@index([address])
+  @@map("project_allocation_address")
+}
+
 // ReviewProjectLog
 model ProjectReviewLog {
-  id        String        @id @default(uuid())
+  id        String            @id @default(uuid())
   projectId String
-  project   Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  status    ProjectStatus
+  project   Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  status    EnumProjectStatus @default(PENDING)
+  note      String?
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -393,10 +489,339 @@ model ProjectReviewLog {
   @@map("project_review_logs")
 }
 
+model ProjectSocial {
+  projectId String
+  socialId  String
+  url       String @db.VarChar(255)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  social  Social  @relation(fields: [socialId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  createdBy String?
+  updatedBy String?
+  deletedBy String?
+
+  @@id([projectId, socialId])
+  @@map("project_socials")
+}
+
 // Presales
+model Presales {
+  id              String    @id @default(uuid())
+  projectId       String
+  chainId         String
+  hardcap         Decimal   @db.Decimal(65, 18)
+  price           Decimal   @db.Decimal(65, 18)
+  maxContribution Decimal   @db.Decimal(65, 18)
+  startDate       DateTime  @default(now())
+  endDate         DateTime?
+  duration        Int       @default(1)
+  claimTime       Int       @default(1)
+
+  unit                String                    @db.VarChar(64)
+  presaleSCID         Int?
+  project             Project                   @relation(fields: [projectId], references: [id])
+  contractAddress     String?
+  whitelistContract   String?
+  whitelists          PresaleAddressWhitelist[]
+  whitelistDuration   Int?
+  sweepDuration       Int?
+  initialReleaseBps   Int?
+  cliffDuration       Int?
+  vestingDuration     Int?
+  createdAt           DateTime                  @default(now())
+  updatedAt           DateTime                  @updatedAt
+  deletedAt           DateTime?
+  isActive            Boolean?                  @default(false)
+  isWithdrawn         Boolean                   @default(false)
+  createdBy           String?
+  updatedBy           String?
+  deletedBy           String?
+  trasactions         TransactionPresales[]
+  PresaleClaimedToken PresaleClaimedToken[]
+  PaymentHistory      PaymentHistory[]
+
+  @@map("project_presales")
+}
+
+model PresaleAddressWhitelist {
+  id            String    @id @default(uuid())
+  walletAddress String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  createdBy String?
+  updatedBy String?
+  deletedBy String?
+  presale   Presales? @relation(fields: [presaleId], references: [id])
+  presaleId String?
+
+  @@map("presale_address_whitelist")
+}
+
+// new presale
+model ProjectPresaleWhitelistAddress {
+  id            String    @id @default(uuid())
+  walletAddress String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  createdBy String?
+  updatedBy String?
+  deletedBy String?
+  project   Project? @relation(fields: [projectId], references: [id])
+  projectId String?
+
+  @@map("project_presale_whitelist_address")
+}
+
 // TransactionPresales
+model TransactionPresales {
+  id              String  @id @default(uuid())
+  projectId       String
+  presaleId       String
+  userId          String
+  price           Decimal @db.Decimal(65, 18)
+  // count           Int
+  count           Decimal @db.Decimal(65, 18)
+  transactionHash String
+
+  project Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  presale Presales @relation(fields: [presaleId], references: [id], onDelete: Cascade)
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  createdBy String?
+  updatedBy String?
+  deletedBy String?
+
+  @@map("transaction_presales")
+}
 
 // ProjectOwnerVerification
+model ProjectOwnerVerification {
+  userId         String
+  verificationId String
+
+  idCard          String?                @db.VarChar(255)
+  selfie          String?                @db.VarChar(255)
+  bisnisLicense   String?                @db.VarChar(255)
+  taxId           String?                @db.VarChar(255)
+  submittedAt     DateTime
+  approvedAt      DateTime?
+  rejectedAt      DateTime?
+  status          EnumVerificationStatus @default(PENDING)
+  rejectionReason String?
+
+  verification Verification @relation(fields: [verificationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  createdBy String?
+  updatedBy String?
+  deletedBy String?
+  logs      ReviewVerificationLog[]
+
+  @@id([userId, verificationId]) // composite key
+  @@map("project_owner_verifications")
+}
+
 // ReviewVerificationLog
+model ReviewVerificationLog {
+  id        String                 @id @default(uuid())
+  status    EnumVerificationStatus
+  note      String?
+  createdAt DateTime               @default(now())
+  updatedAt DateTime               @updatedAt
+  deletedAt DateTime?
+
+  verification                           ProjectOwnerVerification @relation(fields: [projectOwnerVerificationUserId, projectOwnerVerificationVerificationId], references: [userId, verificationId])
+  createdBy                              String?
+  updatedBy                              String?
+  deletedBy                              String?
+  projectOwnerVerificationUserId         String
+  projectOwnerVerificationVerificationId String
+
+  @@map("review_verification_log")
+}
+
+model PresaleClaimedToken {
+  id              String    @id @default(uuid())
+  presaleId       String
+  userId          String
+  amount          Decimal   @db.Decimal(65, 18)
+  transactionHash String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  presale   Presales @relation(fields: [presaleId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  createdBy String?
+  updatedBy String?
+  deletedBy String?
+}
+
+model AdditionalRewardType {
+  id     String  @id @default(uuid())
+  name   String
+  status Boolean @default(true)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  createdBy String?
+  updatedBy String?
+  deletedBy String?
+  rewards   AdditionalReward[]
+
+  @@map("additional_reward_types")
+}
+
+model AdditionalReward {
+  id                   String                 @id @default(uuid())
+  projectId            String
+  amount               Decimal                @db.Decimal(65, 18)
+  typeId               String
+  type                 AdditionalRewardType   @relation(fields: [typeId], references: [id])
+  project              Project                @relation(fields: [projectId], references: [id])
+  startDateClaim       DateTime?
+  endDateClaim         DateTime?
+  contactAddress       String?
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  deletedAt            DateTime?
+  createdBy            String?
+  updatedBy            String?
+  deletedBy            String?
+  userAdditionalReward UserAdditionalReward[]
+  scheduleId           String?
+
+  @@map("additional_asset_rewards")
+}
+
+model UserAdditionalReward {
+  id                 String           @id @default(uuid())
+  additionalRewardId String
+  userId             String
+  address            String
+  amount             Decimal          @db.Decimal(65, 18)
+  isClaimed          Boolean          @default(false)
+  user               User             @relation(fields: [userId], references: [id])
+  additionalReward   AdditionalReward @relation(fields: [additionalRewardId], references: [id])
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  deletedAt          DateTime?
+  createdBy          String?
+  updatedBy          String?
+  deletedBy          String?
+
+  @@unique([additionalRewardId, userId])
+  @@map("user_additional_rewars")
+}
+
+model AddressPoolPayment {
+  id           String       @id @default(uuid())
+  paymentSc    String       @default("0x779aa5C7ff04B6Ba48464bcEA0a60134Df9E6AFf")
+  stableCoinId String?
+  listingFee   String       @default("0")
+  presaleFee   Float        @default(1)
+  decimal      Int          @default(6)
+  status       Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  deletedAt    DateTime?
+  createdBy    String?
+  updatedBy    String?
+  deletedBy    String?
+  stableCoin   MStableCoin? @relation(fields: [stableCoinId], references: [id])
+
+  @@map("address_pool_payments")
+}
+
+model StableCoinGroup {
+  id          String        @id @default(uuid())
+  name        String        @db.VarChar(8)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  deletedAt   DateTime?
+  createdBy   String?
+  updatedBy   String?
+  deletedBy   String?
+  mStableCoin MStableCoin[]
+
+  @@map("m_stable_coin_groups")
+}
+
+model MStableCoin {
+  id                 String               @id @default(uuid())
+  chainId            String
+  stableCoinGroupId  String
+  address            String
+  decimal            Int
+  chain              Chain                @relation(fields: [chainId], references: [id])
+  stableCoin         StableCoinGroup      @relation(fields: [stableCoinGroupId], references: [id])
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  deletedAt          DateTime?
+  createdBy          String?
+  updatedBy          String?
+  deletedBy          String?
+  addressPoolPayment AddressPoolPayment[]
+
+  @@map("m_stable_coins")
+}
+
+model PaymentHistory {
+  id              String             @id @default(uuid())
+  type            PaymentHistoryType
+  address         String
+  projectId       String? // optional
+  presaleId       String? // optional
+  project         Project?           @relation(fields: [projectId], references: [id])
+  presale         Presales?          @relation(fields: [presaleId], references: [id])
+  amount          String
+  unit            String
+  transactionHash String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  deletedAt       DateTime?
+  createdBy       String?
+  updatedBy       String?
+  deletedBy       String?
+
+  @@map("payment_histories")
+}
 
 // Project Here...
+
+model FaucetHistory {
+  id        String    @id @default(uuid())
+  address   String
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  amount    String
+  unit      String
+  txHash    String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy String?
+  updatedBy String?
+  deletedBy String?
+
+  @@map("faucet_histories")
+}

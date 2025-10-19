@@ -38,4 +38,15 @@ export class AuthController {
   signout(@Req() req: Request) {
     return this.authService.signout(req);
   }
+  @Post('request-nonce')
+  requestNonce(@Body('walletAddress') walletAddress: string) {
+    return this.authService.requestNonce(walletAddress);
+  }
+  @Post('verify-signature')
+  verifySignature(
+    @Body('walletAddress') walletAddress: string,
+    @Body('signature') signature: string,
+  ) {
+    return this.authService.verifySignature(walletAddress, signature);
+  }
 }

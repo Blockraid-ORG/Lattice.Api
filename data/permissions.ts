@@ -1,29 +1,5 @@
 export const permissionData = [
   {
-    name: 'POST_auth/login',
-    code: 'POST_auth/login',
-    path: 'auth/login',
-    method: 'POST',
-  },
-  {
-    name: 'POST_auth/register',
-    code: 'POST_auth/register',
-    path: 'auth/register',
-    method: 'POST',
-  },
-  {
-    name: 'POST_auth/refresh-token',
-    code: 'POST_auth/refresh-token',
-    path: 'auth/refresh-token',
-    method: 'POST',
-  },
-  {
-    name: 'GET_auth/logout',
-    code: 'GET_auth/logout',
-    path: 'auth/logout',
-    method: 'GET',
-  },
-  {
     name: 'POST_users',
     code: 'POST_users',
     path: 'users',
@@ -132,12 +108,6 @@ export const permissionData = [
     method: 'DELETE',
   },
   {
-    name: 'POST_permissions/sync',
-    code: 'POST_permissions/sync',
-    path: 'permissions/sync',
-    method: 'POST',
-  },
-  {
     name: 'POST_role-permissions/sign',
     code: 'POST_role-permissions/sign',
     path: 'role-permissions/sign',
@@ -208,5 +178,359 @@ export const permissionData = [
     code: 'GET_sidemenu',
     path: 'sidemenu',
     method: 'GET',
+  },
+  // ===
+  {
+    name: 'POST_chains',
+    code: 'POST_chains',
+    path: 'chains',
+    method: 'POST',
+  },
+  {
+    name: 'GET_chains',
+    code: 'GET_chains',
+    path: 'chains',
+    method: 'GET',
+  },
+  {
+    name: 'GET_chains/:id',
+    code: 'GET_chains/:id',
+    path: 'chains/:id',
+    method: 'GET',
+  },
+  {
+    name: 'PATCH_chains/:id',
+    code: 'PATCH_chains/:id',
+    path: 'chains/:id',
+    method: 'PATCH',
+  },
+  {
+    name: 'DELETE_chains/:id',
+    code: 'DELETE_chains/:id',
+    path: 'chains/:id',
+    method: 'DELETE',
+  },
+  // ===
+  {
+    name: 'POST_socials',
+    code: 'POST_socials',
+    path: 'socials',
+    method: 'POST',
+  },
+  {
+    name: 'GET_socials',
+    code: 'GET_socials',
+    path: 'socials',
+    method: 'GET',
+  },
+  {
+    name: 'GET_socials/:id',
+    code: 'GET_socials/:id',
+    path: 'socials/:id',
+    method: 'GET',
+  },
+  {
+    name: 'PATCH_socials/:id',
+    code: 'PATCH_socials/:id',
+    path: 'socials/:id',
+    method: 'PATCH',
+  },
+  {
+    name: 'DELETE_socials/:id',
+    code: 'DELETE_socials/:id',
+    path: 'socials/:id',
+    method: 'DELETE',
+  },
+  // ===
+  {
+    name: 'POST_categories',
+    code: 'POST_categories',
+    path: 'categories',
+    method: 'POST',
+  },
+  {
+    name: 'GET_categories',
+    code: 'GET_categories',
+    path: 'categories',
+    method: 'GET',
+  },
+  {
+    name: 'GET_categories/:id',
+    code: 'GET_categories/:id',
+    path: 'categories/:id',
+    method: 'GET',
+  },
+  {
+    name: 'PATCH_categories/:id',
+    code: 'PATCH_categories/:id',
+    path: 'categories/:id',
+    method: 'PATCH',
+  },
+  {
+    name: 'DELETE_categories/:id',
+    code: 'DELETE_categories/:id',
+    path: 'categories/:id',
+    method: 'DELETE',
+  },
+  // ===
+  {
+    name: 'POST_master-verifications',
+    code: 'POST_master-verifications',
+    path: 'master-verifications',
+    method: 'POST',
+  },
+  {
+    name: 'GET_master-verifications',
+    code: 'GET_master-verifications',
+    path: 'master-verifications',
+    method: 'GET',
+  },
+  {
+    name: 'GET_master-verifications/:id',
+    code: 'GET_master-verifications/:id',
+    path: 'master-verifications/:id',
+    method: 'GET',
+  },
+  {
+    name: 'PATCH_master-verifications/:id',
+    code: 'PATCH_master-verifications/:id',
+    path: 'master-verifications/:id',
+    method: 'PATCH',
+  },
+  {
+    name: 'DELETE_master-verifications/:id',
+    code: 'DELETE_master-verifications/:id',
+    path: 'master-verifications/:id',
+    method: 'DELETE',
+  },
+  // ===
+  {
+    name: 'POST_members',
+    code: 'POST_members',
+    path: 'members',
+    method: 'POST',
+  },
+  {
+    name: 'GET_members',
+    code: 'GET_members',
+    path: 'members',
+    method: 'GET',
+  },
+  {
+    name: 'GET_members/:id',
+    code: 'GET_members/:id',
+    path: 'members/:id',
+    method: 'GET',
+  },
+  {
+    name: 'PATCH_members/:id',
+    code: 'PATCH_members/:id',
+    path: 'members/:id',
+    method: 'PATCH',
+  },
+  {
+    name: 'DELETE_members/:id',
+    code: 'DELETE_members/:id',
+    path: 'members/:id',
+    method: 'DELETE',
+  },
+  // ===
+  {
+    name: 'POST_projects',
+    code: 'POST_projects',
+    path: 'projects',
+    method: 'POST',
+  },
+  {
+    name: 'GET_projects',
+    code: 'GET_projects',
+    path: 'projects',
+    method: 'GET',
+  },
+  {
+    name: 'POST_projects/me',
+    code: 'POST_projects/me',
+    path: 'projects/me',
+    method: 'GET',
+  },
+  {
+    name: 'GET_projects/:id',
+    code: 'GET_projects/:id',
+    path: 'projects/:id',
+    method: 'GET',
+  },
+  {
+    name: 'PATCH_projects/:id',
+    code: 'PATCH_projects/:id',
+    path: 'projects/:id',
+    method: 'PATCH',
+  },
+  {
+    name: 'DELETE_projects/:id',
+    code: 'DELETE_projects/:id',
+    path: 'projects/:id',
+    method: 'DELETE',
+  },
+  // ===
+  {
+    name: 'POST_project-verifications',
+    code: 'POST_project-verifications',
+    path: 'project-verifications',
+    method: 'POST',
+  },
+  {
+    name: 'GET_project-verifications',
+    code: 'GET_project-verifications',
+    path: 'project-verifications',
+    method: 'GET',
+  },
+  {
+    name: 'GET_project-verifications/:id',
+    code: 'GET_project-verifications/:id',
+    path: 'project-verifications/:id',
+    method: 'GET',
+  },
+  // ===
+  {
+    name: 'POST_transaction-presale',
+    code: 'POST_transaction-presale',
+    path: 'transaction-presale',
+    method: 'POST',
+  },
+  {
+    name: 'GET_transaction-presale',
+    code: 'GET_transaction-presale',
+    path: 'transaction-presale',
+    method: 'GET',
+  },
+  {
+    name: 'GET_transaction-presale/:id',
+    code: 'GET_transaction-presale/:id',
+    path: 'transaction-presale/:id',
+    method: 'GET',
+  },
+  // ===
+  {
+    name: 'POST_project-types',
+    code: 'POST_project-types',
+    path: 'project-types',
+    method: 'POST',
+  },
+  {
+    name: 'GET_project-types',
+    code: 'GET_project-types',
+    path: 'project-types',
+    method: 'GET',
+  },
+  {
+    name: 'GET_project-types/:id',
+    code: 'GET_project-types/:id',
+    path: 'project-types/:id',
+    method: 'GET',
+  },
+  {
+    name: 'PATCH_project-types/:id',
+    code: 'PATCH_project-types/:id',
+    path: 'project-types/:id',
+    method: 'PATCH',
+  },
+  {
+    name: 'DELETE_project-types/:id',
+    code: 'DELETE_project-types/:id',
+    path: 'project-types/:id',
+    method: 'DELETE',
+  },
+  // ===
+  {
+    name: 'POST_address-pool-payments',
+    code: 'POST_address-pool-payments',
+    path: 'address-pool-payments',
+    method: 'POST',
+  },
+  {
+    name: 'GET_address-pool-payments',
+    code: 'GET_address-pool-payments',
+    path: 'address-pool-payments',
+    method: 'GET',
+  },
+  {
+    name: 'GET_address-pool-payments/:id',
+    code: 'GET_address-pool-payments/:id',
+    path: 'address-pool-payments/:id',
+    method: 'GET',
+  },
+  {
+    name: 'PATCH_address-pool-payments/:id',
+    code: 'PATCH_address-pool-payments/:id',
+    path: 'address-pool-payments/:id',
+    method: 'PATCH',
+  },
+  {
+    name: 'DELETE_address-pool-payments/:id',
+    code: 'DELETE_address-pool-payments/:id',
+    path: 'address-pool-payments/:id',
+    method: 'DELETE',
+  },
+  // ===
+  {
+    name: 'POST_stable-coin',
+    code: 'POST_stable-coin',
+    path: 'stable-coin',
+    method: 'POST',
+  },
+  {
+    name: 'GET_stable-coin',
+    code: 'GET_stable-coin',
+    path: 'stable-coin',
+    method: 'GET',
+  },
+  {
+    name: 'GET_stable-coin/:id',
+    code: 'GET_stable-coin/:id',
+    path: 'stable-coin/:id',
+    method: 'GET',
+  },
+  {
+    name: 'PATCH_stable-coin/:id',
+    code: 'PATCH_stable-coin/:id',
+    path: 'stable-coin/:id',
+    method: 'PATCH',
+  },
+  {
+    name: 'DELETE_stable-coin/:id',
+    code: 'DELETE_stable-coin/:id',
+    path: 'stable-coin/:id',
+    method: 'DELETE',
+  },
+  // ===
+  {
+    name: 'POST_stable-coin-group',
+    code: 'POST_stable-coin-group',
+    path: 'stable-coin-group',
+    method: 'POST',
+  },
+  {
+    name: 'GET_stable-coin-group',
+    code: 'GET_stable-coin-group',
+    path: 'stable-coin-group',
+    method: 'GET',
+  },
+  {
+    name: 'GET_stable-coin-group/:id',
+    code: 'GET_stable-coin-group/:id',
+    path: 'stable-coin-group/:id',
+    method: 'GET',
+  },
+  {
+    name: 'PATCH_stable-coin-group/:id',
+    code: 'PATCH_stable-coin-group/:id',
+    path: 'stable-coin-group/:id',
+    method: 'PATCH',
+  },
+  {
+    name: 'DELETE_stable-coin-group/:id',
+    code: 'DELETE_stable-coin-group/:id',
+    path: 'stable-coin-group/:id',
+    method: 'DELETE',
   },
 ];

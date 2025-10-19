@@ -13,7 +13,22 @@ import { ChainsModule } from './modules/chains/chains.module';
 import { SocialsModule } from './modules/socials/socials.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { VerificationsModule } from './modules/verifications/verifications.module';
-
+import { ProjectsModule } from './modules/projects/projects.module';
+import { ProjectVerificationsModule } from './modules/project-verifications/project-verifications.module';
+import { MembersModule } from './modules/members/members.module';
+import { MemberVerificationsModule } from './modules/member-verifications/member-verifications.module';
+import { ProfileModule } from './modules/profile/profile.module';
+import { UsrClientModule } from './modules/client/usr-client/usr-client.module';
+import { PresaleModule } from './modules/client/presale/presale.module';
+import { ProjectModule } from './modules/client/project/project.module';
+import { PresalesModule } from './modules/presales/presales.module';
+import { ProjectTypesModule } from './modules/project-types/project-types.module';
+import { AdditionalRewardTypesModule } from './modules/additional-reward-types/additional-reward-types.module';
+import { AdditionalAssetRewardsModule } from './modules/additional-asset-rewards/additional-asset-rewards.module';
+import { AddressPoolPaymentsModule } from './modules/address-pool-payments/address-pool-payments.module';
+import { StableCoinGroupModule } from './modules/stable-coin-group/stable-coin-group.module';
+import { StableCoinModule } from './modules/stable-coin/stable-coin.module';
+import { FaucetModule } from './modules/faucet/faucet.module';
 @Module({
   imports: [
     PrismaModule,
@@ -32,6 +47,22 @@ import { VerificationsModule } from './modules/verifications/verifications.modul
     SocialsModule,
     CategoriesModule,
     VerificationsModule,
+    ProjectsModule,
+    ProjectVerificationsModule,
+    MembersModule,
+    MemberVerificationsModule,
+    ProfileModule,
+    UsrClientModule,
+    PresaleModule,
+    ProjectModule,
+    PresalesModule,
+    ProjectTypesModule,
+    AdditionalRewardTypesModule,
+    AdditionalAssetRewardsModule,
+    AddressPoolPaymentsModule,
+    StableCoinGroupModule,
+    StableCoinModule,
+    FaucetModule,
   ],
   controllers: [],
   providers: [],

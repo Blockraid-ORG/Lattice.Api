@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
-  HttpStatus,
   Param,
   Patch,
   Post,
@@ -49,33 +47,5 @@ export class PermissionsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.permissionsService.remove(id);
-  }
-
-  @Post('sync')
-  @HttpCode(HttpStatus.OK)
-  async syncPermissions() {
-    const { httpAdapter } = this.adapterHost;
-    const router = httpAdapter.getInstance()?._router;
-
-    if (!router) return 'Router not found';
-    const stack = router.stack;
-    const routes = stack
-      .filter((layer) => layer.route)
-      .flatMap((layer) => {
-        const path = layer.route.path;
-        const methods = Object.keys(layer.route.methods).filter(
-          (method) => layer.route.methods[method],
-        );
-        return methods.map((method) => {
-          const onlyPath = path.replace(/^\/v1\//, '');
-          return {
-            method: method.toUpperCase(),
-            path: onlyPath,
-            code: `${method.toUpperCase()}_${onlyPath}`,
-            name: `${method.toUpperCase()}_${onlyPath}`,
-          };
-        });
-      });
-    return this.permissionsService.syncPermissions(routes);
   }
 }

@@ -24,6 +24,9 @@
     "db:init": "npx prisma migrate dev --name init",
     "db:rebuild": "npm run migration:delete && npm run db:reset && npm run db:init && npm run seed"
   },
+  "prisma": {
+    "seed": "ts-node --require tsconfig-paths/register prisma/seed.ts"
+  },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^4.0.2",
@@ -33,9 +36,13 @@
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.2",
     "@prisma/client": "^6.7.0",
+    "axios": "^1.11.0",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
+    "crypto": "^1.0.1",
+    "date-fns": "^4.1.0",
+    "ethers": "^6.15.0",
     "multer": "^2.0.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
@@ -58,6 +65,7 @@
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
+    "hardhat": "^2.26.1",
     "jest": "^29.5.0",
     "prettier": "^3.0.0",
     "prisma": "^6.7.0",

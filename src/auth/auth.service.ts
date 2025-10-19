@@ -4,11 +4,14 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ethers } from 'ethers';
 import { JwtPayload, SignInDto, SignUpDto } from './dto/auth.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { comparePassword, hashPassword } from 'src/common/password';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { randomBytes } from 'crypto';
+import { addMinutes } from 'date-fns';
 
 @Injectable()
 export class AuthService {
@@ -206,5 +209,141 @@ export class AuthService {
   }
   async decodeToken(token: string) {
     return this.jwt.decode(token);
+  }
+
+  // Login Nonce
+  async requestNonce(walletAddress: string) {
+    const nonce = `${randomBytes(16).toString('hex')}`;
+    const expiredAt = addMinutes(new Date(), 5);
+
+    await this.prisma.nonceLogin.upsert({
+      where: {
+        walletAddress: walletAddress,
+      },
+      update: { nonce, expiredAt },
+      create: { walletAddress, nonce, expiredAt },
+    });
+
+    return { nonce };
+  }
+  async verifySignature(walletAddress: string, signature: string) {
+    const record = await this.prisma.nonceLogin.findUnique({
+      where: { walletAddress },
+    });
+    if (!record || new Date(record.expiredAt) < new Date()) {
+      throw new ForbiddenException('Nonce expired or not found');
+    }
+    const message = `Welcome To Terravest\n\n
+Agree to Presale Terms\n\nTo participate in the Terravest presale, you must agree to the following terms:\n\n
+By signing, you acknowledge and agree to the Terravest presale terms and conditions.
+You understand that participation is subject to all applicable laws and regulations, and you have read and accept the full terms at terravest.capital/terms.\n\nNonce: ${record.nonce}`;
+    const signerAddr = ethers.verifyMessage(message, signature);
+    if (signerAddr.toLowerCase() !== walletAddress.toLowerCase()) {
+      throw new ForbiddenException('Invalid signature');
+    }
+    let newUser;
+    newUser = await this.prisma.user.findFirst({
+      where: { walletAddress },
+      include: {
+        roles: {
+          select: { id: true },
+        },
+      },
+    });
+    if (!newUser) {
+      newUser = await this.prisma.user.create({
+        data: {
+          walletAddress,
+          fullname: walletAddress,
+        },
+        include: {
+          roles: {
+            select: { id: true },
+          },
+        },
+      });
+    }
+    if (newUser?.roles && newUser.roles.length <= 0) {
+      const role = await this.prisma.role.findFirst({
+        where: { name: 'USER' },
+      });
+      await this.prisma.userRole.create({
+        data: {
+          roleId: role.id,
+          userId: newUser.id,
+        },
+      });
+    }
+
+    await this.prisma.nonceLogin.delete({
+      where: {
+        walletAddress: walletAddress,
+      },
+    });
+    const accessToken = await this.generateAccessToken(newUser.id);
+    const refreshToken = await this.generateRefreshToken(newUser.id);
+    await this.prisma.user.update({
+      where: {
+        id: newUser.id,
+      },
+      data: {
+        refreshToken,
+      },
+    });
+    const roles = await this.prisma.userRole.findMany({
+      where: {
+        userId: newUser.id,
+      },
+      select: {
+        id: true,
+        role: {
+          select: {
+            id: true,
+            code: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    const rolePermissions = await this.prisma.rolePermission.findMany({
+      where: {
+        roleId: {
+          in: roles.map((i) => i.role.id),
+        },
+      },
+    });
+    // GET UNIQUE PERMISSIONS
+    const uniquePermissions = [
+      ...new Set(rolePermissions.map((i) => i.permissionId)),
+    ];
+
+    const permissionLists = await this.prisma.permission.findMany({
+      where: {
+        id: {
+          in: uniquePermissions,
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        code: true,
+        method: true,
+      },
+    });
+    const permissions = permissionLists.map((item) => {
+      return `${item.name}`;
+    });
+    return {
+      user: {
+        id: newUser.id,
+        fullname: newUser.fullname,
+        roles: roles.map((i) => i.role.name),
+      },
+      accessToken,
+      refreshToken,
+      roles: roles.map((i) => i.role.name),
+      permissions: permissions,
+    };
   }
 }

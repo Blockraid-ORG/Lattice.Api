@@ -41,4 +41,8 @@ export class CreateUserByAdminDto {
   @IsString()
   @MaxLength(100)
   email: string;
+
+  @IsOptional()
+  @IsString()
+  walletAddress?: string;
 }

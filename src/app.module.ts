@@ -29,6 +29,7 @@ import { AddressPoolPaymentsModule } from './modules/address-pool-payments/addre
 import { StableCoinGroupModule } from './modules/stable-coin-group/stable-coin-group.module';
 import { StableCoinModule } from './modules/stable-coin/stable-coin.module';
 import { FaucetModule } from './modules/faucet/faucet.module';
+import { HealtCheckModule } from './healt-check/healt-check.module';
 @Module({
   imports: [
     PrismaModule,
@@ -63,6 +64,7 @@ import { FaucetModule } from './modules/faucet/faucet.module';
     StableCoinGroupModule,
     StableCoinModule,
     FaucetModule,
+    HealtCheckModule,
   ],
   controllers: [],
   providers: [],

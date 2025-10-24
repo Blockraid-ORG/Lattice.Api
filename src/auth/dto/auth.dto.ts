@@ -3,6 +3,13 @@ import { IsStrongPassword } from 'src/common/validators/IsStrongPassword';
 export class JwtPayload {
   userId: string;
 }
+
+export class UserSession {
+  id: string;
+  email: string;
+  fullname: string;
+  userId: string;
+}
 export class SignInDto {
   @IsNotEmpty()
   email: string;

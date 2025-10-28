@@ -30,6 +30,7 @@ import { StableCoinGroupModule } from './modules/stable-coin-group/stable-coin-g
 import { StableCoinModule } from './modules/stable-coin/stable-coin.module';
 import { FaucetModule } from './modules/faucet/faucet.module';
 import { HealtCheckModule } from './healt-check/healt-check.module';
+import { StatsModule } from './modules/client/stats/stats.module';
 @Module({
   imports: [
     PrismaModule,
@@ -65,6 +66,7 @@ import { HealtCheckModule } from './healt-check/healt-check.module';
     StableCoinModule,
     FaucetModule,
     HealtCheckModule,
+    StatsModule,
   ],
   controllers: [],
   providers: [],

@@ -62,6 +62,7 @@ export class ProjectsController {
     @Body() dto: UpdateProjectDto,
     @CurrentUserId() userId: string,
   ) {
+    console.log({ userId });
     return this.projectsService.update(id, dto, userId);
   }
 
@@ -77,6 +78,7 @@ export class ProjectsController {
     @Query() query: QueryParamDto,
     @CurrentUserId() userId: string,
   ) {
+    console.log({ userId });
     return this.projectsService.findMany({
       ...query,
       userId,

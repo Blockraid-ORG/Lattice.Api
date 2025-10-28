@@ -25,7 +25,6 @@ export class PresaleController {
   findActivePresale(@Query() query: QueryParamDto) {
     return this.presaleService.findActivePresale(query);
   }
-  // Main
   @UseGuards(AuthGuard('jwt'))
   @Post()
   create(@Body() createPresaleDto: CreatePresaleDto) {

@@ -11,12 +11,21 @@ import {
   SetUserRewardClaimedDto,
 } from './dto/create-additional-asset-reward.dto';
 import { UpdateAdditionalAssetRewardDto } from './dto/update-additional-asset-reward.dto';
+import { CreateUserByAdminDto } from 'src/users/dto/create-user.dto';
 
 @Injectable()
 export class AdditionalAssetRewardsService {
   constructor(private readonly prisma: PrismaService) {}
   async setAllocations(dto: SetAllocationAirdropDto[]) {
     const addesses = dto.map((i) => i.address);
+    const newUsers = addesses.map((item) => {
+      return {
+        walletAddress: item,
+        fullname: 'Unnamed',
+        email: item,
+      };
+    });
+    await this.generateNewUser(newUsers);
     const users = await this.prisma.user.findMany({
       where: {
         walletAddress: {
@@ -403,6 +412,26 @@ export class AdditionalAssetRewardsService {
     return this.prisma.userAdditionalReward.update({
       where: { id: dto.id },
       data: { isClaimed: true },
+    });
+  }
+  async generateNewUser(dto: CreateUserByAdminDto[]) {
+    return this.prisma.$transaction(async (prisma) => {
+      for (const item of dto) {
+        const existingUser = await prisma.user.findFirst({
+          where: {
+            walletAddress: item.walletAddress,
+          },
+        });
+        if (!existingUser) {
+          await prisma.user.create({
+            data: {
+              fullname: item.fullname,
+              email: item.email,
+              walletAddress: item.walletAddress,
+            },
+          });
+        }
+      }
     });
   }
 }

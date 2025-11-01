@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma, Project } from '@prisma/client';
+import { Prisma, Project, ProjectAllocation } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
+import { UserSession } from 'src/auth/dto/auth.dto';
 import { QueryParamDto } from 'src/common/pagination/dto/pagination.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -216,6 +217,70 @@ export class ProjectService {
         },
       },
     );
+    return result;
+  }
+
+  async findMyVesting(query: QueryParamDto, user: UserSession) {
+    const currentUser = await this.prisma.user.findUnique({
+      where: { id: user.userId },
+    });
+    const paginate = createPaginator({
+      page: query.page,
+      perPage: query.pageSize,
+    });
+    console.log(currentUser.walletAddress);
+    const orderField = query.sortBy || 'createdAt';
+    const orderType = query.sortType || 'desc';
+    const orderBy = { [orderField]: orderType };
+    const result = await paginate<
+      ProjectAllocation,
+      Prisma.ProjectAllocationFindManyArgs
+    >(this.prisma.projectAllocation, {
+      where: {
+        addresses: {
+          some: {
+            address: {
+              equals: currentUser.walletAddress,
+              mode: 'insensitive',
+            },
+            deletedAt: null,
+          },
+        },
+        project: { status: 'DEPLOYED' },
+      },
+      orderBy,
+      include: {
+        addresses: {
+          where: {
+            address: currentUser.walletAddress,
+          },
+        },
+        project: {
+          select: {
+            id: true,
+            name: true,
+            logo: true,
+            ticker: true,
+            decimals: true,
+            contractAddress: true,
+            chains: {
+              select: {
+                chain: {
+                  select: {
+                    id: true,
+                    name: true,
+                    logo: true,
+                    type: true,
+                    urlScanner: true,
+                    chainid: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
     return result;
   }
 }

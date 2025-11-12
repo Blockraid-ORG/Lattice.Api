@@ -55,6 +55,10 @@ export class PresalesController {
   findAllActivePresale(@Query() query: QueryParamDto) {
     return this.presalesService.findAllActivePresale(query);
   }
+  @Get('end-presale')
+  findAllEndPresale(@Query() query: QueryParamDto) {
+    return this.presalesService.findAllEndPresale(query);
+  }
   @Get('upcoming')
   findAllUpcomingPresale(@Query() query: QueryParamDto) {
     return this.presalesService.findAllUpcomingPresale(query);

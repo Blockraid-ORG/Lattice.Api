@@ -247,6 +247,81 @@ export class PresalesService {
     );
     return result;
   }
+  async findAllEndPresale(query: QueryParamDto) {
+    const now = new Date();
+    const paginate = createPaginator({
+      page: query.page,
+      perPage: query.pageSize,
+    });
+    const result = await paginate<Presales, Prisma.PresalesFindManyArgs>(
+      this.prisma.presales,
+      {
+        where: {
+          endDate: { lt: now },
+          project: {
+            status: 'DEPLOYED',
+          },
+        },
+        orderBy: {
+          endDate: 'desc',
+        },
+        select: {
+          id: true,
+          project: {
+            select: {
+              id: true,
+              name: true,
+              logo: true,
+              banner: true,
+              ticker: true,
+              totalSupply: true,
+              decimals: true,
+              contractAddress: true,
+              detail: true,
+              projectType: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              category: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              chains: {
+                select: {
+                  chain: true,
+                },
+              },
+              socials: {
+                include: {
+                  social: true,
+                },
+              },
+              allocations: true,
+            },
+          },
+          projectId: true,
+          chainId: true,
+          hardcap: true,
+          price: true,
+          maxContribution: true,
+          startDate: true,
+          endDate: true,
+          duration: true,
+          claimTime: true,
+          unit: true,
+          contractAddress: true,
+          whitelistContract: true,
+          whitelistDuration: true,
+          sweepDuration: true,
+        },
+      },
+    );
+    return result;
+  }
   async findAllUpcomingPresale(query: QueryParamDto) {
     const now = new Date();
     const paginate = createPaginator({

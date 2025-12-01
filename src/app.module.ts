@@ -31,6 +31,8 @@ import { StableCoinModule } from './modules/stable-coin/stable-coin.module';
 import { FaucetModule } from './modules/faucet/faucet.module';
 import { HealtCheckModule } from './healt-check/healt-check.module';
 import { StatsModule } from './modules/client/stats/stats.module';
+import { ClientAppsModule } from './modules/client-apps/client-apps.module';
+import { ClientUserPointModule } from './modules/client-user-point/client-user-point.module';
 @Module({
   imports: [
     PrismaModule,
@@ -67,6 +69,8 @@ import { StatsModule } from './modules/client/stats/stats.module';
     FaucetModule,
     HealtCheckModule,
     StatsModule,
+    ClientAppsModule,
+    ClientUserPointModule,
   ],
   controllers: [],
   providers: [],

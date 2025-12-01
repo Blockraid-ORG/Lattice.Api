@@ -70,6 +70,12 @@ enum ChianType {
   Testnet
 }
 
+enum EnumPointHistoryType {
+  IN
+  OUT
+  DEDUCT
+}
+
 model User {
   id            String           @id @default(uuid())
   fullname      String           @db.VarChar(100)
@@ -80,13 +86,14 @@ model User {
   category      EnumUserCategory @default(PERSONAL)
   type          EnumUserType     @default(PUBLIC)
   walletAddress String?          @db.VarChar(128)
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  createdBy String?
-  updatedBy String?
-  deletedBy String?
+  clientAppId   String?
+  point         ClientUserPoint?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  deletedAt     DateTime?
+  createdBy     String?
+  updatedBy     String?
+  deletedBy     String?
 
   roles                UserRole[]
   projects             Project[]
@@ -95,6 +102,7 @@ model User {
   PresaleClaimedToken  PresaleClaimedToken[]
   UserAdditionalReward UserAdditionalReward[]
   FaucetHistory        FaucetHistory[]
+  clientApp            ClientApp?                 @relation(fields: [clientAppId], references: [id])
 
   @@index([email, walletAddress])
   @@map("users")
@@ -824,4 +832,54 @@ model FaucetHistory {
   deletedBy String?
 
   @@map("faucet_histories")
+}
+
+// Client App Schema
+model ClientApp {
+  id          String  @id @default(uuid())
+  code        String  @unique
+  name        String
+  description String?
+  url         String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy String?
+  updatedBy String?
+  deletedBy String?
+  users     User[]
+
+  @@map("client_apps")
+}
+
+model ClientUserPoint {
+  id                     String                   @id @default(uuid())
+  userId                 String?                  @unique // one-to-one FK
+  balance                Float
+  user                   User?                    @relation(fields: [userId], references: [id])
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+  deletedAt              DateTime?
+  createdBy              String?
+  updatedBy              String?
+  deletedBy              String?
+  clientUserPointHistory ClientUserPointHistory[]
+
+  @@map("client_user_points")
+}
+
+model ClientUserPointHistory {
+  id            String               @id @default(uuid())
+  pointId       String
+  change        Float // + or - value
+  type          EnumPointHistoryType
+  description   String?
+  balanceBefore Float
+  balanceAfter  Float
+
+  createdAt DateTime        @default(now())
+  point     ClientUserPoint @relation(fields: [pointId], references: [id])
+
+  @@map("client_user_point_histories")
 }

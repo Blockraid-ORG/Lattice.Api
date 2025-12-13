@@ -397,6 +397,209 @@ export class ProjectsService {
       isHashAirdrop: hasAirdrop,
     };
   }
+  async findByContract(contract: string) {
+    const result = await this.prisma.project.findFirst({
+      where: { contractAddress: contract },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        logo: true,
+        banner: true,
+        ticker: true,
+        decimals: true,
+        totalSupply: true,
+        detail: true,
+        status: true,
+        contractAddress: true,
+        factoryAddress: true,
+        lockerDistributed: true,
+        lockerDistributeHash: true,
+        rewardContractAddress: true,
+        presaleAddress: true,
+        whitelistsAddress: true,
+        PaymentHistory: true,
+        whitelistDuration: true,
+        ProjectPresaleWhitelistAddress: {
+          select: {
+            id: true,
+            walletAddress: true,
+            projectId: true,
+          },
+        },
+        paused: true,
+        projectType: {
+          select: {
+            id: true,
+            name: true,
+            icon: true,
+          },
+        },
+        reviewLogs: {
+          select: {
+            id: true,
+            status: true,
+            note: true,
+            createdAt: true,
+            createdBy: true,
+          },
+        },
+        socials: {
+          select: {
+            url: true,
+            social: {
+              select: {
+                id: true,
+                name: true,
+                icon: true,
+              },
+            },
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            icon: true,
+          },
+        },
+        chains: {
+          select: {
+            chain: {
+              select: {
+                id: true,
+                name: true,
+                logo: true,
+                ticker: true,
+                urlScanner: true,
+                urlRpc: true,
+                chainid: true,
+                type: true,
+                aliasName: true,
+              },
+            },
+          },
+        },
+        allocations: {
+          orderBy: [{ createdAt: 'asc' }, { sortNumber: 'asc' }],
+          select: {
+            id: true,
+            name: true,
+            supply: true,
+            vesting: true,
+            startDate: true,
+            isPresale: true,
+            contractAddress: true,
+            isDeploying: true,
+            isFinalized: true,
+            addresses: {
+              select: {
+                id: true,
+                address: true,
+                amount: true,
+                isClaimed: true,
+              },
+            },
+            _count: {
+              select: {
+                addresses: true,
+              },
+            },
+          },
+        },
+        presales: {
+          where: { deletedAt: null },
+          orderBy: [{ presaleSCID: 'desc' }, { createdAt: 'desc' }],
+          select: {
+            id: true,
+            hardcap: true,
+            price: true,
+            maxContribution: true,
+            duration: true,
+            unit: true,
+            claimTime: true,
+            contractAddress: true,
+            whitelistContract: true,
+            sweepDuration: true,
+            startDate: true,
+            endDate: true,
+            whitelistDuration: true,
+            isActive: true,
+            presaleSCID: true,
+            isWithdrawn: true,
+            initialReleaseBps: true,
+            cliffDuration: true,
+            vestingDuration: true,
+            whitelists: {
+              select: {
+                id: true,
+                walletAddress: true,
+              },
+            },
+          },
+        },
+        transactionPresales: {
+          select: {
+            id: true,
+            user: {
+              select: {
+                id: true,
+                walletAddress: true,
+                fullname: true,
+              },
+            },
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            fullname: true,
+            walletAddress: true,
+            type: true,
+            status: true,
+            verifications: {
+              select: {
+                userId: true,
+                verificationId: true,
+                status: true,
+              },
+            },
+          },
+        },
+        additionalReward: {
+          select: {
+            id: true,
+            amount: true,
+            contactAddress: true,
+            type: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+            startDateClaim: true,
+            endDateClaim: true,
+            scheduleId: true,
+            project: {
+              select: {
+                rewardContractAddress: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    if (!result) {
+      throw new NotFoundException(`data with ${contract} not found!`);
+    }
+    const hasAirdrop = result.allocations.some(
+      (a) => a.name.toLowerCase() === 'airdrop',
+    );
+    return {
+      ...result,
+      isHashAirdrop: hasAirdrop,
+    };
+  }
 
   async reject(dto: CreateReviewProjectDto) {
     const result = await this.prisma.$transaction(async (tx) => {

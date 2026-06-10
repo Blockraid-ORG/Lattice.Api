@@ -91,6 +91,11 @@ export class ProjectsController {
     return this.projectsService.setAssetPause(dto);
   }
 
+  @Get('token/:contract')
+  findByContract(@Param('contract') contract: string) {
+    return this.projectsService.findByContract(contract);
+  }
+
   // @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   findOne(@Param('id') id: string) {

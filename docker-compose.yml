@@ -1,13 +1,24 @@
-version: '3.8'
-
 services:
-   latticeapi-nestjs-app:
+  launchpad-api:
     build: .
-    ports: 
-      - "8000:8000"
-    volumes:
-      - .:/app
-      - /app/node_modules
-    command: sh -c "npm run db:rebuild && npm run start:dev"
+    image: launchpad-api:latest
+    container_name: launchpad-api
+
+    restart: unless-stopped
+
     env_file:
       - .env
+
+    networks:
+      - production
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.launchpad-api.rule=Host(`api.terravest.capital`)"
+      - "traefik.http.routers.launchpad-api.entrypoints=websecure"
+      - "traefik.http.routers.launchpad-api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.launchpad-api.loadbalancer.server.port=8000"
+
+networks:
+  production:
+    external: true

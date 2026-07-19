@@ -1,19 +1,36 @@
-# Base image
-FROM node:24-alpine
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
-RUN apk add --no-cache netcat-openbsd
-
 COPY package*.json ./
 
-RUN npm install --legacy-peer-deps
+RUN npm ci
 
 COPY . .
 
 RUN npx prisma generate
 
+RUN npm run build
+
+
+FROM node:24-alpine
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+COPY package*.json ./
+
+RUN npm ci --omit=dev
+
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/prisma ./prisma
+
+COPY docker-entrypoint.sh .
+
+RUN chmod +x docker-entrypoint.sh
+
 EXPOSE 8000
 
-ENV NODE_ENV=development
-CMD ["sh", "-c", "echo '⏳ Waiting for DB...' && until nc -z \"$DB_HOST\" \"$DB_PORT\"; do echo '🔁 Waiting...'; sleep 1; done && echo '✅ DB is ready!' && npm run db:rebuild && npm run start:dev"]
+ENTRYPOINT ["./docker-entrypoint.sh"]

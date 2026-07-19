@@ -2,15 +2,16 @@ FROM node:24-alpine AS builder
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY package.json yarn.lock ./
 
-RUN npm ci
+RUN corepack enable
+RUN yarn install --frozen-lockfile
 
 COPY . .
 
-RUN npx prisma generate
+RUN yarn prisma generate
 
-RUN npm run build
+RUN yarn build
 
 
 FROM node:24-alpine
@@ -19,12 +20,13 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-COPY package*.json ./
+COPY package.json yarn.lock ./
 
-RUN npm ci --omit=dev
+RUN corepack enable
+RUN yarn install --frozen-lockfile --production
 
-COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 
 COPY docker-entrypoint.sh .
